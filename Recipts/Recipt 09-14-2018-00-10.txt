@@ -1,0 +1,7 @@
+e:Grilled Salmon Fillet = $15.00
+ d:Tap Water = $2.00
+ e:Cajun Chicken & Pasta = $13.00
+ d:Coca-Cola = $3.00
+----------------------------
+SubTotal = $33.00
+Final Total(incuding tip:0.27999999999999997 and tax:0.08) = $44.88

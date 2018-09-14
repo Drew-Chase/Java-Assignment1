@@ -2,27 +2,73 @@ package tk.dccraft.Assignment_1.part_1;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.util.HashMap;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.DefaultCaret;
 
-public class MealTester {
+/**
+ * Assignment 1 Part 1 ------------------------------ This class creates a Point
+ * of Sale Service (POS-System) like program... Something I've been wanting to
+ * do since I saw the god-awful POS-System at the Local House of Pizza.
+ * 
+ * @author Drew Chase
+ *
+ */
+public class MealTester implements ActionListener {
 
+	// Initializing Private Variables... Which are all of them because ONE CLASS
+	// BABY!
+	// The Window Title
 	private String title = "Bennigan's POS System";
-	// private double price;
-	// private Food brBites, loPS, mozzStick, cCaP, steak, salmon, liver, cola,
-	// iceTea, lemonade, water;
+	private DefaultCaret caret;
+	private List<String> menu_name = new ArrayList<String>();
+	private List<Double> menu_price = new ArrayList<Double>();
+	private List<String> yourOrder = new ArrayList<String>();
+	private ArrayList<Double> yourOrderPrice = new ArrayList<Double>();
+	private List<JButton> button = new ArrayList<JButton>();
+	private JButton orderButton, clearButton, add, subtract;
+	private JFrame consoleWindow, orderWindow;
+	private JTextArea console;
+	private String moneyString;
+	private double tax = 0.08, tip = 0.18;
+	private JTextField tipBox;
 
-	public static HashMap<String, Double> menu = new HashMap<String, Double>();
-	public JFrame consoleWindow, orderWindow;
-	public JTextArea console;
+	private BufferedWriter bw;
+	public PrintWriter writer;
 
+	// Main Method. This is where it all starts :).
 	public static void main(String[] args) {
+		// Makes it so everything in here doesn't have to be static
 		new MealTester();
 	}
 
+	// the Constructor
 	public MealTester() {
 		initConsoleWindow();
 		initApp();
@@ -32,73 +78,310 @@ public class MealTester {
 
 	}
 
+	// Initializes Appetizer
 	public void initApp() {
 		print("---------- Initializing Appetizers ----------");
 		// brBites = new Food(5.39, "app", "Broccoli Bites");
-		menu.put("Broccoli Bites", 5.39);
+		menu_name.add("a:Broccoli Bites");
+		menu_price.add(5.39);
 		print("Initializing Broccoli Bites");
 		// loPS = new Food(6.49, "app", "Loaded Potato Skins");
-		menu.put("Loaded Potato Skins", 6.49);
+		menu_name.add("a:Loaded Potato Skins");
+		menu_price.add(6.49);
 		print("Initializing Loaded Potato Skins");
 		// mozzStick = new Food(5.29, "app", "Mozzarella Sticks");
-		menu.put("Mozzarella Sticks", 5.29);
+		menu_name.add("a:Mozzarella Sticks");
+		menu_price.add(5.29);
 		print("Initializing Mozzarella Sticks");
 	}
 
+	// Initializes Drinks
 	private void initBev() {
 		print("--------- Initializing Beverages ------------");
-		menu.put("Coca-Cola", 3.00);
+		menu_name.add("d:Coca-Cola");
+		menu_price.add(3.00);
 		print("Initializing Coca-Cola");
-		menu.put("Iced Tea", 3.00);
+		menu_name.add("d:Iced Tea");
+		menu_price.add(3.00);
 		print("Initializing Iced Tea");
-		menu.put("Lemonade", 3.00);
+		menu_name.add("d:Lemonade");
+		menu_price.add(3.00);
 		print("Initializing Lemonade");
-		menu.put("Tap Water", 2.00);
+		menu_name.add("d:Tap Water");
+		menu_price.add(2.00);
 		print("Initializing Tap Water");
 
 	}
 
+	// Initializes Entries
 	private void initEnt() {
 		print("--------- Initializing Entrees --------------");
+		menu_name.add("e:Cajun Chicken & Pasta");
+		menu_price.add(13.00);
+		print("Initializing Cajun Chicken & Pasta");
+		menu_name.add("e:Flat Iron Steak");
+		menu_price.add(16.00);
+		print("Initializing Flat Iron Steak");
+		menu_name.add("e:Grilled Salmon Fillet");
+		menu_price.add(15.00);
+		print("Initializing Grilled Salmon Fillet");
+		menu_name.add("e:Liver Dumplings");
+		menu_price.add(13.00);
+		print("Initializing Liver Dumplings");
 
 	}
 
 	// Initializes Windows
+	// Initializes the Main Window
 	private void initOrderWindow() {
+		// Initializing Content Pane
+		JPanel pane = new JPanel();
 		// Initializing Frame
 		orderWindow = new JFrame(title + " -- Menu");
 		orderWindow.setSize(new Dimension(800, 600));
+		orderWindow.setBackground(Color.DARK_GRAY);
+		// orderWindow.setLayout(null);
 		orderWindow.setVisible(true);
 		orderWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		orderWindow.setLocationRelativeTo(null);
+		orderWindow.setResizable(false);
+		orderWindow.setContentPane(pane);
+		pane.setBackground(Color.DARK_GRAY);
+		pane.setLayout(null);
 
 		// Initializing UI
-		JButton button[] = new JButton[menu.size()];
-		print(menu.size() + " menu string length");
-		
+		int x = 100, y = 100, xOffset = 0, yOffset = 0;
+		for (int i = 0; i < menu_name.size(); i++) {
+			JButton b = new JButton();
+			NumberFormat formatter = NumberFormat.getCurrencyInstance();
+			moneyString = formatter.format(menu_price.get(i));
+			b.setText(menu_name.get(i).substring(2) + " = " + moneyString);
+			b.setEnabled(true);
+			b.addActionListener(this);
+			b.setSize(new Dimension(250, 25));
+			b.setVisible(true);
+			b.setLocation(x + xOffset, y + yOffset);
+			yOffset += 50;
+			b.setLayout(null);
+			if (i == 5) {
+				yOffset = 0;
+				xOffset += (orderWindow.getWidth() / 2);
+			}
+			b.setBackground(Color.DARK_GRAY);
+			b.setForeground(Color.WHITE);
+			b.setBorderPainted(false);
+			button.add(b);
+			pane.add(button.get(i));
+		}
+
+		orderButton = new JButton("Finish Order");
+		orderButton.setEnabled(true);
+		orderButton.addActionListener(this);
+		orderButton.setSize(new Dimension(150, 25));
+		orderButton.setForeground(Color.WHITE);
+		orderButton.setBackground(Color.DARK_GRAY);
+		orderButton.setVisible(true);
+		orderButton.setLocation((orderWindow.getWidth() / 2) / 2, orderWindow.getHeight() - 85);
+		orderButton.setLayout(null);
+		orderButton.setBorderPainted(false);
+		pane.add(orderButton);
+
+		tipBox = new JTextField();
+		tipBox.setLocation(orderButton.getLocation().x + 50, orderButton.getLocation().y - 100);
+		tipBox.setEnabled(true);
+		tipBox.setToolTipText("This is the Tip Amount");
+		tipBox.setSize(100, 25);
+		tipBox.setText("18%");
+		pane.add(tipBox);
+
+		subtract = new JButton("-");
+		subtract.setSize(45, 25);
+		subtract.setFont(new Font("Arial", Font.BOLD, 19));
+		subtract.addActionListener(this);
+		subtract.setLocation(tipBox.getLocation().x - 50, tipBox.getLocation().y);
+		subtract.setForeground(Color.white);
+		subtract.setBackground(Color.DARK_GRAY);
+		subtract.setBorderPainted(false);
+		pane.add(subtract);
+
+		add = new JButton("+");
+		add.setSize(45, 25);
+		add.setFont(new Font("Arial", Font.BOLD, 19));
+		add.addActionListener(this);
+		add.setLocation(tipBox.getLocation().x + 100, tipBox.getLocation().y);
+		add.setForeground(Color.white);
+		add.setBackground(Color.DARK_GRAY);
+		add.setBorderPainted(false);
+		pane.add(add);
+
+		clearButton = new JButton("Clear Current Order");
+		clearButton.setEnabled(true);
+		clearButton.addActionListener(this);
+		clearButton.setSize(new Dimension(150, 25));
+		clearButton.setForeground(Color.WHITE);
+		clearButton.setBackground(Color.DARK_GRAY);
+		clearButton.setVisible(true);
+		clearButton.setLocation((orderWindow.getWidth() / 2), orderWindow.getHeight() - 85);
+		clearButton.setLayout(null);
+		clearButton.setBorderPainted(false);
+		pane.add(clearButton);
+
+		updateFrame(orderWindow, orderWindow.getGraphics());
 
 	}
 
+	// Initializes the Custom Console Window
 	public void initConsoleWindow() {
 		// Initializing Frame
 		consoleWindow = new JFrame(title + " -- Console");
 		consoleWindow.setSize(new Dimension(800 / 2, 600 / 2));
-		consoleWindow.setVisible(true);
-		consoleWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// consoleWindow.setResizable(false);
+		consoleWindow.setUndecorated(true);
+		consoleWindow.setLocation(50, 100);
+		consoleWindow.setResizable(false);
 
 		// Initializing UI
 		console = new JTextArea();
 		console.setEditable(false);
-		console.setSize(new Dimension(consoleWindow.getWidth() - 50, consoleWindow.getHeight() - 50));
+		console.setSize(new Dimension(consoleWindow.getWidth() - 200, consoleWindow.getHeight() - 50));
 		console.setBackground(Color.BLACK);
 		console.setForeground(Color.WHITE);
-		consoleWindow.add(console);
+
+		GridBagLayout gbl = new GridBagLayout();
+		consoleWindow.setLayout(gbl);
+
+		console.setBorder(new EmptyBorder(5, 5, 5, 5));
+		JScrollPane scroll = new JScrollPane(console, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.caret = (DefaultCaret) console.getCaret();
+		this.caret.setUpdatePolicy(2);
+		scroll.setForeground(Color.LIGHT_GRAY);
+		scroll.setBackground(Color.black);
+		GridBagConstraints scrollConstraints = new GridBagConstraints();
+		scrollConstraints.insets = new Insets(0, 0, 5, 5);
+		scrollConstraints.fill = 1;
+		scrollConstraints.gridx = 0;
+		scrollConstraints.gridy = 0;
+		scrollConstraints.gridwidth = 3;
+		scrollConstraints.gridheight = 2;
+		scrollConstraints.weightx = 1.0;
+		scrollConstraints.weighty = 1.0;
+		scrollConstraints.insets = new Insets(0, 5, 0, 0);
+		consoleWindow.add(scroll, scrollConstraints);
+		consoleWindow.setVisible(true);
+		consoleWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	public void print(String message) {
+	// IF NEEDED it will update the Graphics on the JFrame
+	public void updateFrame(JFrame frame, Graphics g) {
+		frame.update(g);
+		print(frame.getTitle() + " Window Updated");
+	}
+
+	// This will print to both the system console and the custom console
+	public void print(Object message) {
 		System.out.println(message);
-		console.append(message + "\n");
+		console.append(message.toString() + "\n");
+	}
+
+	// This will provide an action event for the buttons
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+		if (e.getSource().equals(add)) {
+			NumberFormat format = NumberFormat.getPercentInstance();
+
+			if (tip <= 0.99) {
+				tip += 0.05;
+
+				tipBox.setText(format.format(tip));
+			} else {
+				tip = 0.99;
+			}
+		}
+		if (e.getSource().equals(subtract)) {
+			NumberFormat format = NumberFormat.getPercentInstance();
+			if (tip >= 0.18) {
+				tip -= 0.05;
+				tipBox.setText(format.format(tip));
+			} else {
+				tip = 0.18;
+			}
+		}
+
+		for (int i = 0; i < menu_name.size(); i++) {
+			if (e.getSource().equals(button.get(i))) {
+				NumberFormat formatter = NumberFormat.getCurrencyInstance();
+				moneyString = formatter.format(menu_price.get(i));
+				yourOrder.add(menu_name.get(i));
+				yourOrderPrice.add(menu_price.get(i));
+				print("Added " + menu_name.get(i).substring(2) + " to Your Order for " + moneyString);
+			}
+		}
+		String[] item = new String[yourOrder.size()];
+		if (e.getSource().equals(orderButton)) {
+			DateFormat format = new SimpleDateFormat("MM-dd-yyyy-HH-mm");
+			String date = format.format(new Date());
+			NumberFormat formatter = NumberFormat.getCurrencyInstance();
+			List<String> orderArray = new ArrayList<String>();
+			double finalOrderPrice = 0.00;
+			String finalOrder[] = new String[yourOrderPrice.size()];
+			String money[] = new String[yourOrderPrice.size()];
+			for (int i = 0; i < yourOrderPrice.size(); i++) {
+				money[i] = formatter.format(yourOrderPrice.get(i));
+				item[i] = yourOrder.get(i);
+				finalOrder[i] = item[i] + " = " + money[i];
+				orderArray.add(finalOrder[i]);
+			}
+			if (finalOrder != null) {
+				String finalOrderString = orderArray.toString().replace("[", "").replace("]", "").replace(",", "\n");
+				for (double d : yourOrderPrice) {
+					finalOrderPrice += d;
+				}
+				String subString = formatter.format(finalOrderPrice);
+				Path currentRelativePath = Paths.get("");
+				String path = currentRelativePath.toAbsolutePath().toString();
+				double totalCost = finalOrderPrice;
+				totalCost += (finalOrderPrice * (tax + tip));
+				String totalString = formatter.format(totalCost);
+				String fileContent = finalOrderString + "\n----------------------------\nSubTotal = " + subString + "\nFinal Total(incuding tip:" + tip + " and tax:" + tax + ") = " + totalString;
+				try {
+					reciptPrinter("Recipt " + date + ".txt", fileContent, "Recipts/");
+				} catch (IOException e1) {
+					print("An Issue happened because a programmer made a mistake\nrelatave to the ordering and printing/writing of the recipt.\nError: " + e1.getMessage());
+				}
+			}
+		} else if (e.getSource().equals(clearButton)) {
+			String finalOrder = yourOrder.toString().replace("[", "\"").replace("]", "\"");
+			print(finalOrder + " Has been removed from your ticket");
+			yourOrder.clear();
+		}
+	}
+
+	public void reciptPrinter(String FileName, String fileContent, String FolderName) throws IOException {
+		print("Accessing ReciptPrinter Method...");
+		File f = new File(FolderName);
+		try {
+			if (f.mkdir()) {
+				print("Directory Created in " + f.getAbsolutePath());
+			} else {// Exists
+				print("Directory is not created -- Maybe the File already exists");
+			}
+		} catch (Exception e) {
+			print(e.getMessage());
+		}
+		try {
+			bw = new BufferedWriter(new FileWriter(FolderName + FileName, true));
+			bw.write(fileContent);
+			bw.newLine();
+			bw.flush();
+			print(fileContent);
+		} catch (IOException e) {
+			print("Had an issue with Appending file " + FileName + " in ReciptPrinter Meathod.  ERROR: " + e.getMessage());
+		} finally {
+			if (bw != null) {
+				bw.close();
+			}
+		}
+
 	}
 
 }
