@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -57,7 +58,7 @@ public class MealTester implements ActionListener {
 	private JTextArea console;
 	private String moneyString;
 	private double tax = 0.08, tip = 0.18;
-	private JTextField tipBox;
+	private JLabel tipLabel;
 
 	private BufferedWriter bw;
 	public PrintWriter writer;
@@ -186,19 +187,21 @@ public class MealTester implements ActionListener {
 		orderButton.setBorderPainted(false);
 		pane.add(orderButton);
 
-		tipBox = new JTextField();
-		tipBox.setLocation(orderButton.getLocation().x + 50, orderButton.getLocation().y - 100);
-		tipBox.setEnabled(true);
-		tipBox.setToolTipText("This is the Tip Amount");
-		tipBox.setSize(100, 25);
-		tipBox.setText("18%");
-		pane.add(tipBox);
+		tipLabel = new JLabel();
+		tipLabel.setLocation((orderWindow.getWidth() / 2) - 50, orderButton.getLocation().y - 100);
+		tipLabel.setEnabled(true);
+		tipLabel.setToolTipText("This is the Tip Amount");
+		tipLabel.setSize(38, 25);
+		tipLabel.setText("18%");
+		tipLabel.setForeground(Color.white);
+		tipLabel.setFont(new Font("Arial", Font.BOLD, 18));
+		pane.add(tipLabel);
 
 		subtract = new JButton("-");
 		subtract.setSize(45, 25);
 		subtract.setFont(new Font("Arial", Font.BOLD, 19));
 		subtract.addActionListener(this);
-		subtract.setLocation(tipBox.getLocation().x - 50, tipBox.getLocation().y);
+		subtract.setLocation(tipLabel.getLocation().x - 50, tipLabel.getLocation().y);
 		subtract.setForeground(Color.white);
 		subtract.setBackground(Color.DARK_GRAY);
 		subtract.setBorderPainted(false);
@@ -208,7 +211,7 @@ public class MealTester implements ActionListener {
 		add.setSize(45, 25);
 		add.setFont(new Font("Arial", Font.BOLD, 19));
 		add.addActionListener(this);
-		add.setLocation(tipBox.getLocation().x + 100, tipBox.getLocation().y);
+		add.setLocation(tipLabel.getLocation().x + 75, tipLabel.getLocation().y);
 		add.setForeground(Color.white);
 		add.setBackground(Color.DARK_GRAY);
 		add.setBorderPainted(false);
@@ -285,23 +288,23 @@ public class MealTester implements ActionListener {
 	// This will provide an action event for the buttons
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
+		// Adds and Event for incrementing a tip
 		if (e.getSource().equals(add)) {
 			NumberFormat format = NumberFormat.getPercentInstance();
 
-			if (tip <= 0.99) {
+			if (tip < 0.95) {
 				tip += 0.05;
 
-				tipBox.setText(format.format(tip));
+				tipLabel.setText(format.format(tip));
 			} else {
 				tip = 0.99;
 			}
 		}
 		if (e.getSource().equals(subtract)) {
 			NumberFormat format = NumberFormat.getPercentInstance();
-			if (tip >= 0.18) {
+			if (tip > 0.18) {
 				tip -= 0.05;
-				tipBox.setText(format.format(tip));
+				tipLabel.setText(format.format(tip));
 			} else {
 				tip = 0.18;
 			}
@@ -318,15 +321,15 @@ public class MealTester implements ActionListener {
 		}
 		String[] item = new String[yourOrder.size()];
 		if (e.getSource().equals(orderButton)) {
-			DateFormat format = new SimpleDateFormat("MM-dd-yyyy-HH-mm");
-			String date = format.format(new Date());
-			NumberFormat formatter = NumberFormat.getCurrencyInstance();
+			DateFormat dateFormatter = new SimpleDateFormat("MM-dd-yyyy-HH-mm");
+			String date = dateFormatter.format(new Date());
+			NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
 			List<String> orderArray = new ArrayList<String>();
 			double finalOrderPrice = 0.00;
 			String finalOrder[] = new String[yourOrderPrice.size()];
 			String money[] = new String[yourOrderPrice.size()];
 			for (int i = 0; i < yourOrderPrice.size(); i++) {
-				money[i] = formatter.format(yourOrderPrice.get(i));
+				money[i] = moneyFormat.format(yourOrderPrice.get(i));
 				item[i] = yourOrder.get(i);
 				finalOrder[i] = item[i] + " = " + money[i];
 				orderArray.add(finalOrder[i]);
@@ -336,13 +339,14 @@ public class MealTester implements ActionListener {
 				for (double d : yourOrderPrice) {
 					finalOrderPrice += d;
 				}
-				String subString = formatter.format(finalOrderPrice);
+				String subString = moneyFormat.format(finalOrderPrice);
 				Path currentRelativePath = Paths.get("");
 				String path = currentRelativePath.toAbsolutePath().toString();
 				double totalCost = finalOrderPrice;
 				totalCost += (finalOrderPrice * (tax + tip));
-				String totalString = formatter.format(totalCost);
-				String fileContent = finalOrderString + "\n----------------------------\nSubTotal = " + subString + "\nFinal Total(incuding tip:" + tip + " and tax:" + tax + ") = " + totalString;
+				String totalString = moneyFormat.format(totalCost);
+				NumberFormat perFormat = NumberFormat.getPercentInstance();
+				String fileContent = finalOrderString + "\n----------------------------\nSubTotal = " + subString + "\nFinal Total(incuding tip:" + perFormat.format(tip) + " and tax:" + perFormat.format(tax) + ") = " + totalString;
 				try {
 					reciptPrinter("Recipt " + date + ".txt", fileContent, "Recipts/");
 				} catch (IOException e1) {
