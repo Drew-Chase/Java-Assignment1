@@ -2,16 +2,27 @@ package tk.dccraft.Assignment_1.init;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.text.DefaultCaret;
+
+import com.sun.glass.events.KeyEvent;
 
 import tk.dccraft.Assignment_1.part_1.MealTester;
 import tk.dccraft.Assignment_1.part_2.CalendarTester;
@@ -22,11 +33,14 @@ import tk.dccraft.Assignment_1.part_2.CalendarTester;
  *
  */
 @SuppressWarnings("all")
-public class Main {
+public class Main implements ActionListener {
 
 	public static JTextArea console;
 	public static JFrame consoleWindow;
 	private static DefaultCaret caret;
+	private static JMenuBar menuBar;
+	private static JMenu file, assign_1, assign_2;
+	private static JMenuItem pos, dob, exit;
 
 	public static boolean isDefaultConsole;
 
@@ -37,9 +51,40 @@ public class Main {
 		consoleWindow.setSize(new Dimension(800 / 2, 600 / 2));
 		consoleWindow.setUndecorated(true);
 		consoleWindow.setLocation(50, 100);
-		consoleWindow.setResizable(false);
+		consoleWindow.setResizable(true);
+		consoleWindow.setLayout(new FlowLayout());
 
 		// Initializing UI
+		// Menu Items
+		menuBar = new JMenuBar();
+
+		file = new JMenu("File");
+		file.setMnemonic(KeyEvent.VK_F);
+		menuBar.add(file);
+		
+		//Assignment 1 Menu
+		assign_1 = new JMenu("Assignment 1");
+		file.add(assign_1);
+
+		dob = new JMenuItem("CalendarTester");
+		dob.addActionListener(new Main());
+		assign_1.add(dob);
+
+		pos = new JMenuItem("MealTester");
+		pos.addActionListener(new Main());
+		assign_1.add(pos);
+		
+		//Assignment 2 Menu
+		assign_2 = new JMenu("Assignment 2");
+		file.add(assign_2);
+		
+		
+
+		exit = new JMenuItem("Exit");
+		exit.addActionListener(new Main());
+		file.add(exit);
+
+		// Console
 		console = new JTextArea("");
 		console.setSize(new Dimension(consoleWindow.getWidth() - 200, consoleWindow.getHeight() - 50));
 		console.setBackground(Color.BLACK);
@@ -66,8 +111,8 @@ public class Main {
 		scrollConstraints.weighty = 1.0;
 		scrollConstraints.insets = new Insets(0, 5, 0, 0);
 		consoleWindow.add(scroll, scrollConstraints);
-		consoleWindow.setVisible(true);
 		consoleWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		consoleWindow.setJMenuBar(menuBar);
 
 	}
 
@@ -82,15 +127,11 @@ public class Main {
 
 	public static void main(String[] args) {
 		if (System.console() == null) {
-			isDefaultConsole = true;
 			initConsoleWindow();
-			new CalendarTester();
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			new MealTester();
+			EventQueue.invokeLater(() -> {
+				consoleWindow.setVisible(true);
+			});
+			isDefaultConsole = true;
 		} else {
 			isDefaultConsole = false;
 			// Everything Below is for standard Command Line Launch
@@ -102,7 +143,7 @@ public class Main {
 				} else {
 					System.out.println("Enter pos for MealTester or dob for CalendarTester.  Not " + args[0]);
 				}
-			} else{
+			} else {
 				Scanner sc = new Scanner(System.in);
 				System.out.println("Enter pos for MealTester or dob for CalendarTester");
 				String input = sc.nextLine();
@@ -116,6 +157,17 @@ public class Main {
 					System.out.println("Enter pos for MealTester or dob for CalendarTester.  Not " + input);
 				}
 			}
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource().equals(exit)) {
+			System.exit(0);
+		}else if(e.getSource().equals(dob)){
+			new CalendarTester();
+		}else if (e.getSource().equals(pos)){
+			new MealTester();
 		}
 	}
 

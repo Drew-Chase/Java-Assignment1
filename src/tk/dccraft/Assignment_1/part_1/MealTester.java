@@ -8,8 +8,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,6 +28,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+
+import sun.net.ftp.FtpProtocolException;
 import tk.dccraft.Assignment_1.init.Main;
 
 /**
@@ -218,15 +225,11 @@ public class MealTester extends Main implements ActionListener {
 
 	}
 
-	
-
 	// IF NEEDED it will update the Graphics on the JFrame
 	public void updateFrame(JFrame frame, Graphics g) {
 		frame.update(g);
 		print(frame.getTitle() + " Window Updated");
 	}
-
-	
 
 	// This will provide an action event for the buttons
 	@Override
@@ -292,6 +295,7 @@ public class MealTester extends Main implements ActionListener {
 				String fileContent = finalOrderString + "\n----------------------------\nSubTotal = " + subString + "\nFinal Total(incuding tip:" + perFormat.format(tip) + " and tax:" + perFormat.format(tax) + ") = " + totalString;
 				try {
 					reciptPrinter("Recipt " + date + ".txt", fileContent, "Recipts/");
+
 				} catch (IOException e1) {
 					print("An Issue happened because a programmer made a mistake\nrelatave to the ordering and printing/writing of the recipt.\nError: " + e1.getMessage());
 				}
@@ -320,7 +324,6 @@ public class MealTester extends Main implements ActionListener {
 			bw.write(fileContent);
 			bw.newLine();
 			bw.flush();
-			print(fileContent);
 		} catch (IOException e) {
 			print("Had an issue with Appending file " + FileName + " in ReciptPrinter Meathod.  ERROR: " + e.getMessage());
 		} finally {
@@ -329,6 +332,47 @@ public class MealTester extends Main implements ActionListener {
 			}
 		}
 
+//		ftpSend("ftp://192.168.1.31", FileName, fileContent);
+
+	}
+
+	public void ftpSend(String url, String name, String content) {
+		FileOutputStream fos = null;
+		FTPClient client = new FTPClient();
+		try {
+			client.connect(url);
+			File f = new File(name);
+			bw = new BufferedWriter(new FileWriter(f, true));
+			bw.write(content);
+			bw.newLine();
+			bw.flush();
+			client.setFileType(FTP.BINARY_FILE_TYPE);
+			try (InputStream input = new FileInputStream(f)) {
+				client.storeFile(url + name, input);
+			}
+			fos = new FileOutputStream(f);
+			
+			client.logout();
+			print("Sending " + content + "\n to " + url);
+		} catch (IOException e) {
+			print("ERROR with the ftpSender Method\n" + e.getMessage());
+		} finally {
+			if (bw != null) {
+				try {
+					bw.close();
+				} catch (IOException e) {
+					print("Error with BufferedWriter closing\nERROR:" + e.getMessage());
+				}
+			}
+			try {
+				if (fos != null) {
+					fos.close();
+				}
+				client.disconnect();
+			} catch (IOException e) {
+				print("ERROR with the ftpSender Method\n" + e.getMessage());
+			}
+		}
 	}
 
 }
