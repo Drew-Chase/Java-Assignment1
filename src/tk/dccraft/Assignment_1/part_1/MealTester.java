@@ -4,9 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -27,11 +24,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.DefaultCaret;
+
+import tk.dccraft.Assignment_1.init.Main;
 
 /**
  * Assignment 1 Part 1 ------------------------------ This class creates a Point
@@ -41,21 +35,20 @@ import javax.swing.text.DefaultCaret;
  * @author Drew Chase
  *
  */
-public class MealTester implements ActionListener {
+@SuppressWarnings("all")
+public class MealTester extends Main implements ActionListener {
 
 	// Initializing Private Variables... Which are all of them because ONE CLASS
 	// BABY!
 	// The Window Title
-	private String title = "Bennigan's POS System";
-	private DefaultCaret caret;
+	public String title = "Bennigan's POS System";
 	private List<String> menu_name = new ArrayList<String>();
 	private List<Double> menu_price = new ArrayList<Double>();
 	private List<String> yourOrder = new ArrayList<String>();
 	private ArrayList<Double> yourOrderPrice = new ArrayList<Double>();
 	private List<JButton> button = new ArrayList<JButton>();
 	private JButton orderButton, clearButton, add, subtract;
-	private JFrame consoleWindow, orderWindow;
-	private JTextArea console;
+	public JFrame orderWindow;
 	private String moneyString;
 	private double tax = 0.08, tip = 0.18;
 	private JLabel tipLabel;
@@ -63,20 +56,12 @@ public class MealTester implements ActionListener {
 	private BufferedWriter bw;
 	public PrintWriter writer;
 
-	// Main Method. This is where it all starts :).
-	public static void main(String[] args) {
-		// Makes it so everything in here doesn't have to be static
-		new MealTester();
-	}
-
 	// the Constructor
 	public MealTester() {
-		initConsoleWindow();
 		initApp();
 		initEnt();
 		initBev();
 		initOrderWindow();
-
 	}
 
 	// Initializes Appetizer
@@ -233,45 +218,7 @@ public class MealTester implements ActionListener {
 
 	}
 
-	// Initializes the Custom Console Window
-	public void initConsoleWindow() {
-		// Initializing Frame
-		consoleWindow = new JFrame(title + " -- Console");
-		consoleWindow.setSize(new Dimension(800 / 2, 600 / 2));
-		consoleWindow.setUndecorated(true);
-		consoleWindow.setLocation(50, 100);
-		consoleWindow.setResizable(false);
-
-		// Initializing UI
-		console = new JTextArea();
-		console.setEditable(false);
-		console.setSize(new Dimension(consoleWindow.getWidth() - 200, consoleWindow.getHeight() - 50));
-		console.setBackground(Color.BLACK);
-		console.setForeground(Color.WHITE);
-
-		GridBagLayout gbl = new GridBagLayout();
-		consoleWindow.setLayout(gbl);
-
-		console.setBorder(new EmptyBorder(5, 5, 5, 5));
-		JScrollPane scroll = new JScrollPane(console, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		this.caret = (DefaultCaret) console.getCaret();
-		this.caret.setUpdatePolicy(2);
-		scroll.setForeground(Color.LIGHT_GRAY);
-		scroll.setBackground(Color.black);
-		GridBagConstraints scrollConstraints = new GridBagConstraints();
-		scrollConstraints.insets = new Insets(0, 0, 5, 5);
-		scrollConstraints.fill = 1;
-		scrollConstraints.gridx = 0;
-		scrollConstraints.gridy = 0;
-		scrollConstraints.gridwidth = 3;
-		scrollConstraints.gridheight = 2;
-		scrollConstraints.weightx = 1.0;
-		scrollConstraints.weighty = 1.0;
-		scrollConstraints.insets = new Insets(0, 5, 0, 0);
-		consoleWindow.add(scroll, scrollConstraints);
-		consoleWindow.setVisible(true);
-		consoleWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
+	
 
 	// IF NEEDED it will update the Graphics on the JFrame
 	public void updateFrame(JFrame frame, Graphics g) {
@@ -279,11 +226,7 @@ public class MealTester implements ActionListener {
 		print(frame.getTitle() + " Window Updated");
 	}
 
-	// This will print to both the system console and the custom console
-	public void print(Object message) {
-		System.out.println(message);
-		console.append(message.toString() + "\n");
-	}
+	
 
 	// This will provide an action event for the buttons
 	@Override

@@ -1,5 +1,0 @@
-e:Grilled Salmon Fillet = $15.00
- d:Lemonade = $3.00
-----------------------------
-SubTotal = $18.00
-Final Total(incuding tip:18% and tax:8%) = $22.68

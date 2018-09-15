@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
+
+import tk.dccraft.Assignment_1.init.Main;
+import tk.dccraft.Assignment_1.part_1.MealTester;
 
 /**
  * Part 2 of Assignment 1
@@ -14,7 +16,7 @@ import java.util.TimeZone;
  *
  */
 @SuppressWarnings("all")
-public class CalendarTester {
+public class CalendarTester extends Main {
 
 	// Initializing private variables
 	private Calendar bDay, today;
@@ -42,18 +44,17 @@ public class CalendarTester {
 		}
 
 		long difference = bDay.getTimeInMillis() - today.getTimeInMillis();
-		long days = (((((difference /1000)/60)/60)/24));
-		double year = days/365;
+		long days = (((((difference / 1000) / 60) / 60) / 24));
+		String year = "" + (double) days / 365;
+		String yearNextString = "" + (((double) days / 365) - 1.0);
+		double yearNextDouble = Double.parseDouble(yearNextString.substring(0, 5));
+		print("Days to my 21st birth day: " + days + " and Years til' " + year.substring(0, 5) + "yrs\nAnd " + (yearNextDouble * 365) + " days until my next birth day");
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-		print("Days to my 21st birth day: " + days + " and Years til' " + year);
-	}
-
-	public void print(Object message) {
-		System.out.println(message);
-	}
-
-	public static void main(String[] args) {
-		new CalendarTester();
 	}
 
 }

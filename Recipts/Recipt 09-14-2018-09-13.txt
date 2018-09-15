@@ -1,6 +1,0 @@
-d:Lemonade = $3.00
- a:Loaded Potato Skins = $6.49
- a:Mozzarella Sticks = $5.29
-----------------------------
-SubTotal = $14.78
-Final Total(incuding tip:$0.28 and tax:0.08) = $20.10
