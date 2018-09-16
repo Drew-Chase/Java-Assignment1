@@ -32,7 +32,7 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
 import sun.net.ftp.FtpProtocolException;
-import tk.dccraft.Assignment_1.init.Main;
+import tk.dccraft.init.Main;
 
 /**
  * Assignment 1 Part 1 ------------------------------ This class creates a Point
@@ -135,7 +135,7 @@ public class MealTester extends Main implements ActionListener {
 		orderWindow.setBackground(Color.DARK_GRAY);
 		// orderWindow.setLayout(null);
 		orderWindow.setVisible(true);
-		orderWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		orderWindow.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		orderWindow.setLocationRelativeTo(null);
 		orderWindow.setResizable(false);
 		orderWindow.setContentPane(pane);
@@ -225,11 +225,7 @@ public class MealTester extends Main implements ActionListener {
 
 	}
 
-	// IF NEEDED it will update the Graphics on the JFrame
-	public void updateFrame(JFrame frame, Graphics g) {
-		frame.update(g);
-		print(frame.getTitle() + " Window Updated");
-	}
+	
 
 	// This will provide an action event for the buttons
 	@Override

@@ -6,8 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import tk.dccraft.Assignment_1.init.Main;
 import tk.dccraft.Assignment_1.part_1.MealTester;
+import tk.dccraft.init.Main;
 
 /**
  * Part 2 of Assignment 1

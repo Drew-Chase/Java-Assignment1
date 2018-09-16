@@ -1,9 +1,10 @@
-package tk.dccraft.Assignment_1.init;
+package tk.dccraft.init;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -26,6 +27,8 @@ import com.sun.glass.events.KeyEvent;
 
 import tk.dccraft.Assignment_1.part_1.MealTester;
 import tk.dccraft.Assignment_1.part_2.CalendarTester;
+import tk.dccraft.Assignment_2.bank.SavingsAccount;
+import tk.dccraft.Assignment_2.bank.SavingsAccountTester;
 
 /**
  * 
@@ -40,7 +43,7 @@ public class Main implements ActionListener {
 	private static DefaultCaret caret;
 	private static JMenuBar menuBar;
 	private static JMenu file, assign_1, assign_2;
-	private static JMenuItem pos, dob, exit;
+	private static JMenuItem pos, dob, sat, exit;
 
 	public static boolean isDefaultConsole;
 
@@ -52,17 +55,25 @@ public class Main implements ActionListener {
 		consoleWindow.setUndecorated(true);
 		consoleWindow.setLocation(50, 100);
 		consoleWindow.setResizable(true);
+		consoleWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		consoleWindow.setLayout(new FlowLayout());
+		consoleWindow.setBackground(Color.BLACK);
 
 		// Initializing UI
 		// Menu Items
 		menuBar = new JMenuBar();
+		menuBar.setBorderPainted(false);
 
 		file = new JMenu("File");
 		file.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(file);
-		
-		//Assignment 1 Menu
+
+		exit = new JMenuItem("Exit");
+		exit.setMnemonic(KeyEvent.VK_E);
+		exit.addActionListener(new Main());
+		menuBar.add(exit);
+
+		// Assignment 1 Menu
 		assign_1 = new JMenu("Assignment 1");
 		file.add(assign_1);
 
@@ -73,16 +84,14 @@ public class Main implements ActionListener {
 		pos = new JMenuItem("MealTester");
 		pos.addActionListener(new Main());
 		assign_1.add(pos);
-		
-		//Assignment 2 Menu
+
+		// Assignment 2 Menu
 		assign_2 = new JMenu("Assignment 2");
 		file.add(assign_2);
-		
-		
 
-		exit = new JMenuItem("Exit");
-		exit.addActionListener(new Main());
-		file.add(exit);
+		sat = new JMenuItem("Savings Account Tester");
+		sat.addActionListener(new Main());
+		assign_2.add(sat);
 
 		// Console
 		console = new JTextArea("");
@@ -94,7 +103,7 @@ public class Main implements ActionListener {
 		GridBagLayout gbl = new GridBagLayout();
 		consoleWindow.setLayout(gbl);
 
-		console.setBorder(new EmptyBorder(5, 5, 5, 5));
+		// console.setBorder(new EmptyBorder(5, 5, 5, 5));
 		JScrollPane scroll = new JScrollPane(console, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		caret = (DefaultCaret) console.getCaret();
 		caret.setUpdatePolicy(2);
@@ -111,7 +120,6 @@ public class Main implements ActionListener {
 		scrollConstraints.weighty = 1.0;
 		scrollConstraints.insets = new Insets(0, 5, 0, 0);
 		consoleWindow.add(scroll, scrollConstraints);
-		consoleWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		consoleWindow.setJMenuBar(menuBar);
 
 	}
@@ -160,14 +168,24 @@ public class Main implements ActionListener {
 		}
 	}
 
+	// IF NEEDED it will update the Graphics on the JFrame
+	public void updateFrame(JFrame frame, Graphics g) {
+		frame.update(g);
+		print(frame.getTitle() + " Window Updated");
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(exit)) {
 			System.exit(0);
-		}else if(e.getSource().equals(dob)){
+		} else if (e.getSource().equals(dob)) {
 			new CalendarTester();
-		}else if (e.getSource().equals(pos)){
+		} else if (e.getSource().equals(pos)) {
 			new MealTester();
+		} else if (e.getSource().equals(sat)) {
+			new SavingsAccount(300, "Corey");
+			new SavingsAccount(2000, "Sofia", 2.5);
+			new SavingsAccountTester();
 		}
 	}
 
