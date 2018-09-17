@@ -26,6 +26,7 @@ import tk.dccraft.Assignment_1.part_1.MealTester;
 import tk.dccraft.Assignment_1.part_2.CalendarTester;
 import tk.dccraft.Assignment_2.bank.SavingsAccount;
 import tk.dccraft.Assignment_2.bank.SavingsAccountTester;
+import tk.dccraft.init.updater.Download;
 
 /**
  * 
@@ -40,7 +41,7 @@ public class Main implements ActionListener {
 	private static DefaultCaret caret;
 	private static JMenuBar menuBar;
 	private static JMenu file, assign_1, assign_2;
-	private static JMenuItem pos, dob, sat, exit;
+	private static JMenuItem pos, dob, sat, exit, update;
 
 	public static boolean isDefaultConsole;
 
@@ -89,7 +90,11 @@ public class Main implements ActionListener {
 		sat = new JMenuItem("Savings Account Tester");
 		sat.addActionListener(new Main());
 		assign_2.add(sat);
-
+		
+		update = new JMenuItem("Update");
+		update.addActionListener(new Main());
+		file.add(update);
+		
 		// Console
 		console = new JTextArea("");
 		console.setSize(new Dimension(consoleWindow.getWidth() - 200, consoleWindow.getHeight() - 50));
@@ -173,7 +178,9 @@ public class Main implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(exit)) {
+		if(e.getSource().equals(update)){
+			new Download();
+		}else if (e.getSource().equals(exit)) {
 			System.exit(0);
 		} else if (e.getSource().equals(dob)) {
 			new CalendarTester();
