@@ -3,7 +3,6 @@ package tk.dccraft.Assignment_1.part_1;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -31,7 +30,6 @@ import javax.swing.JPanel;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
-import sun.net.ftp.FtpProtocolException;
 import tk.dccraft.init.Main;
 
 /**

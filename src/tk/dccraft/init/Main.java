@@ -10,6 +10,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
@@ -18,12 +19,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import javax.swing.text.DefaultCaret;
 
-import com.sun.glass.events.KeyEvent;
 
 import tk.dccraft.Assignment_1.part_1.MealTester;
 import tk.dccraft.Assignment_1.part_2.CalendarTester;
