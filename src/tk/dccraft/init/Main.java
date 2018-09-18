@@ -187,8 +187,6 @@ public class Main implements ActionListener {
 		} else if (e.getSource().equals(pos)) {
 			new MealTester();
 		} else if (e.getSource().equals(sat)) {
-			new SavingsAccount(300, "Corey");
-			new SavingsAccount(2000, "Sofia", 2.5);
 			new SavingsAccountTester();
 		}
 	}

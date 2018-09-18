@@ -25,10 +25,12 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 	double balance;
 	String name, initNameBox = "Enter Your Name", initBalanceBox = "Enter Your Initial Deposit";
 	Main main;
-	SavingsAccount sa;
+	SavingsAccount coreyBank, sofiasBank, sa;
 
 	public SavingsAccountTester() {
 		sa = new SavingsAccount();
+		coreyBank = new SavingsAccount(300, "Corey");
+		sofiasBank = new SavingsAccount(2000, "Sofia", 2.5);
 		main = new Main();
 		width = (int) (getToolkit().getScreenSize().getWidth() / 2);
 		height = (int) (getToolkit().getScreenSize().getHeight() / 2);
@@ -104,8 +106,10 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		boolean okBalance = false, okName = false;
 		if (e.getSource().equals(list)) {
-			main.print("Accounts: "+sa.listAccounts());
+			main.print("Accounts: ");
+			sa.listAccounts();
 		} else if (e.getSource().equals(getBalance)) {
 			if (nameBox.getText() != initNameBox) {
 				main.print("Balance for " + nameBox.getText() + " is " + sa.getBalance(nameBox.getText()));
@@ -121,20 +125,27 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 		} else if (e.getSource().equals(confirm)) {
 			if (nameBox.getText().equals(initNameBox)) {
 				name = "";
+				okName = false;
 				main.print("You at least need to type a name");
 			}
 			if (!nameBox.getText().equals("")) {
 				name = nameBox.getText();
+				okName = true;
 			}
 			if (balanceBox.getText().equals(initBalanceBox)) {
 				balance = 0.00;
+				okBalance = true;
 				main.print("The Initial Deposit was empty so marking it as $0.00");
 			}
 			if (!balanceBox.getText().equals("")) {
 				balance = Double.parseDouble(balanceBox.getText());
+				okBalance = true;
+//				main.print("Account created for " + name + " with a balance of " + balance);
+			}
+			if (okBalance && okName) {
+				sa = new SavingsAccount(balance, name);
 				main.print("Account created for " + name + " with a balance of " + balance);
 			}
-			main.print("Account created for " + name + " with a balance of " + balance);
 		} else if (e.getSource().equals(cancel)) {
 			this.dispose();
 		}
