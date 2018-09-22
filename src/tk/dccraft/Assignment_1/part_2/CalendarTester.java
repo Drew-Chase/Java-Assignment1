@@ -24,6 +24,8 @@ public class CalendarTester extends Main {
 	private Date date = null;
 
 	public CalendarTester() {
+		print(Math.PI);
+		print(Math.E);
 		formatter = new SimpleDateFormat("MM/dd/yyyy-HH:mm");
 		converter = new SimpleDateFormat("MM/dd/yyyy-HH:mm aa");
 		String output = "";

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -11,6 +12,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
@@ -21,12 +23,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.DefaultCaret;
 
-
 import tk.dccraft.Assignment_1.part_1.MealTester;
 import tk.dccraft.Assignment_1.part_2.CalendarTester;
-import tk.dccraft.Assignment_2.bank.SavingsAccount;
 import tk.dccraft.Assignment_2.bank.SavingsAccountTester;
-import tk.dccraft.init.updater.Download;
+import tk.dccraft.http.updater.Download;
+import tk.dccraft.utils.TextTransfer;
+import tk.dccraft.utils.settings.PreferenceWindow;
 
 /**
  * 
@@ -40,16 +42,19 @@ public class Main implements ActionListener {
 	public static JFrame consoleWindow;
 	private static DefaultCaret caret;
 	private static JMenuBar menuBar;
-	private static JMenu file, assign_1, assign_2;
-	private static JMenuItem pos, dob, sat, exit, update;
+	private static JMenu file, edit, assign_1, assign_2;
+	private static JMenuItem pos, dob, exit, sat, update, preference;
+	private static Color bg, fg;
+	private static int fontSize = 12;
+	private static boolean isDefaultConsole;
 
-	public static boolean isDefaultConsole;
+	public static Font font;
 
 	// Initializes the Custom Console Window
 	public static void initConsoleWindow() {
 		// Initializing Frame
 		consoleWindow = new JFrame("Console");
-		consoleWindow.setSize(new Dimension(800 / 2, 600 / 2));
+		consoleWindow.setSize(new Dimension(500, 300));
 		consoleWindow.setUndecorated(true);
 		consoleWindow.setLocation(50, 100);
 		consoleWindow.setResizable(true);
@@ -66,8 +71,13 @@ public class Main implements ActionListener {
 		file.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(file);
 
+		edit = new JMenu("Edit");
+		edit.setMnemonic(KeyEvent.VK_E);
+		edit.addActionListener(new Main());
+		menuBar.add(edit);
+
 		exit = new JMenuItem("Exit");
-		exit.setMnemonic(KeyEvent.VK_E);
+		exit.setMnemonic(KeyEvent.VK_X);
 		exit.addActionListener(new Main());
 		menuBar.add(exit);
 
@@ -90,11 +100,16 @@ public class Main implements ActionListener {
 		sat = new JMenuItem("Savings Account Tester");
 		sat.addActionListener(new Main());
 		assign_2.add(sat);
-		
+
 		update = new JMenuItem("Update");
 		update.addActionListener(new Main());
 		file.add(update);
-		
+
+		// Working on Edit Menu
+		preference = new JMenuItem("Preferences");
+		preference.addActionListener(new Main());
+		edit.add(preference);
+
 		// Console
 		console = new JTextArea("");
 		console.setSize(new Dimension(consoleWindow.getWidth() - 200, consoleWindow.getHeight() - 50));
@@ -138,6 +153,15 @@ public class Main implements ActionListener {
 	public static void main(String[] args) {
 		if (System.console() == null) {
 			initConsoleWindow();
+			TextTransfer tf = new TextTransfer();
+			try {
+				tf.TextReader("Colors.ini", "Settings/", "style");
+				setBg(new Color(Integer.decode(tf.bg)));
+				setFg(new Color(Integer.decode(tf.fg)));
+				setFontSize(Integer.parseInt(tf.ft));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			EventQueue.invokeLater(() -> {
 				consoleWindow.setVisible(true);
 			});
@@ -178,9 +202,11 @@ public class Main implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource().equals(update)){
+		if (e.getSource().equals(preference)) {
+			new PreferenceWindow();
+		} else if (e.getSource().equals(update)) {
 			new Download();
-		}else if (e.getSource().equals(exit)) {
+		} else if (e.getSource().equals(exit)) {
 			System.exit(0);
 		} else if (e.getSource().equals(dob)) {
 			new CalendarTester();
@@ -189,6 +215,56 @@ public class Main implements ActionListener {
 		} else if (e.getSource().equals(sat)) {
 			new SavingsAccountTester();
 		}
+	}
+
+	public static int getFontSize() {
+		return fontSize;
+	}
+
+	public static void setFontSize(int size) {
+		fontSize = size;
+		font = new Font("Arial", Font.PLAIN, size);
+		console.setFont(font);
+	}
+
+	public Font getFont() {
+		return font;
+	}
+
+	public static Color getTitleFg() {
+		int r = 0, g = 0, b = 0, scd = 110;
+		if (bg.getRed() > scd)
+			r = scd;
+		else
+			r = Color.white.getRed();
+		if (bg.getGreen() > scd)
+			g = scd;
+		else
+			g = Color.white.getGreen();
+		if (bg.getBlue() > scd)
+			b = scd;
+		else
+			b = Color.white.getBlue();
+		if (b == Color.white.getBlue() && g == Color.white.getGreen() && r == Color.white.getRed())
+			return new Color(r, g, b);
+		else
+			return new Color(bg.getRed() - r, bg.getGreen() - g, bg.getBlue() - b);
+	}
+
+	public static Color getBg() {
+		return bg;
+	}
+
+	public static void setBg(Color bg) {
+		Main.bg = bg;
+	}
+
+	public static Color getFg() {
+		return fg;
+	}
+
+	public static void setFg(Color fg) {
+		Main.fg = fg;
 	}
 
 }

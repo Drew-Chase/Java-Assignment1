@@ -12,7 +12,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -31,6 +30,7 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
 import tk.dccraft.init.Main;
+import tk.dccraft.utils.TextTransfer;
 
 /**
  * Assignment 1 Part 1 ------------------------------ This class creates a Point
@@ -43,8 +43,7 @@ import tk.dccraft.init.Main;
 @SuppressWarnings("all")
 public class MealTester extends Main implements ActionListener {
 
-	// Initializing Private Variables... Which are all of them because ONE CLASS
-	// BABY!
+	// Initializing Private Variables...
 	// The Window Title
 	public String title = "Bennigan's POS System";
 	private List<String> menu_name = new ArrayList<String>();
@@ -52,14 +51,13 @@ public class MealTester extends Main implements ActionListener {
 	private List<String> yourOrder = new ArrayList<String>();
 	private ArrayList<Double> yourOrderPrice = new ArrayList<Double>();
 	private List<JButton> button = new ArrayList<JButton>();
-	private JButton orderButton, clearButton, add, subtract;
+	private JButton orderButton, clearButton, add, subtract, close;
 	public JFrame orderWindow;
 	private String moneyString;
 	private double tax = 0.08, tip = 0.18;
-	private JLabel tipLabel;
-
+	private JLabel tipLabel, titlelbl;
 	private BufferedWriter bw;
-	public PrintWriter writer;
+	private Font font = getFont();
 
 	// the Constructor
 	public MealTester() {
@@ -72,15 +70,12 @@ public class MealTester extends Main implements ActionListener {
 	// Initializes Appetizer
 	public void initApp() {
 		print("---------- Initializing Appetizers ----------");
-		// brBites = new Food(5.39, "app", "Broccoli Bites");
 		menu_name.add("a:Broccoli Bites");
 		menu_price.add(5.39);
 		print("Initializing Broccoli Bites");
-		// loPS = new Food(6.49, "app", "Loaded Potato Skins");
 		menu_name.add("a:Loaded Potato Skins");
 		menu_price.add(6.49);
 		print("Initializing Loaded Potato Skins");
-		// mozzStick = new Food(5.29, "app", "Mozzarella Sticks");
 		menu_name.add("a:Mozzarella Sticks");
 		menu_price.add(5.29);
 		print("Initializing Mozzarella Sticks");
@@ -125,22 +120,35 @@ public class MealTester extends Main implements ActionListener {
 	// Initializes Windows
 	// Initializes the Main Window
 	private void initOrderWindow() {
+		int width = 800, height = 600;
 		// Initializing Content Pane
+		Color bg = getBg(), fg = getFg();
 		JPanel pane = new JPanel();
 		// Initializing Frame
 		orderWindow = new JFrame(title + " -- Menu");
-		orderWindow.setSize(new Dimension(800, 600));
-		orderWindow.setBackground(Color.DARK_GRAY);
+		orderWindow.setSize(new Dimension(width, height));
+		orderWindow.setBackground(bg);
+		orderWindow.setUndecorated(true);
 		// orderWindow.setLayout(null);
 		orderWindow.setVisible(true);
-		orderWindow.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		orderWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		orderWindow.setLocationRelativeTo(null);
 		orderWindow.setResizable(false);
 		orderWindow.setContentPane(pane);
-		pane.setBackground(Color.DARK_GRAY);
+		pane.setBackground(bg);
 		pane.setLayout(null);
 
 		// Initializing UI
+
+		titlelbl = new JLabel(title);
+		titlelbl.setForeground(getTitleFg());
+		titlelbl.setLocation(25, -5);
+		titlelbl.setFont(new Font("Impact", Font.BOLD, 28));
+		titlelbl.setVisible(true);
+		titlelbl.setSize(width, 100);
+		titlelbl.setLayout(null);
+		pane.add(titlelbl);
+
 		int x = 100, y = 100, xOffset = 0, yOffset = 0;
 		for (int i = 0; i < menu_name.size(); i++) {
 			JButton b = new JButton();
@@ -150,16 +158,18 @@ public class MealTester extends Main implements ActionListener {
 			b.setEnabled(true);
 			b.addActionListener(this);
 			b.setSize(new Dimension(250, 25));
+			b.setMaximumSize(new Dimension(400, 75));
 			b.setVisible(true);
 			b.setLocation(x + xOffset, y + yOffset);
+			b.setFont(font);
 			yOffset += 50;
 			b.setLayout(null);
 			if (i == 5) {
 				yOffset = 0;
 				xOffset += (orderWindow.getWidth() / 2);
 			}
-			b.setBackground(Color.DARK_GRAY);
-			b.setForeground(Color.WHITE);
+			b.setBackground(bg);
+			b.setForeground(fg);
 			b.setBorderPainted(false);
 			button.add(b);
 			pane.add(button.get(i));
@@ -169,12 +179,14 @@ public class MealTester extends Main implements ActionListener {
 		orderButton.setEnabled(true);
 		orderButton.addActionListener(this);
 		orderButton.setSize(new Dimension(150, 25));
-		orderButton.setForeground(Color.WHITE);
-		orderButton.setBackground(Color.DARK_GRAY);
+		orderButton.setForeground(fg);
+		orderButton.setBackground(bg);
 		orderButton.setVisible(true);
 		orderButton.setLocation((orderWindow.getWidth() / 2) / 2, orderWindow.getHeight() - 85);
 		orderButton.setLayout(null);
 		orderButton.setBorderPainted(false);
+		orderButton.setFont(font);
+		orderButton.setMaximumSize(new Dimension(400, 75));
 		pane.add(orderButton);
 
 		tipLabel = new JLabel();
@@ -183,17 +195,17 @@ public class MealTester extends Main implements ActionListener {
 		tipLabel.setToolTipText("This is the Tip Amount");
 		tipLabel.setSize(38, 25);
 		tipLabel.setText("18%");
-		tipLabel.setForeground(Color.white);
-		tipLabel.setFont(new Font("Arial", Font.BOLD, 18));
+		tipLabel.setForeground(fg);
+		tipLabel.setFont(font);
 		pane.add(tipLabel);
 
 		subtract = new JButton("-");
 		subtract.setSize(45, 25);
-		subtract.setFont(new Font("Arial", Font.BOLD, 19));
+		subtract.setFont(font);
 		subtract.addActionListener(this);
 		subtract.setLocation(tipLabel.getLocation().x - 50, tipLabel.getLocation().y);
-		subtract.setForeground(Color.white);
-		subtract.setBackground(Color.DARK_GRAY);
+		subtract.setForeground(fg);
+		subtract.setBackground(bg);
 		subtract.setBorderPainted(false);
 		pane.add(subtract);
 
@@ -202,32 +214,49 @@ public class MealTester extends Main implements ActionListener {
 		add.setFont(new Font("Arial", Font.BOLD, 19));
 		add.addActionListener(this);
 		add.setLocation(tipLabel.getLocation().x + 75, tipLabel.getLocation().y);
-		add.setForeground(Color.white);
-		add.setBackground(Color.DARK_GRAY);
+		add.setForeground(fg);
+		add.setBackground(bg);
 		add.setBorderPainted(false);
+		add.setFont(font);
 		pane.add(add);
 
 		clearButton = new JButton("Clear Current Order");
 		clearButton.setEnabled(true);
 		clearButton.addActionListener(this);
 		clearButton.setSize(new Dimension(150, 25));
-		clearButton.setForeground(Color.WHITE);
-		clearButton.setBackground(Color.DARK_GRAY);
+		clearButton.setForeground(fg);
+		clearButton.setBackground(bg);
 		clearButton.setVisible(true);
 		clearButton.setLocation((orderWindow.getWidth() / 2), orderWindow.getHeight() - 85);
 		clearButton.setLayout(null);
 		clearButton.setBorderPainted(false);
+		clearButton.setFont(font);
+		clearButton.setMaximumSize(new Dimension(400, 75));
 		pane.add(clearButton);
+
+		close = new JButton("[X]");
+		close.setEnabled(true);
+		close.addActionListener(this);
+		close.setSize(new Dimension(75, 50));
+		close.setLocation(width-75, 0);
+		close.setForeground(getTitleFg());
+		close.setBackground(bg);
+		close.setOpaque(false);
+		close.setFont(new Font("Arial", Font.BOLD, 28));
+		close.setLayout(null);
+		close.setBorderPainted(false);
+		pane.add(close);
 
 		updateFrame(orderWindow, orderWindow.getGraphics());
 
 	}
 
-	
-
 	// This will provide an action event for the buttons
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if(e.getSource().equals(close)){
+			orderWindow.dispose();
+		}
 		// Adds and Event for incrementing a tip
 		if (e.getSource().equals(add)) {
 			NumberFormat format = NumberFormat.getPercentInstance();
@@ -288,8 +317,8 @@ public class MealTester extends Main implements ActionListener {
 				NumberFormat perFormat = NumberFormat.getPercentInstance();
 				String fileContent = finalOrderString + "\n----------------------------\nSubTotal = " + subString + "\nFinal Total(incuding tip:" + perFormat.format(tip) + " and tax:" + perFormat.format(tax) + ") = " + totalString;
 				try {
-					reciptPrinter("Recipt " + date + ".txt", fileContent, "Recipts/");
-
+					TextTransfer tf = new TextTransfer();
+					tf.TextWriter("Recipt " + date + ".txt", fileContent, "Recipts/", false);
 				} catch (IOException e1) {
 					print("An Issue happened because a programmer made a mistake\nrelatave to the ordering and printing/writing of the recipt.\nError: " + e1.getMessage());
 				}
@@ -299,35 +328,6 @@ public class MealTester extends Main implements ActionListener {
 			print(finalOrder + " Has been removed from your ticket");
 			yourOrder.clear();
 		}
-	}
-
-	public void reciptPrinter(String FileName, String fileContent, String FolderName) throws IOException {
-		print("Accessing ReciptPrinter Method...");
-		File f = new File(FolderName);
-		try {
-			if (f.mkdir()) {
-				print("Directory Created in " + f.getAbsolutePath());
-			} else {// Exists
-				print("Directory is not created -- Maybe the File already exists");
-			}
-		} catch (Exception e) {
-			print(e.getMessage());
-		}
-		try {
-			bw = new BufferedWriter(new FileWriter(FolderName + FileName, true));
-			bw.write(fileContent);
-			bw.newLine();
-			bw.flush();
-		} catch (IOException e) {
-			print("Had an issue with Appending file " + FileName + " in ReciptPrinter Meathod.  ERROR: " + e.getMessage());
-		} finally {
-			if (bw != null) {
-				bw.close();
-			}
-		}
-
-//		ftpSend("ftp://192.168.1.31", FileName, fileContent);
-
 	}
 
 	public void ftpSend(String url, String name, String content) {
@@ -345,7 +345,7 @@ public class MealTester extends Main implements ActionListener {
 				client.storeFile(url + name, input);
 			}
 			fos = new FileOutputStream(f);
-			
+
 			client.logout();
 			print("Sending " + content + "\n to " + url);
 		} catch (IOException e) {

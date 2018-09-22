@@ -1,8 +1,6 @@
 
-package tk.dccraft.init.updater;
-
+package tk.dccraft.http.updater;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -13,7 +11,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,19 +30,16 @@ import javax.swing.JTextArea;
 @SuppressWarnings("all")
 public class Download extends JFrame {
 	private Thread worker;
-	private final String root = "Assignment-Selector/", url = "http://dccraft.tk/assignment/Assignment.zip";
+	private final String root = "Assignment/", url = "http://dccraft.tk/assignment/Assignment.zip";
 	private JTextArea outText;
-	private JButton cancel, launch;
+	private JButton cancle;
+	private JButton launch;
 	private JScrollPane sp;
-	private JPanel pan1, pan2;
+	private JPanel pan1;
+	private JPanel pan2;
 
 	public Download() {
 		initComponents();
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				new Download().setVisible(true);
-			}
-		});
 		this.outText.setText("Contacting Download Server...");
 		download();
 	}
@@ -55,26 +49,15 @@ public class Download extends JFrame {
 
 		this.pan1 = new JPanel();
 		this.pan1.setLayout(new BorderLayout());
-		this.pan1.setBackground(Color.DARK_GRAY);
-		this.pan1.setForeground(Color.WHITE);
 
 		this.pan2 = new JPanel();
 		this.pan2.setLayout(new FlowLayout());
-		this.pan2.setBackground(Color.DARK_GRAY);
-		this.pan2.setForeground(Color.WHITE);
 
 		this.outText = new JTextArea();
-		this.outText.setForeground(Color.white);
-		this.outText.setBackground(Color.BLACK);
-
 		this.sp = new JScrollPane();
 		this.sp.setViewportView(this.outText);
-
 		this.launch = new JButton("Continue");
 		this.launch.setEnabled(false);
-		this.launch.setForeground(Color.white);
-		this.launch.setBackground(Color.DARK_GRAY);
-		this.launch.setBorderPainted(false);
 		this.launch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Download.this.launch();
@@ -82,16 +65,13 @@ public class Download extends JFrame {
 		});
 		this.pan2.add(this.launch);
 
-		this.cancel = new JButton("Cancel Update");
-		this.cancel.setBackground(Color.DARK_GRAY);
-		this.cancel.setForeground(Color.white);
-		this.cancel.setBorderPainted(false);
-		this.cancel.addActionListener(new ActionListener() {
+		this.cancle = new JButton("Cancel Install/Update");
+		this.cancle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
-		this.pan2.add(this.cancel);
+		this.pan2.add(this.cancle);
 		this.pan1.add(this.sp, "Center");
 		this.pan1.add(this.pan2, "South");
 
@@ -100,16 +80,16 @@ public class Download extends JFrame {
 		setSize(500, 400);
 		setVisible(true);
 		setLocationRelativeTo(null);
-		setTitle("Updating to the Latest Assignment Release");
+		setTitle("Updating/Installing Assignment");
 	}
 
 	private void download() {
 		this.worker = new Thread(new Runnable() {
 			public void run() {
 				try {
-					Download.this.downloadFile(url, "http://192.168.1.31/assignment/Assignment.zip");
+					Download.this.downloadFile(url);
 					Download.this.unzip();
-					Download.this.copyFiles(new File("Assignment-Selector/"), new File("").getAbsolutePath());
+					Download.this.copyFiles(new File("Assignment/"), new File("").getAbsolutePath());
 					Download.this.cleanup();
 					Download.this.launch.setEnabled(true);
 					Download.this.outText.setText(Download.this.outText.getText() + "\nUpdate Finished!");
@@ -139,8 +119,8 @@ public class Download extends JFrame {
 		if (f.exists()) {
 			f.delete();
 		}
-		remove(new File("Assignment-Selector/"));
-		new File("Assignment-Selector/").delete();
+		remove(new File("Assignment/"));
+		new File("Assignment/").delete();
 	}
 
 	private void remove(File f) {
@@ -198,18 +178,18 @@ public class Download extends JFrame {
 
 		ZipFile zipfile = new ZipFile("update.zip");
 		Enumeration e = zipfile.entries();
-		new File("Assignment-Selector/").mkdir();
+		new File("Assignment/").mkdir();
 		while (e.hasMoreElements()) {
 			ZipEntry entry = (ZipEntry) e.nextElement();
 			this.outText.setText(this.outText.getText() + "\nExtracting: " + entry);
 			if (entry.isDirectory()) {
-				new File("Assignment-Selector/" + entry.getName()).mkdir();
+				new File("Assignment/" + entry.getName()).mkdir();
 			} else {
-				new File("Assignment-Selector/" + entry.getName()).createNewFile();
+				new File("Assignment/" + entry.getName()).createNewFile();
 				is = new BufferedInputStream(zipfile.getInputStream(entry));
 
 				byte[] data = new byte[BUFFER];
-				FileOutputStream fos = new FileOutputStream("Assignment-Selector/" + entry.getName());
+				FileOutputStream fos = new FileOutputStream("Assignment/" + entry.getName());
 				dest = new BufferedOutputStream(fos, BUFFER);
 				int count;
 				while ((count = is.read(data, 0, BUFFER)) != -1) {
@@ -224,44 +204,32 @@ public class Download extends JFrame {
 		zipfile.close();
 	}
 
-	private void downloadFile(String link, String localLink) throws MalformedURLException, IOException {
+	private void downloadFile(String link) throws MalformedURLException, IOException {
 		URL url = new URL(link);
 		URLConnection conn = url.openConnection();
 		InputStream is = conn.getInputStream();
-		if (conn.getConnectTimeout() > 1) {
-			long max = conn.getContentLength();
-			this.outText.setText(this.outText.getText() + "\n" + "Downloding file...\nUpdate Size(compressed): " + max + " Bytes");
-			BufferedOutputStream fOut = new BufferedOutputStream(new FileOutputStream(new File("update.zip")));
-			byte[] buffer = new byte[32768];
-			int bytesRead = 0;
-			int in = 0;
-			while ((bytesRead = is.read(buffer)) != -1) {
-				in += bytesRead;
-				fOut.write(buffer, 0, bytesRead);
-			}
-			fOut.flush();
-			fOut.close();
-			is.close();
-			this.outText.setText(this.outText.getText() + "\nDownload Complete!");
-		} else {
-
+		long max = conn.getContentLength();
+		this.outText.setText(
+				this.outText.getText() + "\n" + "Downloding file...\nUpdate Size(compressed): " + max + " Bytes");
+		BufferedOutputStream fOut = new BufferedOutputStream(new FileOutputStream(new File("update.zip")));
+		byte[] buffer = new byte[32768];
+		int bytesRead = 0;
+		int in = 0;
+		while ((bytesRead = is.read(buffer)) != -1) {
+			in += bytesRead;
+			fOut.write(buffer, 0, bytesRead);
 		}
+		fOut.flush();
+		fOut.close();
+		is.close();
+		this.outText.setText(this.outText.getText() + "\nDownload Complete!");
 	}
 
-	private String getDownloadLinkFromHost() throws MalformedURLException, IOException {
-		String path = this.url;
-		URL url = new URL(path);
-
-		InputStream html = null;
-
-		html = url.openStream();
-
-		int c = 0;
-		StringBuilder buffer = new StringBuilder("");
-		while (c != -1) {
-			c = html.read();
-			buffer.append((char) c);
-		}
-		return buffer.substring(buffer.indexOf("[url]") + 5, buffer.indexOf("[/url]"));
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				new Download().setVisible(true);
+			}
+		});
 	}
 }
