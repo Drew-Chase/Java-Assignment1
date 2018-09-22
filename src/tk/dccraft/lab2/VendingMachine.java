@@ -1,4 +1,6 @@
-package tk.dccraft.lab2
+package tk.dccraft.lab2;
+
+import tk.dccraft.init.Main;
 
 public class VendingMachine extends Main{
 	private int canAmount = 0, maxCanAmount = 25, cashAmount = 50;
