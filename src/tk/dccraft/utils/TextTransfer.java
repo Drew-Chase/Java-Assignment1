@@ -31,13 +31,13 @@ public class TextTransfer {
 
 	List<String> balanceList = new ArrayList<String>(), nameList = new ArrayList<String>();
 	List<Double> taxList = new ArrayList<Double>();
+	public boolean exists = false;
 
 	private Main main = new Main();
 
 	public void TextReader(String FileName, String FileLocation, String type) throws IOException {
 		main.print("Accessing Text Reader Method...");
 		main.print("Attempting To Read Designated File...");
-
 		FileReader file = new FileReader(FileLocation + FileName);
 		main.print("Reading File: " + FileName + " in " + FileLocation);
 		BufferedReader reader = new BufferedReader(file);
@@ -68,7 +68,8 @@ public class TextTransfer {
 					line = reader.readLine();
 				}
 			} catch (Exception e) {
-				main.print("Had A Problem with the while loop in the TextReader Method(Section 1:Style)\n Couldn't proccess line reader");
+				main.print(
+						"Had A Problem with the while loop in the TextReader Method(Section 1:Style)\n Couldn't proccess line reader");
 				e.printStackTrace();
 			}
 		} else if (type.equalsIgnoreCase("bank")) {
@@ -95,10 +96,12 @@ public class TextTransfer {
 				}
 
 				for (int i = 0; i < nameList.size(); i++)
-					SavingsAccountTester.accounts.add(new SavingsAccount(Double.parseDouble(balanceList.get(i)), nameList.get(i)));
+					SavingsAccountTester.accounts
+							.add(new SavingsAccount(Double.parseDouble(balanceList.get(i)), nameList.get(i)));
 
 			} catch (Exception e) {
-				main.print("Had A Problem with the while loop in the TextReader Method(Section 2:Banking)\n Couldn't proccess line reader");
+				main.print(
+						"Had A Problem with the while loop in the TextReader Method(Section 2:Banking)\n Couldn't proccess line reader");
 				e.printStackTrace();
 			}
 		} else {
@@ -114,7 +117,8 @@ public class TextTransfer {
 
 				}
 			} catch (Exception e) {
-				main.print("Had A Problem with the while loop in the TextReader Method\n Couldn't proccess line reader");
+				main.print(
+						"Had A Problem with the while loop in the TextReader Method\n Couldn't proccess line reader");
 				e.printStackTrace();
 			}
 		}
@@ -139,7 +143,8 @@ public class TextTransfer {
 			bw.newLine();
 			bw.flush();
 		} catch (IOException e) {
-			main.print("Had an issue with Writting the file " + FileName + " in TextWriter Meathod.  ERROR: " + e.getMessage());
+			main.print("Had an issue with Writting the file " + FileName + " in TextWriter Meathod.  ERROR: "
+					+ e.getMessage());
 		} finally {
 			if (bw != null) {
 				bw.close();

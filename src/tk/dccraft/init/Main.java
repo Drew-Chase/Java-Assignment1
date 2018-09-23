@@ -27,6 +27,8 @@ import tk.dccraft.Assignment_1.part_1.MealTester;
 import tk.dccraft.Assignment_1.part_2.CalendarTester;
 import tk.dccraft.Assignment_2.bank.SavingsAccountTester;
 import tk.dccraft.http.updater.Download;
+import tk.dccraft.lab1.Lab1;
+import tk.dccraft.lab2.VendingMachine;
 import tk.dccraft.utils.TextTransfer;
 import tk.dccraft.utils.settings.PreferenceWindow;
 
@@ -43,7 +45,7 @@ public class Main implements ActionListener {
 	private static DefaultCaret caret;
 	private static JMenuBar menuBar;
 	private static JMenu file, edit, assign_1, assign_2;
-	private static JMenuItem pos, dob, exit, sat, update, preference;
+	private static JMenuItem pos, dob, exit, sat, update, preference, load;
 	private static Color bg, fg;
 	private static int fontSize = 12;
 	private static boolean isDefaultConsole;
@@ -110,6 +112,10 @@ public class Main implements ActionListener {
 		preference.addActionListener(new Main());
 		edit.add(preference);
 
+		load = new JMenuItem("Load Default Files");
+		load.addActionListener(new Main());
+		edit.add(load);
+
 		// Console
 		console = new JTextArea("");
 		console.setSize(new Dimension(consoleWindow.getWidth() - 200, consoleWindow.getHeight() - 50));
@@ -121,7 +127,8 @@ public class Main implements ActionListener {
 		consoleWindow.setLayout(gbl);
 
 		// console.setBorder(new EmptyBorder(5, 5, 5, 5));
-		JScrollPane scroll = new JScrollPane(console, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane scroll = new JScrollPane(console, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		caret = (DefaultCaret) console.getCaret();
 		caret.setUpdatePolicy(2);
 		scroll.setForeground(Color.LIGHT_GRAY);
@@ -152,7 +159,8 @@ public class Main implements ActionListener {
 
 	public static void main(String[] args) {
 		if (System.console() == null) {
-			initConsoleWindow();
+			initConsoleWindow();//NECESSARY
+			new Main().print("IF THIS IS THE FIRST LAUNCH PLEASE RUN:\n----"+edit.getText()+"\n----------"+load.getText()+"\nTO GENERATE THE NECESSARY SETTINGS");
 			TextTransfer tf = new TextTransfer();
 			try {
 				tf.TextReader("Colors.ini", "Settings/", "style");
@@ -174,12 +182,19 @@ public class Main implements ActionListener {
 					new MealTester();
 				} else if (args[0].equalsIgnoreCase("dob")) {
 					new CalendarTester();
+				}else if (args[0].equalsIgnoreCase("bank")) {
+					new SavingsAccountTester();
+				}else if(args[0].equalsIgnoreCase("lab1")) {
+					new Lab1();
+				}else if(args[0].equalsIgnoreCase("lab2")) {
+					Lab2();
 				} else {
-					System.out.println("Enter pos for MealTester or dob for CalendarTester.  Not " + args[0]);
+					help();
+					new Main().print(args[0]+" is not a proper argument.");
 				}
 			} else {
 				Scanner sc = new Scanner(System.in);
-				System.out.println("Enter pos for MealTester or dob for CalendarTester");
+				new Main().print("Enter pos for MealTester or dob for CalendarTester");
 				String input = sc.nextLine();
 				if (input.equalsIgnoreCase("pos")) {
 					new MealTester();
@@ -187,10 +202,52 @@ public class Main implements ActionListener {
 					new CalendarTester();
 				} else if (input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("quit")) {
 					System.exit(0);
-				} else {
-					System.out.println("Enter pos for MealTester or dob for CalendarTester.  Not " + input);
+				} else if(input.equalsIgnoreCase("help")||input.equalsIgnoreCase("?")){
+					help();
+				}else {
+					new Main().print("Enter pos for MealTester or dob for CalendarTester.  Not " + input);
 				}
 			}
+		}
+	}
+	
+	private static void Lab2() {
+		VendingMachine vm = new VendingMachine(10);
+		vm.buyAll();
+		vm.fill();
+		vm.dispense();
+		vm.buyAll();
+		
+	}
+	
+	private static void help() {
+		new Main().print("HELP!!!\n"
+				+ "---Here's a list of commands:\n"
+				+ "---------pos:MealTester\n"
+				+ "---------dob:CalculatorTester\n"
+				+ "---------bank:SavingsAccountTester\n"
+				+ "---------lab1:Lab1\n"
+				+ "---------lab2:Lab2\n");
+	}
+
+	private static void loadDefaultFiles() {
+		TextTransfer tf = new TextTransfer();
+		String FolderName = "Settings/";
+		String FileName = "Colors.ini";
+		String fileContent = "bg:0x404040\nfg:0xFFFFFF\nft:12";
+		try {
+			tf.TextWriter(FileName, fileContent, FolderName, false);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		FolderName = "DataBase/";
+		FileName = "bankinfo.dat";
+		fileContent = "Name0:Corey\nBalance0:300.0\nName1:Sofia\nBalance1:2000.0";
+		try {
+			tf.TextWriter(FileName, fileContent, FolderName, false);
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 	}
 
@@ -202,7 +259,9 @@ public class Main implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(preference)) {
+		if (e.getSource().equals(load)) {
+			 loadDefaultFiles();
+		} else if (e.getSource().equals(preference)) {
 			new PreferenceWindow();
 		} else if (e.getSource().equals(update)) {
 			new Download();
@@ -232,23 +291,27 @@ public class Main implements ActionListener {
 	}
 
 	public static Color getTitleFg() {
-		int r = 0, g = 0, b = 0, scd = 110;
+		int r = 0, g = 0, b = 0, scd = 100;
+		boolean rVisible = true, gVisible = true, bVisible = true;
 		if (bg.getRed() > scd)
 			r = scd;
 		else
-			r = Color.white.getRed();
+			rVisible = false;
 		if (bg.getGreen() > scd)
 			g = scd;
 		else
-			g = Color.white.getGreen();
+			gVisible = false;
 		if (bg.getBlue() > scd)
 			b = scd;
 		else
-			b = Color.white.getBlue();
-		if (b == Color.white.getBlue() && g == Color.white.getGreen() && r == Color.white.getRed())
-			return new Color(r, g, b);
+			bVisible = false;
+		new Main().print(bg.toString());
+		Color c;
+		if (!rVisible && !gVisible && !bVisible)
+			c = Color.WHITE;
 		else
-			return new Color(bg.getRed() - r, bg.getGreen() - g, bg.getBlue() - b);
+			c = new Color(r, g, b);
+		return c;
 	}
 
 	public static Color getBg() {
