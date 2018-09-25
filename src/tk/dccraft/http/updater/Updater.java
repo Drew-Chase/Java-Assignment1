@@ -1,5 +1,6 @@
 
 package tk.dccraft.http.updater;
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -27,10 +28,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+/**
+ * Creates an Updater that connects to a remote .zip file
+ * 
+ * @author Drew Chase
+ *
+ */
 @SuppressWarnings("all")
-public class Download extends JFrame {
+public class Updater extends JFrame {
 	private Thread worker;
-	private final String root = "Assignment/", url = "http://dccraft.tk/assignment/Assignment.zip";
+	private final String root = "Assignment/", url = "http://dccraft.tk/assignment/Assignment.zip", jarName = "Assignment-Selector.jar";
 	private JTextArea outText;
 	private JButton cancle;
 	private JButton launch;
@@ -38,12 +45,15 @@ public class Download extends JFrame {
 	private JPanel pan1;
 	private JPanel pan2;
 
-	public Download() {
+	public Updater() {
 		initComponents();
 		this.outText.setText("Contacting Download Server...");
 		download();
 	}
 
+	/**
+	 * Initializes the UI components
+	 */
 	private void initComponents() {
 		setDefaultCloseOperation(3);
 
@@ -60,7 +70,7 @@ public class Download extends JFrame {
 		this.launch.setEnabled(false);
 		this.launch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Download.this.launch();
+				Updater.this.launch();
 			}
 		});
 		this.pan2.add(this.launch);
@@ -83,16 +93,19 @@ public class Download extends JFrame {
 		setTitle("Updating/Installing Assignment");
 	}
 
+	/**
+	 * Sets up the Order of Operations, so to speak
+	 */
 	private void download() {
 		this.worker = new Thread(new Runnable() {
 			public void run() {
 				try {
-					Download.this.downloadFile(url);
-					Download.this.unzip();
-					Download.this.copyFiles(new File("Assignment/"), new File("").getAbsolutePath());
-					Download.this.cleanup();
-					Download.this.launch.setEnabled(true);
-					Download.this.outText.setText(Download.this.outText.getText() + "\nUpdate Finished!");
+					Updater.this.downloadFile(url);
+					Updater.this.unzip();
+					Updater.this.copyFiles(new File("Assignment/"), new File("").getAbsolutePath());
+					Updater.this.cleanup();
+					Updater.this.launch.setEnabled(true);
+					Updater.this.outText.setText(Updater.this.outText.getText() + "\nUpdate Finished!");
 				} catch (Exception ex) {
 					ex.printStackTrace();
 					JOptionPane.showMessageDialog(null, "An error occured while preforming update!");
@@ -102,8 +115,11 @@ public class Download extends JFrame {
 		this.worker.start();
 	}
 
+	/**
+	 * Launches the newly downloaded/updated and unzipped file
+	 */
 	private void launch() {
-		String[] run = { "java", "-jar", "Assignment-Selector.jar" };
+		String[] run = { "java", "-jar", jarName };
 		try {
 			Runtime.getRuntime().exec(run);
 		} catch (Exception ex) {
@@ -112,6 +128,9 @@ public class Download extends JFrame {
 		System.exit(0);
 	}
 
+	/**
+	 * Delets the temp zip file
+	 */
 	private void cleanup() {
 		this.outText.setText(this.outText.getText() + "\nPreforming clean up...");
 		File f = new File("update.zip");
@@ -123,6 +142,11 @@ public class Download extends JFrame {
 		new File("Assignment/").delete();
 	}
 
+	/**
+	 * Removes folder that the files were copied from
+	 * 
+	 * @param f
+	 */
 	private void remove(File f) {
 		File[] files = f.listFiles();
 		File[] arrayOfFile1;
@@ -138,6 +162,13 @@ public class Download extends JFrame {
 		}
 	}
 
+	/**
+	 * Copies all file out of a folder
+	 * 
+	 * @param f
+	 * @param dir
+	 * @throws IOException
+	 */
 	private void copyFiles(File f, String dir) throws IOException {
 		File[] files = f.listFiles();
 		File[] arrayOfFile1;
@@ -153,6 +184,14 @@ public class Download extends JFrame {
 		}
 	}
 
+	/**
+	 * If there is only a single file
+	 * 
+	 * @param srFile
+	 * @param dtFile
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public void copy(String srFile, String dtFile) throws FileNotFoundException, IOException {
 		File f1 = new File(srFile);
 		File f2 = new File(dtFile);
@@ -171,6 +210,11 @@ public class Download extends JFrame {
 		out.close();
 	}
 
+	/**
+	 * Unzips the downloaded zip file
+	 * 
+	 * @throws IOException
+	 */
 	private void unzip() throws IOException {
 		int BUFFER = 2048;
 		BufferedOutputStream dest = null;
@@ -204,13 +248,19 @@ public class Download extends JFrame {
 		zipfile.close();
 	}
 
+	/**
+	 * Downloads file from the link parameter
+	 * 
+	 * @param link
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
 	private void downloadFile(String link) throws MalformedURLException, IOException {
 		URL url = new URL(link);
 		URLConnection conn = url.openConnection();
 		InputStream is = conn.getInputStream();
 		long max = conn.getContentLength();
-		this.outText.setText(
-				this.outText.getText() + "\n" + "Downloding file...\nUpdate Size(compressed): " + max + " Bytes");
+		this.outText.setText(this.outText.getText() + "\n" + "Downloding file...\nUpdate Size(compressed): " + max + " Bytes");
 		BufferedOutputStream fOut = new BufferedOutputStream(new FileOutputStream(new File("update.zip")));
 		byte[] buffer = new byte[32768];
 		int bytesRead = 0;
@@ -225,10 +275,15 @@ public class Download extends JFrame {
 		this.outText.setText(this.outText.getText() + "\nDownload Complete!");
 	}
 
+	/**
+	 * Just in case I want to make it an installer or use it as an updater
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				new Download().setVisible(true);
+				new Updater().setVisible(true);
 			}
 		});
 	}

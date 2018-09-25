@@ -13,9 +13,16 @@ import java.util.List;
 import tk.dccraft.Assignment_2.bank.SavingsAccount;
 import tk.dccraft.Assignment_2.bank.SavingsAccountTester;
 import tk.dccraft.init.Main;
+import tk.dccraft.utils.settings.PreferenceWindow;
 
+/**
+ * Basic Input/Output System for this program
+ * 
+ * @author Drew Chase
+ *
+ */
 @SuppressWarnings("all")
-public class TextTransfer {
+public class BIOS extends Main {
 	private static String FileName, fileContent;
 	private static File objFile;
 	private static BufferedWriter bw;
@@ -23,9 +30,7 @@ public class TextTransfer {
 
 	private static String text;
 
-	public String bg, fg, ft, name, balance, total, tax;
-
-	// private SavingsAccountTester sat = new SavingsAccountTester();
+	public String bg, fg, ft, cfg, cbg, name, balance, total, tax, index;
 
 	public int count = 0, normalCount = 0, size;
 
@@ -33,18 +38,25 @@ public class TextTransfer {
 	List<Double> taxList = new ArrayList<Double>();
 	public boolean exists = false;
 
-	private Main main = new Main();
-
+	/**
+	 * Reads the file and organizes by type("style" or more specifically by
+	 * program use, like "bank" for the SavingsAccountTester.class)
+	 * 
+	 * @param FileName
+	 * @param FileLocation
+	 * @param type
+	 * @throws IOException
+	 */
 	public void TextReader(String FileName, String FileLocation, String type) throws IOException {
-		main.print("Accessing Text Reader Method...");
-		main.print("Attempting To Read Designated File...");
+		print("Accessing Text Reader Method...");
+		print("Attempting To Read Designated File...");
 		FileReader file = new FileReader(FileLocation + FileName);
-		main.print("Reading File: " + FileName + " in " + FileLocation);
+		print("Reading File: " + FileName + " in " + FileLocation);
 		BufferedReader reader = new BufferedReader(file);
 
 		BufferedInputStream inStream = new BufferedInputStream(System.in);
 
-		main.print("Initializing Buffered Reader... \nInitializing Buffered Input Stream...");
+		print("Initializing Buffered Reader... \nInitializing Buffered Input Stream...");
 
 		if (type.equalsIgnoreCase("style")) {
 			try {
@@ -54,22 +66,34 @@ public class TextTransfer {
 				while (line != null) {
 					if (line.startsWith("bg:")) {
 						bg = line.substring(3);
-						main.print("Background Color is: " + bg);
+						print("Background Color is: " + bg);
 					}
 					if (line.startsWith("fg:")) {
 						fg = line.substring(3);
-						main.print("Foreground Color is: " + fg);
+						print("Foreground Color is: " + fg);
 					}
 					if (line.startsWith("ft:")) {
 						ft = line.substring(3);
-						main.print("Font size is: " + ft);
+						print("Font size is: " + ft);
 					}
+					if (line.startsWith("cfg:")) {
+						cfg = line.substring(4);
+						print("Console Foreground Color is " + cfg);
+					}
+					if (line.startsWith("cbg:")) {
+						cbg = line.substring(4);
+						print("Console Background Color is " + cbg);
+					}
+					if (line.startsWith("index:")) {
+						index = line.substring(6);
+						print("Page Index is: " + index);
+					}
+
 					text += line;
 					line = reader.readLine();
 				}
 			} catch (Exception e) {
-				main.print(
-						"Had A Problem with the while loop in the TextReader Method(Section 1:Style)\n Couldn't proccess line reader");
+				print("Had A Problem with the while loop in the TextReader Method(Section 1:Style)\n Couldn't proccess line reader");
 				e.printStackTrace();
 			}
 		} else if (type.equalsIgnoreCase("bank")) {
@@ -80,12 +104,12 @@ public class TextTransfer {
 					if (line.startsWith("Name" + count + ":")) {
 						name = line.substring(6);
 						nameList.add(name);
-						main.print("Name" + count + ":" + name);
+						print("Name" + count + ":" + name);
 					}
 					if (line.startsWith("Balance" + count + ":")) {
 						balance = line.substring(9);
 						balanceList.add(balance);
-						main.print("Balance" + count + ":" + balance);
+						print("Balance" + count + ":" + balance);
 					}
 
 					text += line;
@@ -96,46 +120,53 @@ public class TextTransfer {
 				}
 
 				for (int i = 0; i < nameList.size(); i++)
-					SavingsAccountTester.accounts
-							.add(new SavingsAccount(Double.parseDouble(balanceList.get(i)), nameList.get(i)));
+					SavingsAccountTester.accounts.add(new SavingsAccount(Double.parseDouble(balanceList.get(i)), nameList.get(i)));
 
 			} catch (Exception e) {
-				main.print(
-						"Had A Problem with the while loop in the TextReader Method(Section 2:Banking)\n Couldn't proccess line reader");
+				print("Had A Problem with the while loop in the TextReader Method(Section 2:Banking)\n Couldn't proccess line reader");
 				e.printStackTrace();
 			}
 		} else {
 			try {
-				TextTransfer.text = "";
-				String text = TextTransfer.text;
+				BIOS.text = "";
+				String text = BIOS.text;
 
 				String line = reader.readLine();
 				while (line != null) {
-					main.print("Line:" + line + " Text" + text);
+					print("Line:" + line + " Text" + text);
 					text += line;
 					line = reader.readLine();
 
 				}
 			} catch (Exception e) {
-				main.print(
-						"Had A Problem with the while loop in the TextReader Method\n Couldn't proccess line reader");
+				print("Had A Problem with the while loop in the TextReader Method\n Couldn't proccess line reader");
 				e.printStackTrace();
 			}
 		}
 
 	}
 
+	/**
+	 * Writes to a file, either by overwriting or appending to the end of the
+	 * file. with the append boolean
+	 * 
+	 * @param FileName
+	 * @param fileContent
+	 * @param FolderName
+	 * @param append
+	 * @throws IOException
+	 */
 	public void TextWriter(String FileName, String fileContent, String FolderName, boolean append) throws IOException {
-		main.print("Accessing Settings Saving Method...");
+		print("Accessing Settings Saving Method...");
 		File f = new File(FolderName);
 		try {
 			if (f.mkdir()) {
-				main.print("Directory Created in " + f.getAbsolutePath());
+				print("Directory Created in " + f.getAbsolutePath());
 			} else {// Exists
-				main.print("Directory is not created -- Maybe the File already exists");
+				print("Directory is not created -- Maybe the File already exists");
 			}
 		} catch (Exception e) {
-			main.print(e.getMessage());
+			print(e.getMessage());
 		}
 		try {
 			bw = new BufferedWriter(new FileWriter(FolderName + FileName, append));
@@ -143,8 +174,7 @@ public class TextTransfer {
 			bw.newLine();
 			bw.flush();
 		} catch (IOException e) {
-			main.print("Had an issue with Writting the file " + FileName + " in TextWriter Meathod.  ERROR: "
-					+ e.getMessage());
+			print("Had an issue with Writting the file " + FileName + " in TextWriter Meathod.  ERROR: " + e.getMessage());
 		} finally {
 			if (bw != null) {
 				bw.close();

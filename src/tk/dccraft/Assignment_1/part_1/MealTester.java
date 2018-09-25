@@ -30,13 +30,13 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
 import tk.dccraft.init.Main;
-import tk.dccraft.utils.TextTransfer;
+import tk.dccraft.utils.BIOS;
 
 /**
- * Assignment 1 Part 1 ------------------------------ This class creates a Point
+ * Assignment 1 Part 1 ----------------- This class creates a Point
  * of Sale Service (POS-System) like program... Something I've been wanting to
  * do since I saw the god-awful POS-System at the Local House of Pizza.
- * 
+ * It's simple, but, if this was for actual use I would do more.
  * @author Drew Chase
  *
  */
@@ -58,8 +58,11 @@ public class MealTester extends Main implements ActionListener {
 	private JLabel tipLabel, titlelbl;
 	private BufferedWriter bw;
 	private Font font = getFont();
+	private BIOS io = new BIOS();
 
-	// the Constructor
+	/**
+	 * Initializes the MealTester.class
+	 */
 	public MealTester() {
 		initApp();
 		initEnt();
@@ -67,7 +70,9 @@ public class MealTester extends Main implements ActionListener {
 		initOrderWindow();
 	}
 
-	// Initializes Appetizer
+	/**
+	 * Initializes Appetizer
+	 */
 	public void initApp() {
 		print("---------- Initializing Appetizers ----------");
 		menu_name.add("a:Broccoli Bites");
@@ -81,7 +86,9 @@ public class MealTester extends Main implements ActionListener {
 		print("Initializing Mozzarella Sticks");
 	}
 
-	// Initializes Drinks
+	/**
+	 * Initializes Drinks
+	 */
 	private void initBev() {
 		print("--------- Initializing Beverages ------------");
 		menu_name.add("d:Coca-Cola");
@@ -99,7 +106,9 @@ public class MealTester extends Main implements ActionListener {
 
 	}
 
-	// Initializes Entries
+	/**
+	 * Initializes Entries
+	 */
 	private void initEnt() {
 		print("--------- Initializing Entrees --------------");
 		menu_name.add("e:Cajun Chicken & Pasta");
@@ -117,8 +126,9 @@ public class MealTester extends Main implements ActionListener {
 
 	}
 
-	// Initializes Windows
-	// Initializes the Main Window
+	/**
+	 * Initializes the Order Window
+	 */
 	private void initOrderWindow() {
 		int width = 800, height = 600;
 		// Initializing Content Pane
@@ -238,7 +248,7 @@ public class MealTester extends Main implements ActionListener {
 		close.setEnabled(true);
 		close.addActionListener(this);
 		close.setSize(new Dimension(75, 50));
-		close.setLocation(width-75, 0);
+		close.setLocation(width - 75, 0);
 		close.setForeground(getTitleFg());
 		close.setBackground(bg);
 		close.setOpaque(false);
@@ -251,10 +261,9 @@ public class MealTester extends Main implements ActionListener {
 
 	}
 
-	// This will provide an action event for the buttons
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource().equals(close)){
+		if (e.getSource().equals(close)) {
 			orderWindow.dispose();
 		}
 		// Adds and Event for incrementing a tip
@@ -317,8 +326,7 @@ public class MealTester extends Main implements ActionListener {
 				NumberFormat perFormat = NumberFormat.getPercentInstance();
 				String fileContent = finalOrderString + "\n----------------------------\nSubTotal = " + subString + "\nFinal Total(incuding tip:" + perFormat.format(tip) + " and tax:" + perFormat.format(tax) + ") = " + totalString;
 				try {
-					TextTransfer tf = new TextTransfer();
-					tf.TextWriter("Recipt " + date + ".txt", fileContent, "Recipts/", false);
+					io.TextWriter("Recipt " + date + ".txt", fileContent, "Recipts/", false);
 				} catch (IOException e1) {
 					print("An Issue happened because a programmer made a mistake\nrelatave to the ordering and printing/writing of the recipt.\nError: " + e1.getMessage());
 				}
@@ -330,6 +338,13 @@ public class MealTester extends Main implements ActionListener {
 		}
 	}
 
+	/**
+	 * Sends the file to an FTP Server using Apache Libraries
+	 * 
+	 * @param url
+	 * @param name
+	 * @param content
+	 */
 	public void ftpSend(String url, String name, String content) {
 		FileOutputStream fos = null;
 		FTPClient client = new FTPClient();

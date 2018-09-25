@@ -19,12 +19,17 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import tk.dccraft.init.Main;
-import tk.dccraft.utils.TextTransfer;
+import tk.dccraft.utils.BIOS;
 
+/**
+ * Creates the GUI for the banking system
+ * 
+ * @author Drew Chase
+ *
+ */
 @SuppressWarnings("all")
 public class SavingsAccountTester extends JFrame implements ActionListener, FocusListener {
 
-	// private String title = "SignUp Form";
 	private JTextField nameBox, balanceBox;
 	private JPanel contentPane;
 	private JButton confirm, close, getBalance, getUser, list;
@@ -34,28 +39,30 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 	private NumberFormat moneyFormatter = NumberFormat.getCurrencyInstance();
 	private Main main;
 	private JLabel title;
+	private BIOS io = new BIOS();
 
 	public static List<SavingsAccount> accounts = new ArrayList<SavingsAccount>();
 
 	public SavingsAccountTester() {
-		// accounts.add(new SavingsAccount(300, "Corey"));
-		// accounts.add(new SavingsAccount(2000, "Sofia", 2.5));
 
 		ReadFromFile();
 
 		main = new Main();
 		Color bg = main.getBg(), fg = main.getFg();
 
+		// Size init
 		width = 800;
 		height = 280;
 		Dimension size = new Dimension(width, height);
 
+		// GUI Init
 		contentPane = new JPanel();
 		contentPane.setSize(width - 50, width - 50);
 		contentPane.setBackground(bg);
 		contentPane.setForeground(fg);
 		contentPane.setLayout(null);
 
+		// Stylized title for the GUI
 		title = new JLabel("Test Bank title".toUpperCase());
 		title.setLocation(25, -5);
 		title.setForeground(main.getTitleFg());
@@ -63,77 +70,82 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 		title.setVisible(true);
 		title.setSize(width, 100);
 		contentPane.add(title);
+		// Input-type Init
+		{
+			nameBox = new JTextField(initNameBox);
+			nameBox.setSize(200, 25);
+			nameBox.setVisible(true);
+			nameBox.setLocation(150, height / 3);
+			nameBox.addActionListener(this);
+			nameBox.addFocusListener(this);
+			nameBox.setLayout(null);
+			contentPane.add(nameBox);
 
-		nameBox = new JTextField(initNameBox);
-		nameBox.setSize(200, 25);
-		nameBox.setVisible(true);
-		nameBox.setLocation(150, height / 3);
-		nameBox.addActionListener(this);
-		nameBox.addFocusListener(this);
-		nameBox.setLayout(null);
-		contentPane.add(nameBox);
+			balanceBox = new JTextField(initBalanceBox);
+			balanceBox.setSize(200, 25);
+			balanceBox.setVisible(true);
+			balanceBox.setLocation(450, height / 3);
+			balanceBox.addFocusListener(this);
+			balanceBox.setLayout(null);
+			contentPane.add(balanceBox);
+		}
 
-		balanceBox = new JTextField(initBalanceBox);
-		balanceBox.setSize(200, 25);
-		balanceBox.setVisible(true);
-		balanceBox.setLocation(450, height / 3);
-		balanceBox.addFocusListener(this);
-		balanceBox.setLayout(null);
-		contentPane.add(balanceBox);
+		// ActionListeners
+		{
+			confirm = new JButton("Send");
+			confirm.setToolTipText("This sends your information to the system");
+			confirm.setSize(100, 50);
+			confirm.setLocation(75, height - 100);
+			confirm.addActionListener(this);
+			confirm.setLayout(null);
+			confirm.setBackground(bg);
+			confirm.setForeground(fg);
+			confirm.setBorderPainted(false);
+			contentPane.add(confirm);
 
-		confirm = new JButton("Send");
-		confirm.setToolTipText("This sends your information to the system");
-		confirm.setSize(100, 50);
-		confirm.setLocation(75, height - 100);
-		confirm.addActionListener(this);
-		confirm.setLayout(null);
-		confirm.setBackground(bg);
-		confirm.setForeground(fg);
-		confirm.setBorderPainted(false);
-		contentPane.add(confirm);
+			list = new JButton("List All Accounts");
+			list.setToolTipText("This gets information from the system");
+			list.setSize(150, 50);
+			list.setLocation(175, height - 100);
+			list.addActionListener(this);
+			list.setLayout(null);
+			list.setBackground(bg);
+			list.setForeground(fg);
+			list.setBorderPainted(false);
+			contentPane.add(list);
 
-		list = new JButton("List All Accounts");
-		list.setToolTipText("This gets information from the system");
-		list.setSize(150, 50);
-		list.setLocation(175, height - 100);
-		list.addActionListener(this);
-		list.setLayout(null);
-		list.setBackground(bg);
-		list.setForeground(fg);
-		list.setBorderPainted(false);
-		contentPane.add(list);
+			getBalance = new JButton("Check Balance");
+			getBalance.setToolTipText("Checks and Prints the Balance from a users profile");
+			getBalance.setSize(150, 50);
+			getBalance.setLocation(175 + 150, height - 100);
+			getBalance.addActionListener(this);
+			getBalance.setLayout(null);
+			getBalance.setBackground(bg);
+			getBalance.setForeground(fg);
+			getBalance.setBorderPainted(false);
+			contentPane.add(getBalance);
 
-		getBalance = new JButton("Check Balance");
-		getBalance.setToolTipText("Checks and Prints the Balance from a users profile");
-		getBalance.setSize(150, 50);
-		getBalance.setLocation(175 + 150, height - 100);
-		getBalance.addActionListener(this);
-		getBalance.setLayout(null);
-		getBalance.setBackground(bg);
-		getBalance.setForeground(fg);
-		getBalance.setBorderPainted(false);
-		contentPane.add(getBalance);
+			getUser = new JButton("Check User");
+			getUser.setToolTipText("Checks and Prints the Name of the person with that balance");
+			getUser.setSize(100, 50);
+			getUser.setLocation(175 + 150 + 150, height - 100);
+			getUser.addActionListener(this);
+			getUser.setBackground(bg);
+			getUser.setForeground(fg);
+			getUser.setBorderPainted(false);
+			contentPane.add(getUser);
 
-		getUser = new JButton("Check User");
-		getUser.setToolTipText("Checks and Prints the Name of the person with that balance");
-		getUser.setSize(100, 50);
-		getUser.setLocation(175 + 150 + 150, height - 100);
-		getUser.addActionListener(this);
-		getUser.setBackground(bg);
-		getUser.setForeground(fg);
-		getUser.setBorderPainted(false);
-		contentPane.add(getUser);
-
-		close = new JButton("Close");
-		close.setToolTipText("This Closes the window, but keeps the console open.");
-		close.setSize(100, 50);
-		close.setLocation(175 + 150 + 150 + 100, height - 100);
-		close.addActionListener(this);
-		close.setLayout(null);
-		close.setBackground(bg);
-		close.setForeground(fg);
-		close.setBorderPainted(false);
-		contentPane.add(close);
+			close = new JButton("Close");
+			close.setToolTipText("This Closes the window, but keeps the console open.");
+			close.setSize(100, 50);
+			close.setLocation(175 + 150 + 150 + 100, height - 100);
+			close.addActionListener(this);
+			close.setLayout(null);
+			close.setBackground(bg);
+			close.setForeground(fg);
+			close.setBorderPainted(false);
+			contentPane.add(close);
+		}
 
 		setTitle("SignUp Form");
 		setUndecorated(true);
@@ -148,10 +160,20 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 
 	}
 
+	/**
+	 * Test a text-to-double conversion
+	 * @param text
+	 * @return rather the number is a viable monetary value
+	 */
 	public boolean test(String text) {
 		try {
-			Double.parseDouble(text);
-			return true;
+			if (Double.parseDouble(text) < Double.MAX_VALUE) {
+				Double.parseDouble(text);
+				return true;
+			} else {
+				main.print("Whooah, I'm sorry you make too much money we are going to have to refer you to another bank!\nThe Max balance we can confortably afford is " + moneyFormatter.format(Double.MAX_VALUE - 2) + "\nYou would have to be the richest person in the world");
+				return false;
+			}
 		} catch (NumberFormatException e) {
 			main.print("ERROR: Can't parse the text \"" + text + "\" as a double");
 			return false;
@@ -202,7 +224,7 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 			} else if (!balanceBox.getText().equals("")) {
 				balance = Double.parseDouble(balanceBox.getText());
 				okBalance = true;
-			} else if (balance > Double.MAX_VALUE) {
+			} else if (balance >= Double.MAX_VALUE) {
 				main.print("Whooah, I'm sorry you make too much money we are going to have to refer you to another bank!");
 				okBalance = false;
 			}
@@ -216,9 +238,12 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 		}
 	}
 
+	/**
+	 * Saves file to the BIOS
+	 */
 	public void SaveToFile() {
 		List<String> content = new ArrayList<String>();
-		TextTransfer tf = new TextTransfer();
+		// loops through all current accounts to save.
 		for (int i = 0; i < accounts.size(); i++) {
 			main.print("Count = " + i);
 			String holder = accounts.get(i).getHolder();
@@ -228,22 +253,29 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 		main.print(finalContent);
 		accounts.clear();
 		try {
-			tf.TextWriter("bankinfo.dat", finalContent, "DataBase/", false);
+			io.TextWriter("bankinfo.dat", finalContent, "DataBase/", false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Reads DataBase info from the BIOS
+	 */
 	public void ReadFromFile() {
-		TextTransfer tf = new TextTransfer();
 		try {
-			tf.TextReader("bankinfo.dat", "DataBase/", "bank");
+			io.TextReader("bankinfo.dat", "DataBase/", "bank");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 	}
 
+	/**
+	 * Registers Focus and rather the textboxes
+	 * should be blank or have content in them
+	 * on focus gained
+	 */
 	@Override
 	public void focusGained(FocusEvent e) {
 		if (e.getSource().equals(nameBox)) {
@@ -255,7 +287,11 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 		}
 
 	}
-
+	/**
+	 * Registers Focus and rather the textboxes
+	 * should be blank or have content in them
+	 * on focus lost
+	 */
 	@Override
 	public void focusLost(FocusEvent e) {
 		if (e.getSource().equals(nameBox)) {
