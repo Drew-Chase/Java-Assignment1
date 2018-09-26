@@ -33,15 +33,16 @@ import tk.dccraft.init.Main;
 import tk.dccraft.utils.BIOS;
 
 /**
- * Assignment 1 Part 1 ----------------- This class creates a Point
+ * Assignment 1 Part 1...
+ * This class creates a Point
  * of Sale Service (POS-System) like program... Something I've been wanting to
  * do since I saw the god-awful POS-System at the Local House of Pizza.
- * It's simple, but, if this was for actual use I would do more.
+ * It's simple, but, if this was for "actual use" I would do more.
  * @author Drew Chase
  *
  */
 @SuppressWarnings("all")
-public class MealTester extends Main implements ActionListener {
+public class MealTester extends Main {
 
 	// Initializing Private Variables...
 	// The Window Title

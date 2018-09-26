@@ -3,7 +3,6 @@ package tk.dccraft.init;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -13,7 +12,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -23,7 +25,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.UIManager;
 import javax.swing.text.DefaultCaret;
 
 import tk.dccraft.Assignment_1.part_1.MealTester;
@@ -50,10 +51,15 @@ public class Main implements ActionListener {
 	private static DefaultCaret caret;
 	private static JMenuBar menuBar;
 	private static JMenu file, edit, assign, assign_1, assign_2, labs;
-	private static JMenuItem pos, dob, exit, sat, update, preference, load, lab_1, lab_2;
+	private static JMenuItem pos, dob, exit, sat, update, preference, load, lab_1, lab_2, clear;
 	private static Color bg, fg, cbg, cfg;
 	private static int fontSize = 12, scd = 50;
 	private static boolean isDefaultConsole;
+	private Date date = new Date();
+	private DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy-HH-mm");
+	private DateFormat timestamp = new SimpleDateFormat("HH:mm:ss");
+	private final String DATE_STRING = dateFormat.format(date.getTime());
+	private static List<String> log = new ArrayList<String>();
 
 	private static BIOS io = new BIOS();
 	private static int index = 0;
@@ -64,7 +70,6 @@ public class Main implements ActionListener {
 	 */
 	public static void initConsoleWindow() {
 		// Initializing Frame
-
 		consoleWindow = new JFrame("Console");
 		consoleWindow.setSize(new Dimension(500, 300));
 		consoleWindow.setUndecorated(true);
@@ -174,6 +179,12 @@ public class Main implements ActionListener {
 		load.setForeground(getConsoleFg());
 		edit.add(load);
 
+		clear = new JMenuItem("Clear Console");
+		clear.addActionListener(new Main());
+		clear.setBackground(getConsoleBg());
+		clear.setForeground(getConsoleFg());
+		edit.add(clear);
+
 		// Console
 		console = new JTextArea("");
 		console.setSize(new Dimension(consoleWindow.getWidth(), consoleWindow.getHeight()));
@@ -202,30 +213,30 @@ public class Main implements ActionListener {
 		consoleWindow.setJMenuBar(menuBar);
 		console.setBackground(getConsoleBg());
 		console.setForeground(getConsoleFg());
-		
 	}
 
 	/**
 	 * Prints the message to either console
 	 * 
-	 * @param message
+	 * @param message gets the message to print as an object then converts it to a printable string
 	 */
 	public void print(Object message) {
+		log.add(timestamp.format(date.getTime()) + " : " + message.toString());
 		if (isDefaultConsole)
 			console.append(message.toString() + "\n");
 		else
 			System.out.println(message + "\n");
-
 	}
 
 	/**
 	 * Prints the message to either console and makes a new line base on the
 	 * newLine param
 	 * 
-	 * @param message
-	 * @param newLine
+	 * @param message gets the message to print as an object then converts it to a printable string
+	 * @param newLine prints a x new lines after the text
 	 */
 	public void print(Object message, int newLine) {
+		log.add(timestamp.format(date.getTime()) + " : " + message.toString());
 		if (isDefaultConsole) {
 			if (newLine == 1)
 				console.append(message.toString() + "\n");
@@ -251,6 +262,7 @@ public class Main implements ActionListener {
 	}
 
 	public static void main(String[] args) {
+		log.add("Starting LOG...");
 		try {
 			io.TextReader("Colors.ini", "Settings/", "style");
 			setBg(new Color(Integer.decode(io.bg)));
@@ -267,12 +279,6 @@ public class Main implements ActionListener {
 			setConsoleFg(new Color(Integer.decode(io.cfg)));
 			initConsoleWindow();
 			new Main().print("(c) A Drew Chase Project", 2);
-			String message = "IF THIS IS THE FIRST LAUNCH PLEASE RUN:\n----" + edit.getText() + "\n----------" + load.getText() + "\nTO GENERATE THE NECESSARY SETTINGS";
-			new Main().print(message);
-			for (int i = 0; i < message.length(); i++) {
-				new Main().print("-", 0);
-			}
-			new Main().print("", 3);
 			EventQueue.invokeLater(() -> {
 				consoleWindow.setVisible(true);
 			});
@@ -292,7 +298,7 @@ public class Main implements ActionListener {
 					Lab2();
 				} else if (args[0].equalsIgnoreCase("load")) {
 					loadDefaultFiles();
-					System.exit(0);
+					new Main().Exit();
 				} else if (args[0].equalsIgnoreCase("pref")) {
 					new PreferenceWindow();
 				} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
@@ -317,7 +323,7 @@ public class Main implements ActionListener {
 					} else if (input.equalsIgnoreCase("bank")) {
 						new SavingsAccountTester();
 					} else if (input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("quit")) {
-						System.exit(0);
+						new Main().Exit();
 					} else if (input.equalsIgnoreCase("load")) {
 						loadDefaultFiles();
 						System.exit(0);
@@ -391,14 +397,24 @@ public class Main implements ActionListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		new Main().Exit();
+	}
+
+	public void Exit() {
+		try {
+			io.TextWriter("logLatest.txt", log.toString().replace("[", "").replace("]", "").replace(",", "\n"), "logs/", false);
+			io.TextWriter("log-" + DATE_STRING + ".txt", log.toString().replace("[", "").replace("]", "").replace(",", "\n"), "logs/", false);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		System.exit(0);
 	}
 
 	/**
 	 * IF NEEDED it will update the Graphics on the JFrame
 	 * 
-	 * @param frame
-	 * @param g
+	 * @param frame gets window
+	 * @param g gets Graphics of window
 	 */
 	public void updateFrame(JFrame frame, Graphics g) {
 		frame.update(g);
@@ -408,7 +424,7 @@ public class Main implements ActionListener {
 	/**
 	 * IF NEEDED it will update the Graphics on the JFrame
 	 * 
-	 * @param frame
+	 * @param frame gets window with graphics
 	 */
 	public void updateFrame(JFrame frame) {
 		frame.update(frame.getGraphics());
@@ -478,14 +494,16 @@ public class Main implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(load)) {
+		if (e.getSource().equals(clear)) {
+			Clear();
+		} else if (e.getSource().equals(load)) {
 			loadDefaultFiles();
 		} else if (e.getSource().equals(preference)) {
 			new PreferenceWindow();
 		} else if (e.getSource().equals(update)) {
 			new Updater();
 		} else if (e.getSource().equals(exit)) {
-			System.exit(0);
+			Exit();
 		} else if (e.getSource().equals(dob)) {
 			new CalendarTester();
 		} else if (e.getSource().equals(pos)) {
@@ -498,18 +516,35 @@ public class Main implements ActionListener {
 			Lab2();
 		}
 	}
+	/**
+	 * Clears the console text
+	 */
+	public void Clear(){
+		console.setText("");
+	}
 
+	/**
+	 * Gets the Font Size
+	 * @return font size
+	 */
 	public static int getFontSize() {
 		return fontSize;
 	}
 
+	/**
+	 * Sets the font size
+	 * @param size font size
+	 */
 	public static void setFontSize(int size) {
 		fontSize = size;
 		font = new Font("Arial", Font.PLAIN, size);
 		if (isDefaultConsole)
 			console.setFont(font);
 	}
-
+/**
+ * Gets the specified font
+ * @return default font
+ */
 	public Font getFont() {
 		return font;
 	}
@@ -545,7 +580,7 @@ public class Main implements ActionListener {
 
 	/**
 	 * 
-	 * @param bg
+	 * @param bg specifies the background color
 	 * @return slightly darker or lighter color based on the given background
 	 *         color
 	 */
@@ -573,10 +608,18 @@ public class Main implements ActionListener {
 		return c;
 	}
 
+	/**
+	 * Gets the Console Window
+	 * @return Console Window
+	 */
 	public static JFrame getFrame() {
 		return consoleWindow;
 	}
 
+	/**
+	 * Gets Background color of the default windows
+	 * @return background color
+	 */
 	public static Color getBg() {
 		return bg;
 	}
@@ -584,20 +627,24 @@ public class Main implements ActionListener {
 	/**
 	 * sets the main Background Color
 	 * 
-	 * @param bg
+	 * @param bg background color
 	 */
 	public static void setBg(Color bg) {
 		Main.bg = bg;
 	}
 
+	/**
+	 * Gets the Foreground Color
+	 * @return Foreground Color
+	 */
 	public static Color getFg() {
 		return fg;
 	}
 
 	/**
-	 * sets the main Foreground Color
+	 * Sets the main Foreground Color
 	 * 
-	 * @param fg
+	 * @param fg Foreground Color
 	 */
 	public static void setFg(Color fg) {
 		Main.fg = fg;
@@ -606,13 +653,14 @@ public class Main implements ActionListener {
 	/**
 	 * Sets the Console Foreground Color
 	 * 
-	 * @param fg
+	 * @param fg Foreground Color
 	 */
 	public static void setConsoleFg(Color fg) {
 		Main.cfg = fg;
 	}
 
 	/**
+	 * Gets Console Foreground Color
 	 * @return Console Foreground Color
 	 */
 	public static Color getConsoleFg() {
@@ -624,6 +672,7 @@ public class Main implements ActionListener {
 	}
 
 	/**
+	 * Gets Console Background Color
 	 * @return Console Background
 	 */
 	public static Color getConsoleBg() {
@@ -633,7 +682,7 @@ public class Main implements ActionListener {
 	/**
 	 * Sets the Current Page Index used for the Preference Window
 	 * 
-	 * @param index
+	 * @param index tab index
 	 */
 	public static void setIndex(int index) {
 		new Main().index = index;

@@ -3,7 +3,11 @@ package tk.dccraft.excercies;
 import java.util.Scanner;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
-
+/**
+ * 
+ * @author Drew Chase
+ *
+ */
 public class Exercise3 {
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
@@ -23,11 +27,14 @@ public class Exercise3 {
 		else
 			System.out.print("Please enter a proper number that is between 0-100");
 		double finalScore = (score1+score2)/2;
-		System.out.print(name + "'s exam average score is " + finalScore);
+		System.out.println(name + "'s exam average score is " + finalScore+"\n\n");
 		
 		 System.out.println("Maximum int value:  " + Integer.MAX_VALUE);
 		 System.out.println("Max double value " + Double.MAX_VALUE);
-		 System.out.println("");
+		 System.out.println("Max byte value " + Byte.MAX_VALUE);
+		 System.out.println("Max short value " + Short.MAX_VALUE);
+		 System.out.println("Max float value " + Float.MAX_VALUE);
+		 System.out.println("Max long value " + Long.MAX_VALUE);
 
 	}
 

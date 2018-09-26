@@ -31,7 +31,7 @@ import tk.dccraft.utils.BIOS;
  *
  */
 @SuppressWarnings("all")
-public class PreferenceWindow extends Main implements ActionListener {
+public class PreferenceWindow extends Main {
 	private Color fg = getFg();
 	private Color bg = getBg();
 	private Color cfg = getConsoleFg();
