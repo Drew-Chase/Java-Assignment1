@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -33,11 +33,11 @@ import tk.dccraft.init.Main;
 import tk.dccraft.utils.BIOS;
 
 /**
- * Assignment 1 Part 1...
- * This class creates a Point
- * of Sale Service (POS-System) like program... Something I've been wanting to
- * do since I saw the god-awful POS-System at the Local House of Pizza.
- * It's simple, but, if this was for "actual use" I would do more.
+ * Assignment 1 Part 1... This class creates a Point of Sale Service
+ * (POS-System) like program... Something I've been wanting to do since I saw
+ * the god-awful POS-System at the Local House of Pizza. It's simple, but, if
+ * this was for "actual use" I would do more.
+ * 
  * @author Drew Chase
  *
  */
@@ -56,7 +56,7 @@ public class MealTester extends Main {
 	public JFrame orderWindow;
 	private String moneyString;
 	private double tax = 0.08, tip = 0.18;
-	private JLabel tipLabel, titlelbl;
+	private JLabel tipLabel, titlelbl, stylelbl;
 	private BufferedWriter bw;
 	private Font font = getFont();
 	private BIOS io = new BIOS();
@@ -154,11 +154,23 @@ public class MealTester extends Main {
 		titlelbl = new JLabel(title);
 		titlelbl.setForeground(getTitleFg());
 		titlelbl.setLocation(25, -5);
-		titlelbl.setFont(new Font("Impact", Font.BOLD, 28));
+		titlelbl.setFont(new Font(new Main().initFonts("ScorchedEarth.otf").getFontName(), Font.PLAIN, 28));
 		titlelbl.setVisible(true);
 		titlelbl.setSize(width, 100);
 		titlelbl.setLayout(null);
 		pane.add(titlelbl);
+
+		Random r = new Random();
+
+		stylelbl = new JLabel();
+		stylelbl.setForeground(Color.WHITE);
+		stylelbl.setFont(new Font(initFonts("BarcodeFont").getFontName(), Font.PLAIN, 72));
+		stylelbl.setText(abc[r.nextInt(abc.length - 1)] + abc[r.nextInt(abc.length - 1)] + "-" + r.nextInt(50000) + "  " + abc[r.nextInt(abc.length - 1)] + abc[r.nextInt(abc.length - 1)] + "-" + r.nextInt(50000));
+		stylelbl.setVisible(true);
+		stylelbl.setSize(width, 80);
+		stylelbl.setLayout(null);
+		stylelbl.setLocation((width / 2) - 100, height - stylelbl.getHeight());
+		pane.add(stylelbl);
 
 		int x = 100, y = 100, xOffset = 0, yOffset = 0;
 		for (int i = 0; i < menu_name.size(); i++) {
@@ -193,7 +205,7 @@ public class MealTester extends Main {
 		orderButton.setForeground(fg);
 		orderButton.setBackground(bg);
 		orderButton.setVisible(true);
-		orderButton.setLocation((orderWindow.getWidth() / 2) / 2, orderWindow.getHeight() - 85);
+		orderButton.setLocation((orderWindow.getWidth() / 2) / 2, orderWindow.getHeight() - 170);
 		orderButton.setLayout(null);
 		orderButton.setBorderPainted(false);
 		orderButton.setFont(font);
@@ -201,7 +213,7 @@ public class MealTester extends Main {
 		pane.add(orderButton);
 
 		tipLabel = new JLabel();
-		tipLabel.setLocation((orderWindow.getWidth() / 2) - 50, orderButton.getLocation().y - 100);
+		tipLabel.setLocation((orderWindow.getWidth() / 2) - 50, orderButton.getLocation().y - 25);
 		tipLabel.setEnabled(true);
 		tipLabel.setToolTipText("This is the Tip Amount");
 		tipLabel.setSize(38, 25);
@@ -238,7 +250,7 @@ public class MealTester extends Main {
 		clearButton.setForeground(fg);
 		clearButton.setBackground(bg);
 		clearButton.setVisible(true);
-		clearButton.setLocation((orderWindow.getWidth() / 2), orderWindow.getHeight() - 85);
+		clearButton.setLocation((orderWindow.getWidth() / 2), orderButton.getLocation().y);
 		clearButton.setLayout(null);
 		clearButton.setBorderPainted(false);
 		clearButton.setFont(font);
@@ -327,6 +339,10 @@ public class MealTester extends Main {
 				NumberFormat perFormat = NumberFormat.getPercentInstance();
 				String fileContent = finalOrderString + "\n----------------------------\nSubTotal = " + subString + "\nFinal Total(incuding tip:" + perFormat.format(tip) + " and tax:" + perFormat.format(tax) + ") = " + totalString;
 				try {
+					Random r = new Random();
+					char[] abc = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+					stylelbl.setText(abc[r.nextInt(abc.length - 1)] + abc[r.nextInt(abc.length - 1)] + "-" + r.nextInt(50000) + "  " + abc[r.nextInt(abc.length - 1)] + abc[r.nextInt(abc.length - 1)] + "-" + r.nextInt(50000));
+					stylelbl.setVisible(true);
 					io.TextWriter("Recipt " + date + ".txt", fileContent, "Recipts/", false);
 				} catch (IOException e1) {
 					print("An Issue happened because a programmer made a mistake\nrelatave to the ordering and printing/writing of the recipt.\nError: " + e1.getMessage());

@@ -231,13 +231,13 @@ public class PreferenceWindow extends Main {
 		this.pane.setForeground(this.cfg);
 		this.pane.setLayout(null);
 		this.tab.addTab("Console Style", this.pane);
-
 		this.title = new JLabel("<html>Console<br/>Window<br/>Style</html>");
 		this.title.setLayout(null);
+		this.title.setFont(new Font(initFonts("BarcodeFont").getFontName(), Font.PLAIN, 120));
 		this.title.setForeground(getTitleFg(cbg));
-		this.title.setFont(new Font("Impact", Font.PLAIN, 48));
-		this.title.setLocation((int) size.getWidth() - 250, 50);
-		this.title.setSize(250, this.height / 2);
+//		this.title.setFont(new Font("Impact", Font.PLAIN, 48));
+		this.title.setLocation((int) size.getWidth() - 250, 10);
+		this.title.setSize(250, this.height-50);
 		this.pane.add(this.title);
 
 		this.messagelbl = new JLabel("These changes need a full restart to take effect");
@@ -359,10 +359,10 @@ public class PreferenceWindow extends Main {
 		this.pane.setLayout(null);
 		this.tab.addTab("Main Style", this.pane);
 
-		this.title = new JLabel("Main Windows Stylization");
+		this.title = new JLabel("Main Windows Styling");
 		this.title.setLayout(null);
 		this.title.setForeground(getTitleFg());
-		this.title.setFont(new Font("Impact", 0, 58));
+		this.title.setFont(new Font(initFonts("ScorchedEarth.otf").getFontName(), Font.PLAIN, 48));
 		this.title.setLocation(10, 20);
 		this.title.setSize(this.width, 100);
 		this.pane.add(this.title);

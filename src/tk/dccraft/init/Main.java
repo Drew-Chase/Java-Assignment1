@@ -4,13 +4,16 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -63,7 +66,9 @@ public class Main implements ActionListener {
 
 	private static BIOS io = new BIOS();
 	private static int index = 0;
-	public static Font font;
+	public static Font font, titleFont = new Font(new Main().initFonts("ScorchedEarth.otf").getFontName(), Font.PLAIN, 28);
+	public char[] abc = ("abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".toUpperCase()).toCharArray();
+	public Font styleFont;
 
 	/**
 	 * Initializes the Custom Console Window
@@ -213,6 +218,9 @@ public class Main implements ActionListener {
 		consoleWindow.setJMenuBar(menuBar);
 		console.setBackground(getConsoleBg());
 		console.setForeground(getConsoleFg());
+
+		styleFont = new Font(initFonts("BarcodeFont").getFontName(), Font.PLAIN, 72);
+
 	}
 
 	/**
@@ -223,7 +231,7 @@ public class Main implements ActionListener {
 	 *            printable string
 	 */
 	public void print(Object message) {
-		getLog().add(new Main().timestamp.format(date.getTime()) + " : " + message.toString());
+		getLog().add(new Main().timestamp.format(date.getTime()) + " : " + message.toString() + "**");
 		if (isDefaultConsole())
 			console.append(message.toString() + "\n");
 		else
@@ -241,7 +249,7 @@ public class Main implements ActionListener {
 	 *            prints a x new lines after the text
 	 */
 	public void print(Object message, int newLine) {
-		getLog().add(timestamp.format(date.getTime()) + " : " + message.toString());
+		getLog().add(timestamp.format(date.getTime()) + " : " + message.toString() + "**");
 		if (isDefaultConsole()) {
 			if (newLine == 1)
 				console.append(message.toString() + "\n");
@@ -263,6 +271,27 @@ public class Main implements ActionListener {
 					System.out.println("\n");
 				}
 			}
+		}
+	}
+
+	public Font initFonts(String font) {
+		Font f = new Font("Arial", Font.PLAIN, 18);
+		try {
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+
+			if (font.toLowerCase().contains(".ttf") || font.toLowerCase().contains(".otf"))
+				f = Font.createFont(Font.TRUETYPE_FONT, new File(getClass().getResource("/font/" + font).getFile().replace("%20", " ")));
+			else
+				f = Font.createFont(Font.TRUETYPE_FONT, new File(getClass().getResource("/font/" + font + ".ttf").getFile().replace("%20", " ")));
+			ge.registerFont(f);
+
+			print("Imported " + font);
+			return f;
+		} catch (Exception e) {
+			print("Had issues importing " + font);
+			print(e.getMessage());
+			e.printStackTrace();
+			return f;
 		}
 	}
 
@@ -404,11 +433,13 @@ public class Main implements ActionListener {
 		}
 		new Main().Exit();
 	}
-
+/**
+ * Exits the program and saves the log.
+ */
 	public void Exit() {
 		try {
-			io.TextWriter("logLatest.txt", getLog().toString().replace("[", "").replace("]", "").replace(",", "\n"), "logs/", false);
-			io.TextWriter("log-" + DATE_STRING + ".txt", getLog().toString().replace("[", "").replace("]", "").replace(",", "\n"), "logs/", false);
+			io.TextWriter("logLatest.txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), "logs/", false);
+			io.TextWriter("log-" + DATE_STRING + ".txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), "logs/", false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -734,8 +765,8 @@ public class Main implements ActionListener {
 		return log;
 	}
 
-	public static void setLog(List<String> log) {
-		Main.log = log;
+	public static void addLog(String log) {
+		Main.log.add(log);
 	}
 
 }

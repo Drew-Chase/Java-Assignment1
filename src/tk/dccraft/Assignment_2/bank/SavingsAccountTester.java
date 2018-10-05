@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -38,7 +39,7 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 	private String name, initNameBox = "Enter Your Name", initBalanceBox = "Enter Your Initial Deposit";
 	private NumberFormat moneyFormatter = NumberFormat.getCurrencyInstance();
 	private Main main;
-	private JLabel title;
+	private JLabel title, stylelbl;
 	private BIOS io = new BIOS();
 
 	public static List<SavingsAccount> accounts = new ArrayList<SavingsAccount>();
@@ -66,10 +67,25 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 		title = new JLabel("Test Bank title".toUpperCase());
 		title.setLocation(25, -5);
 		title.setForeground(main.getTitleFg());
-		title.setFont(new Font("Impact", Font.BOLD, 28));
+		title.setFont(main.titleFont);
 		title.setVisible(true);
-		title.setSize(width, 100);
+		title.setSize(width / 3, 100);
 		contentPane.add(title);
+
+		char[] abc = new Main().abc;
+
+		Random r = new Random();
+
+		stylelbl = new JLabel("Hello");
+		stylelbl.setForeground(Color.WHITE);
+		stylelbl.setFont(new Font(new Main().initFonts("BarcodeFont").getFontName(), Font.PLAIN, 72));
+		stylelbl.setText(abc[r.nextInt(abc.length - 1)] + abc[r.nextInt(abc.length - 1)] + "-" + r.nextInt(50000) + "  " + abc[r.nextInt(abc.length - 1)] + abc[r.nextInt(abc.length - 1)] + "-" + r.nextInt(50000));
+		stylelbl.setVisible(true);
+		stylelbl.setSize(width, 80);
+		stylelbl.setLayout(null);
+		stylelbl.setLocation((title.getLocation().x + title.getWidth()) + 150, title.getLocation().y);
+		contentPane.add(stylelbl);
+
 		// Input-type Init
 		{
 			nameBox = new JTextField(initNameBox);
@@ -162,6 +178,7 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 
 	/**
 	 * Test a text-to-double conversion
+	 * 
 	 * @param text
 	 * @return rather the number is a viable monetary value
 	 */
@@ -272,9 +289,8 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 	}
 
 	/**
-	 * Registers Focus and rather the textboxes
-	 * should be blank or have content in them
-	 * on focus gained
+	 * Registers Focus and rather the textboxes should be blank or have content
+	 * in them on focus gained
 	 */
 	@Override
 	public void focusGained(FocusEvent e) {
@@ -287,10 +303,10 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 		}
 
 	}
+
 	/**
-	 * Registers Focus and rather the textboxes
-	 * should be blank or have content in them
-	 * on focus lost
+	 * Registers Focus and rather the textboxes should be blank or have content
+	 * in them on focus lost
 	 */
 	@Override
 	public void focusLost(FocusEvent e) {
