@@ -8,6 +8,7 @@ import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
  * @author Drew Chase
  *
  */
+@SuppressWarnings("all")
 public class Exercise3 {
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);

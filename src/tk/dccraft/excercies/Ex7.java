@@ -2,6 +2,7 @@ package tk.dccraft.excercies;
 
 import java.util.Scanner;
 
+@SuppressWarnings("all")
 public class Ex7 {
 
 	public Ex7() {

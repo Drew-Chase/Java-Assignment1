@@ -6,6 +6,7 @@ import java.util.Scanner;
  * @author Drew Chase
  *
  */
+@SuppressWarnings("all")
 public class Exercise4 {
 
 	public static void main(String[] args) {

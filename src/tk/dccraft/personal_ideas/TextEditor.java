@@ -8,6 +8,7 @@ import javax.swing.JTextArea;
 
 import tk.dccraft.init.Main;
 
+@SuppressWarnings("all")
 public class TextEditor extends Main {
 
 	private JTextArea area;

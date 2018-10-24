@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 
 import tk.dccraft.init.Main;
 
+@SuppressWarnings("all")
 public class KeyTester extends Main implements FocusListener {
 
 	private JFrame f;

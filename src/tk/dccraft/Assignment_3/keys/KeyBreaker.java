@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 
 import tk.dccraft.init.Main;
 
+@SuppressWarnings("all")
 public class KeyBreaker extends Main {
 
 	private String key = "";

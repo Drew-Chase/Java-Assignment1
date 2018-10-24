@@ -3,6 +3,7 @@ package tk.dccraft.lab4;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+@SuppressWarnings("all")
 public class Lab4 {
 
 	public Lab4() {
