@@ -471,17 +471,9 @@ public class Main implements ActionListener, MouseListener {
 		}
 	}
 
-	private void Lab4() {
+	private void CmdLabStarter(String labname) {
 		try {
-			Runtime.getRuntime().exec("cmd /c start cmd /K \"java -jar " + getExportedName() + " lab4\"");
-		} catch (Exception e) {
-			print("Sorry something went wrong");
-		}
-	}
-
-	private void Lab3() {
-		try {
-			Runtime.getRuntime().exec("cmd /c start cmd /K \"java -jar " + getExportedName() + " lab3\"");
+			Runtime.getRuntime().exec("cmd /c start cmd /K \"java -jar " + getExportedName() + " " + labname + "\"");
 		} catch (Exception e) {
 			print("Sorry something went wrong");
 		}
@@ -705,9 +697,9 @@ public class Main implements ActionListener, MouseListener {
 		} else if (e.getSource().equals(lab_2)) {
 			Lab2();
 		} else if (e.getSource().equals(lab_3)) {
-			Lab3();
+			CmdLabStarter("lab 3");
 		} else if (e.getSource().equals(lab_4)) {
-			Lab4();
+			CmdLabStarter("lab 4");
 		}
 	}
 
