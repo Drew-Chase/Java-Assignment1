@@ -285,7 +285,7 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 	 */
 	public void ReadFromFile() {
 		try {
-			io.TextReader("bankinfo.dat", "DataBase/", "bank");
+			io.TextReader("bankinfo.dat", "Settings/DataBase/", "bank");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

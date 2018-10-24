@@ -21,12 +21,15 @@ import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import tk.dccraft.init.Main;
 
 /**
  * Creates an Updater that connects to a remote .zip file
@@ -37,7 +40,8 @@ import javax.swing.JTextArea;
 @SuppressWarnings("all")
 public class Updater extends JFrame {
 	private Thread worker;
-	private final String root = "Assignment/", url = "http://dccraft.tk/assignment/Assignment.zip", jarName = "Assignment-Selector.jar";
+	private Main m = new Main();
+	private final String url = "http://dccraft.tk/assignment/Assignment.jar", jarName = m.getExportedName();
 	private JTextArea outText;
 	private JButton cancle;
 	private JButton launch;
@@ -101,9 +105,9 @@ public class Updater extends JFrame {
 			public void run() {
 				try {
 					Updater.this.downloadFile(url);
-					Updater.this.unzip();
-					Updater.this.copyFiles(new File("Assignment/"), new File("").getAbsolutePath());
-					Updater.this.cleanup();
+//					Updater.this.unzip();
+//					Updater.this.copyFiles(new File("Assignment/"), new File("").getAbsolutePath());
+//					Updater.this.cleanup();
 					Updater.this.launch.setEnabled(true);
 					Updater.this.outText.setText(Updater.this.outText.getText() + "\nUpdate Finished!");
 				} catch (Exception ex) {
@@ -261,7 +265,7 @@ public class Updater extends JFrame {
 		InputStream is = conn.getInputStream();
 		long max = conn.getContentLength();
 		this.outText.setText(this.outText.getText() + "\n" + "Downloding file...\nUpdate Size(compressed): " + max + " Bytes");
-		BufferedOutputStream fOut = new BufferedOutputStream(new FileOutputStream(new File("update.zip")));
+		BufferedOutputStream fOut = new BufferedOutputStream(new FileOutputStream(new File(jarName)));
 		byte[] buffer = new byte[32768];
 		int bytesRead = 0;
 		int in = 0;

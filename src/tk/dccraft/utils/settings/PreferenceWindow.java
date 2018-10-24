@@ -338,7 +338,7 @@ public class PreferenceWindow extends Main {
 		log.addActionListener(this);
 		log.setForeground(cfg);
 		log.setBackground(cbg);
-		pane.add(log);
+//		pane.add(log);
 
 		this.apply.setBackground(this.cbg);
 		this.apply.setForeground(this.cfg);

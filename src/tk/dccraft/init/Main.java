@@ -38,6 +38,8 @@ import tk.dccraft.Assignment_3.keys.KeyTester;
 import tk.dccraft.http.updater.Updater;
 import tk.dccraft.lab1.Lab1;
 import tk.dccraft.lab2.VendingMachine;
+import tk.dccraft.lab3.Lab3;
+import tk.dccraft.lab4.Lab4;
 import tk.dccraft.utils.BIOS;
 import tk.dccraft.utils.settings.PreferenceWindow;
 
@@ -56,7 +58,7 @@ public class Main implements ActionListener, MouseListener {
 	private static DefaultCaret caret;
 	private static JMenuBar menuBar;
 	private static JMenu file, edit, assign, assign_1, assign_2, assign_3, labs;
-	private static JMenuItem pos, dob, key, exit, sat, update, preference, load, lab_1, lab_2, clear;
+	private static JMenuItem pos, dob, key, exit, terminal, sat, update, preference, load, lab_1, lab_2, lab_3, lab_4, clear;
 	private static Color bg, fg, cbg, cfg;
 	private static int fontSize = 12;
 	private final int STANDARD_COLOR_DIFFERENCE = 50;
@@ -72,6 +74,7 @@ public class Main implements ActionListener, MouseListener {
 	public static Font font, titleFont = new Font(new Main().initFonts("ScorchedEarth.otf").getFontName(), Font.PLAIN, 28);
 	public char[] abc = ("abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".toUpperCase()).toCharArray();
 	public Font styleFont;
+	private static List<String> help = new ArrayList<String>();
 
 	public boolean shouldLog;
 
@@ -140,6 +143,19 @@ public class Main implements ActionListener, MouseListener {
 		lab_2.setBackground(getConsoleBg());
 		lab_2.setForeground(getConsoleFg());
 		labs.add(lab_2);
+
+		lab_3 = new JMenuItem("Lab 3");
+		lab_3.addActionListener(new Main());
+		lab_3.setBackground(getConsoleBg());
+		lab_3.setForeground(getConsoleFg());
+		labs.add(lab_3);
+
+		lab_4 = new JMenuItem("Lab 4");
+		lab_4.addActionListener(new Main());
+		lab_4.setBackground(getConsoleBg());
+		lab_4.setForeground(getConsoleFg());
+		labs.add(lab_4);
+
 		// Assignment 1 Menu
 		assign_1 = new JMenu("Assignment 1");
 		assign_1.setForeground(getConsoleFg());
@@ -206,6 +222,12 @@ public class Main implements ActionListener, MouseListener {
 		clear.setBackground(getConsoleBg());
 		clear.setForeground(getConsoleFg());
 		edit.add(clear);
+
+		terminal = new JMenuItem("Open in System Terminal");
+		terminal.addActionListener(new Main());
+		terminal.setBackground(getConsoleBg());
+		terminal.setForeground(getConsoleFg());
+		edit.add(terminal);
 
 		// Console
 		console = new JTextArea("");
@@ -297,9 +319,9 @@ public class Main implements ActionListener, MouseListener {
 			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 
 			if (font.toLowerCase().contains(".ttf") || font.toLowerCase().contains(".otf"))
-				f = Font.createFont(Font.TRUETYPE_FONT, new File(getClass().getResource("/font/" + font).getFile().replace("%20", " ")));
+				f = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/font/" + font));
 			else
-				f = Font.createFont(Font.TRUETYPE_FONT, new File(getClass().getResource("/font/" + font + ".ttf").getFile().replace("%20", " ")));
+				f = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/font/" + font + ".ttf"));
 			ge.registerFont(f);
 
 			print("Imported " + font);
@@ -317,27 +339,29 @@ public class Main implements ActionListener, MouseListener {
 	// }
 
 	public static void main(String[] args) {
-		Main main = new Main();
-		try {
-			io.TextReader("Pref.ini", "Settings/", "style");
-			main.setShouldLog(io.log.equalsIgnoreCase("true") ? true : false);
-			main.shouldLog = (io.log.equalsIgnoreCase("true") ? true : false);
-			System.out.println("setting is logging to " + main.isShouldLog());
-			main.setBg(new Color(Integer.decode(io.bg)));
-			main.setFg(new Color(Integer.decode(io.fg)));
-			main.setFontSize(Integer.parseInt(io.ft));
-			main.setIndex(Integer.parseInt(io.index));
-		} catch (Exception e) {
-			new Main().print("Files not found... Creating them");
-			new Main().loadDefaultFiles();
-		}
-		getLog().add("Starting LOG...**");
 		if (System.console() == null) {
+
+			Main main = new Main();
+			try {
+				io.TextReader("Pref.ini", "Settings/", "style");
+				io.TextReader("bankinfo.dat", "Settings/DataBase/", "bank");
+				main.setShouldLog(io.log.equalsIgnoreCase("true") ? true : false);
+				main.shouldLog = (io.log.equalsIgnoreCase("true") ? true : false);
+				System.out.println("setting is logging to " + main.isShouldLog());
+				main.setBg(new Color(Integer.decode(io.bg)));
+				main.setFg(new Color(Integer.decode(io.fg)));
+				main.setFontSize(Integer.parseInt(io.ft));
+				main.setIndex(Integer.parseInt(io.index));
+			} catch (Exception e) {
+				new Main().print("Files not found... Creating them");
+				new Main().loadDefaultFiles();
+			}
+			getLog().add("Starting LOG...**");
 			setDefaultConsole(true);
 			new Main().setConsoleBg(new Color(Integer.decode(io.cbg)));
 			new Main().setConsoleFg(new Color(Integer.decode(io.cfg)));
 			new Main().initConsoleWindow();
-			new Main().print("(c) A Drew Chase Project", 2);
+			new Main().initStartMessages();
 			EventQueue.invokeLater(() -> {
 				consoleWindow.setVisible(true);
 			});
@@ -355,6 +379,10 @@ public class Main implements ActionListener, MouseListener {
 					new Lab1();
 				} else if (args[0].equalsIgnoreCase("lab2")) {
 					new Main().Lab2();
+				} else if (args[0].equalsIgnoreCase("lab3")) {
+					new Lab3();
+				} else if (args[0].equalsIgnoreCase("lab4")) {
+					new Lab4();
 				} else if (args[0].equalsIgnoreCase("load")) {
 					new Main().loadDefaultFiles();
 					new Main().Exit();
@@ -368,6 +396,17 @@ public class Main implements ActionListener, MouseListener {
 				}
 			} else {
 				while (true) {
+					help.add("pos:MealTester");
+					help.add("dob:CalculatorTester");
+					help.add("bank:SavingsAccountTester");
+					help.add("lab1:Lab1");
+					help.add("lab2:Lab2");
+					help.add("lab3:Lab3");
+					help.add("lab4:lab4");
+					help.add("load:Load Default Settings");
+					help.add("pref:Open Prefrences");
+					help.add("exit:Exits the Program");
+					help.add("custom terminal | custom | ct:Opens a custom ease of use Terminal");
 					Scanner sc = new Scanner(System.in);
 					new Main().print("type help or ? for a list of commands and cmd arguments");
 					String input = sc.nextLine();
@@ -379,6 +418,10 @@ public class Main implements ActionListener, MouseListener {
 						new Lab1();
 					} else if (input.equalsIgnoreCase("lab2")) {
 						new Main().Lab2();
+					} else if (input.equalsIgnoreCase("lab3")) {
+						new Lab3();
+					} else if (input.equalsIgnoreCase("lab4")) {
+						new Lab4();
 					} else if (input.equalsIgnoreCase("bank")) {
 						new SavingsAccountTester();
 					} else if (input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("quit")) {
@@ -388,6 +431,8 @@ public class Main implements ActionListener, MouseListener {
 						System.exit(0);
 					} else if (input.equalsIgnoreCase("pref")) {
 						new PreferenceWindow();
+					} else if (input.equalsIgnoreCase("custom terminal") || input.equalsIgnoreCase("custom") || input.equalsIgnoreCase("ct")) {
+						new Main().launchCustomTerminal();
 					} else if (input.equalsIgnoreCase("help") || input.equalsIgnoreCase("?")) {
 						new Main().help();
 					} else {
@@ -400,6 +445,46 @@ public class Main implements ActionListener, MouseListener {
 		// while(true){
 		// System.out.println(new Main().getIsLogging());
 		// }
+	}
+
+	public void initStartMessages() {
+		print("(c) A Drew Chase Project", 2);
+		print("Version: " + Metadata.version);
+		print("Current Author: " + Metadata.author);
+	}
+
+	private void launchCustomTerminal() {
+		try {
+			Runtime.getRuntime().exec("java -jar " + getExportedName());
+			Exit();
+		} catch (Exception e) {
+			print("Sorry something went wrong");
+		}
+	}
+
+	private void launchSystemTerminal() {
+		try {
+			Runtime.getRuntime().exec("cmd /c start cmd /K \"java -jar " + getExportedName() + "\"");
+			Exit();
+		} catch (Exception e) {
+			print("Sorry something went wrong");
+		}
+	}
+
+	private void Lab4() {
+		try {
+			Runtime.getRuntime().exec("cmd /c start cmd /K \"java -jar " + getExportedName() + " lab4\"");
+		} catch (Exception e) {
+			print("Sorry something went wrong");
+		}
+	}
+
+	private void Lab3() {
+		try {
+			Runtime.getRuntime().exec("cmd /c start cmd /K \"java -jar " + getExportedName() + " lab3\"");
+		} catch (Exception e) {
+			print("Sorry something went wrong");
+		}
 	}
 
 	/**
@@ -418,13 +503,6 @@ public class Main implements ActionListener, MouseListener {
 	 * Creates a help menu for the system console
 	 */
 	private void help() {
-		List<String> help = new ArrayList<String>();
-		help.add("pos:MealTester");
-		help.add("dob:CalculatorTester");
-		help.add("bank:SavingsAccountTester");
-		help.add("lab1:Lab1");
-		help.add("lab2:Lab2");
-		help.add("load:Load Default Settings");
 		new Main().print("HELP!!!\n" + "---Here's a list of commands:");
 		for (int i = 0; i < help.size(); i++) {
 			new Main().print("---------" + help.get(i));
@@ -438,14 +516,14 @@ public class Main implements ActionListener, MouseListener {
 
 		String FolderName = "Settings/";
 		String FileName = "Pref.ini";
-		String fileContent = "bg:0x404040\nfg:0xFFFFFF\nft:12\ncbg:0x000000\ncfg:0xFFFFFF\nindex:0\nlog:true";
+		String fileContent = "bg:0x404040\nfg:0xFFFFFF\nft:12\ncbg:0x000000\ncfg:0xFF00FF\nindex:0\nlog:true";
 		try {
 			io.TextWriter(FileName, fileContent, FolderName, false);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 
-		FolderName = "DataBase/";
+		FolderName = "Settings/DataBase/";
 		FileName = "bankinfo.dat";
 		fileContent = "Name0:Corey\nBalance0:300.0\nName1:Sofia\nBalance1:2000.0";
 		try {
@@ -455,11 +533,19 @@ public class Main implements ActionListener, MouseListener {
 		}
 
 		try {
-			Runtime.getRuntime().exec("java -jar Assignment-Selector.jar");
+			Runtime.getRuntime().exec("java -jar " + getExportedName());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		new Main().Exit();
+	}
+
+	public String getExportedName() {
+		return new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getName();
+	}
+
+	public String getExportedPath() {
+		return Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 	}
 
 	/**
@@ -467,14 +553,14 @@ public class Main implements ActionListener, MouseListener {
 	 */
 	public void Exit() {
 		System.out.println(isShouldLog());
-		if (isShouldLog()) {
-			try {
-				io.TextWriter("logLatest.txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), "logs/", false);
-				io.TextWriter("log-" + DATE_STRING + ".txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), "logs/", false);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		// if (isShouldLog()) {
+		try {
+			io.TextWriter("logLatest.txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), "logs/", false);
+			io.TextWriter("log-" + DATE_STRING + ".txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), "logs/", false);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		// }
 		System.exit(0);
 	}
 
@@ -547,6 +633,12 @@ public class Main implements ActionListener, MouseListener {
 		lab_2.setBackground(getConsoleBg());
 		lab_2.setForeground(getConsoleFg());
 
+		lab_3.setBackground(getConsoleBg());
+		lab_3.setForeground(getConsoleFg());
+
+		lab_4.setBackground(getConsoleBg());
+		lab_4.setForeground(getConsoleFg());
+
 		assign.setForeground(getConsoleFg());
 		assign.setBackground(getConsoleBg());
 
@@ -594,6 +686,8 @@ public class Main implements ActionListener, MouseListener {
 			loadDefaultFiles();
 		} else if (e.getSource().equals(preference)) {
 			new PreferenceWindow();
+		} else if (e.getSource().equals(terminal)) {
+			launchSystemTerminal();
 		} else if (e.getSource().equals(update)) {
 			new Updater();
 		} else if (e.getSource().equals(exit)) {
@@ -610,6 +704,10 @@ public class Main implements ActionListener, MouseListener {
 			new Lab1();
 		} else if (e.getSource().equals(lab_2)) {
 			Lab2();
+		} else if (e.getSource().equals(lab_3)) {
+			Lab3();
+		} else if (e.getSource().equals(lab_4)) {
+			Lab4();
 		}
 	}
 

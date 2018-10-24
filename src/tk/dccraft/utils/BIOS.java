@@ -31,7 +31,7 @@ public class BIOS extends Main {
 
 	private static String text;
 
-	public String bg, fg, ft, cfg, cbg, name, balance, total, tax, index, log;
+	public String bg, fg, ft, cfg, cbg, name, balance, total, tax, index, log, author, version;
 
 	public int count = 0, normalCount = 0, size;
 
@@ -143,6 +143,18 @@ public class BIOS extends Main {
 			} catch (Exception e) {
 				print("Had A Problem with the while loop in the TextReader Method(Section 2:Banking)\n Couldn't proccess line reader");
 				e.printStackTrace();
+			}
+		}else if(type.equalsIgnoreCase("metadata")){
+			try{
+				String text = "";
+				String line = reader.readLine();
+				while(line != null){
+					if(line.startsWith("author:")){
+						
+					}
+				}
+			}catch(Exception e){
+				
 			}
 		} else {
 			try {

@@ -26,10 +26,22 @@ public class Lab4 {
 
 	public void nestedLoops() {
 		Scanner sc = new Scanner(System.in);
-		int no = 0;
-		System.out.println("Enter a number: ");
-		no = sc.nextInt();
-		for (int i = 0; i < 10; i++) {
+		int no = 0, mul = 0;
+		System.out.print("Enter a number: ");
+		try {
+			no = sc.nextInt();
+			System.out.print("Please Enter Number of Multiples: ");
+			mul = sc.nextInt();
+			if (mul < 2 || no < 2)
+				throw new InputMismatchException("The Multiple and the Number both have to be above 1.");
+		} catch (InputMismatchException e) {
+			System.out.println("Sorry Incorrect value was entered");
+			if (e.getMessage() != null)
+				System.out.println(e.getMessage());
+			nestedLoops();
+		}
+		
+		for (int i = 0; i < mul; i++) {
 			System.out.println(no + " * " + (i + 1) + " = " + (no * (i + 1)));
 		}
 	}
@@ -47,6 +59,10 @@ public class Lab4 {
 			number = in.nextInt();
 		} catch (InputMismatchException e) {
 			System.out.println("Example: \"1 2 3 4 5 6 7 8 9 0\"\n");
+			getInput();
+		}
+		if (number == 0) {
+			System.out.println("Please Enter a valid sequence of numbers. Just 0 doesn't count!");
 			getInput();
 		}
 		while (number != 0) {
