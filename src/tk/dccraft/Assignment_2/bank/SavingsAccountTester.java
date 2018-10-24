@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ import tk.dccraft.utils.BIOS;
  *
  */
 @SuppressWarnings("all")
-public class SavingsAccountTester extends JFrame implements ActionListener, FocusListener {
+public class SavingsAccountTester extends JFrame implements ActionListener, FocusListener, MouseListener {
 
 	private JTextField nameBox, balanceBox;
 	private JPanel contentPane;
@@ -72,17 +74,14 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 		title.setSize(width / 3, 100);
 		contentPane.add(title);
 
-		char[] abc = new Main().abc;
-
-		Random r = new Random();
-
 		stylelbl = new JLabel("Hello");
 		stylelbl.setForeground(Color.WHITE);
 		stylelbl.setFont(new Font(new Main().initFonts("BarcodeFont").getFontName(), Font.PLAIN, 72));
-		stylelbl.setText(abc[r.nextInt(abc.length - 1)] + abc[r.nextInt(abc.length - 1)] + "-" + r.nextInt(50000) + "  " + abc[r.nextInt(abc.length - 1)] + abc[r.nextInt(abc.length - 1)] + "-" + r.nextInt(50000));
+		stylelbl.setText(randomBarcode());
 		stylelbl.setVisible(true);
 		stylelbl.setSize(width, 80);
 		stylelbl.setLayout(null);
+		stylelbl.addMouseListener(this);
 		stylelbl.setLocation((title.getLocation().x + title.getWidth()) + 150, title.getLocation().y);
 		contentPane.add(stylelbl);
 
@@ -117,6 +116,7 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 			confirm.setBackground(bg);
 			confirm.setForeground(fg);
 			confirm.setBorderPainted(false);
+			confirm.addMouseListener(this);
 			contentPane.add(confirm);
 
 			list = new JButton("List All Accounts");
@@ -128,6 +128,7 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 			list.setBackground(bg);
 			list.setForeground(fg);
 			list.setBorderPainted(false);
+			list.addMouseListener(this);
 			contentPane.add(list);
 
 			getBalance = new JButton("Check Balance");
@@ -139,6 +140,7 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 			getBalance.setBackground(bg);
 			getBalance.setForeground(fg);
 			getBalance.setBorderPainted(false);
+			getBalance.addMouseListener(this);
 			contentPane.add(getBalance);
 
 			getUser = new JButton("Check User");
@@ -149,6 +151,7 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 			getUser.setBackground(bg);
 			getUser.setForeground(fg);
 			getUser.setBorderPainted(false);
+			getUser.addMouseListener(this);
 			contentPane.add(getUser);
 
 			close = new JButton("Close");
@@ -160,6 +163,7 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 			close.setBackground(bg);
 			close.setForeground(fg);
 			close.setBorderPainted(false);
+			close.addMouseListener(this);
 			contentPane.add(close);
 		}
 
@@ -317,6 +321,63 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 			if (balanceBox.getText().equals("") || !test(balanceBox.getText()))
 				balanceBox.setText(initBalanceBox);
 		}
+	}
+
+	public String randomBarcode() {
+		char[] abc = new Main().abc;
+		Random r = new Random();
+		return ("" + abc[r.nextInt(abc.length - 1)] + abc[r.nextInt(abc.length - 1)] + "-" + r.nextInt(50000) + "  " + abc[r.nextInt(abc.length - 1)] + abc[r.nextInt(abc.length - 1)] + "-" + r.nextInt(50000));
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if (e.getSource().equals(stylelbl)) {
+			stylelbl.setText(randomBarcode());
+		}
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		if (e.getSource().equals(confirm)) {
+			confirm.setForeground(new Main().getTitleFg(confirm.getBackground()));
+		} else if (e.getSource().equals(close)) {
+			close.setForeground(new Main().getTitleFg(close.getBackground()));
+		} else if (e.getSource().equals(getBalance)) {
+			getBalance.setForeground(new Main().getTitleFg(getBalance.getBackground()));
+		} else if (e.getSource().equals(getUser)) {
+			getUser.setForeground(new Main().getTitleFg(getUser.getBackground()));
+		} else if (e.getSource().equals(list)) {
+			list.setForeground(new Main().getTitleFg(list.getBackground()));
+		}
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		if (e.getSource().equals(confirm)) {
+			confirm.setForeground(new Main().getFg());
+		} else if (e.getSource().equals(close)) {
+			close.setForeground(new Main().getFg());
+		} else if (e.getSource().equals(getBalance)) {
+			getBalance.setForeground(new Main().getFg());
+		} else if (e.getSource().equals(getUser)) {
+			getUser.setForeground(new Main().getFg());
+		} else if (e.getSource().equals(list)) {
+			list.setForeground(new Main().getFg());
+		}
+
 	}
 
 }

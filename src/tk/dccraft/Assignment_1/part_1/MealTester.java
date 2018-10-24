@@ -5,12 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -25,9 +20,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
 
 import tk.dccraft.init.Main;
 import tk.dccraft.utils.BIOS;
@@ -362,43 +354,43 @@ public class MealTester extends Main {
 	 * @param name
 	 * @param content
 	 */
-	public void ftpSend(String url, String name, String content) {
-		FileOutputStream fos = null;
-		FTPClient client = new FTPClient();
-		try {
-			client.connect(url);
-			File f = new File(name);
-			bw = new BufferedWriter(new FileWriter(f, true));
-			bw.write(content);
-			bw.newLine();
-			bw.flush();
-			client.setFileType(FTP.BINARY_FILE_TYPE);
-			try (InputStream input = new FileInputStream(f)) {
-				client.storeFile(url + name, input);
-			}
-			fos = new FileOutputStream(f);
-
-			client.logout();
-			print("Sending " + content + "\n to " + url);
-		} catch (IOException e) {
-			print("ERROR with the ftpSender Method\n" + e.getMessage());
-		} finally {
-			if (bw != null) {
-				try {
-					bw.close();
-				} catch (IOException e) {
-					print("Error with BufferedWriter closing\nERROR:" + e.getMessage());
-				}
-			}
-			try {
-				if (fos != null) {
-					fos.close();
-				}
-				client.disconnect();
-			} catch (IOException e) {
-				print("ERROR with the ftpSender Method\n" + e.getMessage());
-			}
-		}
-	}
+//	public void ftpSend(String url, String name, String content) {
+//		FileOutputStream fos = null;
+//		FTPClient client = new FTPClient();
+//		try {
+//			client.connect(url);
+//			File f = new File(name);
+//			bw = new BufferedWriter(new FileWriter(f, true));
+//			bw.write(content);
+//			bw.newLine();
+//			bw.flush();
+//			client.setFileType(FTP.BINARY_FILE_TYPE);
+//			try (InputStream input = new FileInputStream(f)) {
+//				client.storeFile(url + name, input);
+//			}
+//			fos = new FileOutputStream(f);
+//
+//			client.logout();
+//			print("Sending " + content + "\n to " + url);
+//		} catch (IOException e) {
+//			print("ERROR with the ftpSender Method\n" + e.getMessage());
+//		} finally {
+//			if (bw != null) {
+//				try {
+//					bw.close();
+//				} catch (IOException e) {
+//					print("Error with BufferedWriter closing\nERROR:" + e.getMessage());
+//				}
+//			}
+//			try {
+//				if (fos != null) {
+//					fos.close();
+//				}
+//				client.disconnect();
+//			} catch (IOException e) {
+//				print("ERROR with the ftpSender Method\n" + e.getMessage());
+//			}
+//		}
+//	}
 
 }

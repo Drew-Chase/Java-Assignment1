@@ -10,10 +10,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
+
 import tk.dccraft.Assignment_2.bank.SavingsAccount;
 import tk.dccraft.Assignment_2.bank.SavingsAccountTester;
 import tk.dccraft.init.Main;
-import tk.dccraft.utils.settings.PreferenceWindow;
 
 /**
  * Basic Input/Output System for this program
@@ -30,7 +31,7 @@ public class BIOS extends Main {
 
 	private static String text;
 
-	public String bg, fg, ft, cfg, cbg, name, balance, total, tax, index;
+	public String bg, fg, ft, cfg, cbg, name, balance, total, tax, index, log;
 
 	public int count = 0, normalCount = 0, size;
 
@@ -88,6 +89,23 @@ public class BIOS extends Main {
 						index = line.substring(6);
 						print("Page Index is: " + index);
 					}
+					if (line.startsWith("log:")) {
+						try {
+							log = line.substring(4);
+							print(line);
+						} catch (Exception e) {
+							print("Could not parse log boolean string in " + FileLocation + "/" + FileName + " line " + line + " line should say \"log:true\" or \"log:false\"");
+						}
+						// if(line.contains("true"))
+						// else if(line.contains("false"))
+						// log = false;
+						// else{
+						// print("Invalid token for the log preference, should
+						// be \"log:true | log:false\" not " + line + "\n
+						// setting log to true");
+						// log = true;
+						// }
+					}
 
 					text += line;
 					line = reader.readLine();
@@ -143,6 +161,7 @@ public class BIOS extends Main {
 				e.printStackTrace();
 			}
 		}
+		inStream.close();
 
 	}
 

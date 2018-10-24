@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
@@ -13,6 +12,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -33,6 +34,7 @@ import javax.swing.text.DefaultCaret;
 import tk.dccraft.Assignment_1.part_1.MealTester;
 import tk.dccraft.Assignment_1.part_2.CalendarTester;
 import tk.dccraft.Assignment_2.bank.SavingsAccountTester;
+import tk.dccraft.Assignment_3.keys.KeyTester;
 import tk.dccraft.http.updater.Updater;
 import tk.dccraft.lab1.Lab1;
 import tk.dccraft.lab2.VendingMachine;
@@ -47,16 +49,17 @@ import tk.dccraft.utils.settings.PreferenceWindow;
  *
  */
 @SuppressWarnings("all")
-public class Main implements ActionListener {
+public class Main implements ActionListener, MouseListener {
 
 	public static JTextArea console;
 	private static JFrame consoleWindow;
 	private static DefaultCaret caret;
 	private static JMenuBar menuBar;
-	private static JMenu file, edit, assign, assign_1, assign_2, labs;
-	private static JMenuItem pos, dob, exit, sat, update, preference, load, lab_1, lab_2, clear;
+	private static JMenu file, edit, assign, assign_1, assign_2, assign_3, labs;
+	private static JMenuItem pos, dob, key, exit, sat, update, preference, load, lab_1, lab_2, clear;
 	private static Color bg, fg, cbg, cfg;
-	private static int fontSize = 12, scd = 50;
+	private static int fontSize = 12;
+	private final int STANDARD_COLOR_DIFFERENCE = 50;
 	private static boolean isDefaultConsole;
 	public Date date = new Date();
 	private DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy-HH-mm");
@@ -69,6 +72,8 @@ public class Main implements ActionListener {
 	public static Font font, titleFont = new Font(new Main().initFonts("ScorchedEarth.otf").getFontName(), Font.PLAIN, 28);
 	public char[] abc = ("abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".toUpperCase()).toCharArray();
 	public Font styleFont;
+
+	public boolean shouldLog;
 
 	/**
 	 * Initializes the Custom Console Window
@@ -164,6 +169,18 @@ public class Main implements ActionListener {
 		sat.setBackground(getConsoleBg());
 		sat.setForeground(getConsoleFg());
 		assign_2.add(sat);
+
+		assign_3 = new JMenu("Assignment 3");
+		assign_3.setBackground(getConsoleBg());
+		assign_3.setForeground(getConsoleFg());
+		assign.add(assign_3);
+
+		key = new JMenuItem("Key Tester");
+		key.addActionListener(new Main());
+		key.setBackground(getConsoleBg());
+		key.setForeground(getConsoleFg());
+		key.setEnabled(false);
+		assign_3.add(key);
 
 		update = new JMenuItem("Update");
 		update.addActionListener(new Main());
@@ -295,18 +312,26 @@ public class Main implements ActionListener {
 		}
 	}
 
+	// public Main(){
+	//
+	// }
+
 	public static void main(String[] args) {
-		getLog().add("Starting LOG...");
+		Main main = new Main();
 		try {
-			io.TextReader("Colors.ini", "Settings/", "style");
-			new Main().setBg(new Color(Integer.decode(io.bg)));
-			new Main().setFg(new Color(Integer.decode(io.fg)));
-			new Main().setFontSize(Integer.parseInt(io.ft));
-			new Main().setIndex(Integer.parseInt(io.index));
+			io.TextReader("Pref.ini", "Settings/", "style");
+			main.setShouldLog(io.log.equalsIgnoreCase("true") ? true : false);
+			main.shouldLog = (io.log.equalsIgnoreCase("true") ? true : false);
+			System.out.println("setting is logging to " + main.isShouldLog());
+			main.setBg(new Color(Integer.decode(io.bg)));
+			main.setFg(new Color(Integer.decode(io.fg)));
+			main.setFontSize(Integer.parseInt(io.ft));
+			main.setIndex(Integer.parseInt(io.index));
 		} catch (Exception e) {
 			new Main().print("Files not found... Creating them");
 			new Main().loadDefaultFiles();
 		}
+		getLog().add("Starting LOG...**");
 		if (System.console() == null) {
 			setDefaultConsole(true);
 			new Main().setConsoleBg(new Color(Integer.decode(io.cbg)));
@@ -372,6 +397,9 @@ public class Main implements ActionListener {
 				}
 			}
 		}
+		// while(true){
+		// System.out.println(new Main().getIsLogging());
+		// }
 	}
 
 	/**
@@ -409,8 +437,8 @@ public class Main implements ActionListener {
 	private void loadDefaultFiles() {
 
 		String FolderName = "Settings/";
-		String FileName = "Colors.ini";
-		String fileContent = "bg:0x404040\nfg:0xFFFFFF\nft:12\ncbg:0x000000\ncfg:0xFFFFFF\nindex:0";
+		String FileName = "Pref.ini";
+		String fileContent = "bg:0x404040\nfg:0xFFFFFF\nft:12\ncbg:0x000000\ncfg:0xFFFFFF\nindex:0\nlog:true";
 		try {
 			io.TextWriter(FileName, fileContent, FolderName, false);
 		} catch (IOException e1) {
@@ -433,18 +461,42 @@ public class Main implements ActionListener {
 		}
 		new Main().Exit();
 	}
-/**
- * Exits the program and saves the log.
- */
+
+	/**
+	 * Exits the program and saves the log.
+	 */
 	public void Exit() {
-		try {
-			io.TextWriter("logLatest.txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), "logs/", false);
-			io.TextWriter("log-" + DATE_STRING + ".txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), "logs/", false);
-		} catch (IOException e) {
-			e.printStackTrace();
+		System.out.println(isShouldLog());
+		if (isShouldLog()) {
+			try {
+				io.TextWriter("logLatest.txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), "logs/", false);
+				io.TextWriter("log-" + DATE_STRING + ".txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), "logs/", false);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		System.exit(0);
 	}
+
+	/**
+	 * I just wrote this when you were talking about it. but it doesn't do
+	 * anything different than the original way.
+	 * 
+	 * @param Object
+	 *            o
+	 */
+	@Override
+	public boolean equals(Object o) {
+		return this == o;
+	}
+
+	// public void setShouldLog(boolean log) {
+	// this.shouldLog = log;
+	// }
+	//
+	// public boolean isShouldLog() {
+	// return shouldLog;
+	// }
 
 	/**
 	 * IF NEEDED it will update the Graphics on the JFrame
@@ -526,6 +578,9 @@ public class Main implements ActionListener {
 		load.setBackground(getConsoleBg());
 		load.setForeground(getConsoleFg());
 
+		clear.setBackground(getConsoleBg());
+		clear.setForeground(getConsoleFg());
+
 		// Console
 		console.setBackground(getConsoleBg());
 		console.setForeground(getConsoleFg());
@@ -549,11 +604,21 @@ public class Main implements ActionListener {
 			new MealTester();
 		} else if (e.getSource().equals(sat)) {
 			new SavingsAccountTester();
+		} else if (e.getSource().equals(key)) {
+			new KeyTester();
 		} else if (e.getSource().equals(lab_1)) {
 			new Lab1();
 		} else if (e.getSource().equals(lab_2)) {
 			Lab2();
 		}
+	}
+
+	public boolean isShouldLog() {
+		return shouldLog;
+	}
+
+	public void setShouldLog(boolean shouldLog) {
+		this.shouldLog = shouldLog;
 	}
 
 	/**
@@ -602,22 +667,22 @@ public class Main implements ActionListener {
 	public Color getTitleFg() {
 		int r = 0, g = 0, b = 0;
 		boolean rVisible = true, gVisible = true, bVisible = true;
-		if (bg.getRed() > scd)
-			r = bg.getRed() - scd;
+		if (bg.getRed() > STANDARD_COLOR_DIFFERENCE)
+			r = bg.getRed() - STANDARD_COLOR_DIFFERENCE;
 		else
 			rVisible = false;
-		if (bg.getGreen() > scd)
-			g = bg.getGreen() - scd;
+		if (bg.getGreen() > STANDARD_COLOR_DIFFERENCE)
+			g = bg.getGreen() - STANDARD_COLOR_DIFFERENCE;
 		else
 			gVisible = false;
-		if (bg.getBlue() > scd)
-			b = bg.getBlue() - scd;
+		if (bg.getBlue() > STANDARD_COLOR_DIFFERENCE)
+			b = bg.getBlue() - STANDARD_COLOR_DIFFERENCE;
 		else
 			bVisible = false;
 		new Main().print(bg.toString());
 		Color c;
 		if (!rVisible && !gVisible && !bVisible)
-			c = new Color(bg.getRed() + scd, bg.getGreen() + scd, bg.getBlue() + scd);
+			c = new Color(bg.getRed() + STANDARD_COLOR_DIFFERENCE, bg.getGreen() + STANDARD_COLOR_DIFFERENCE, bg.getBlue() + STANDARD_COLOR_DIFFERENCE);
 		else
 			c = new Color(r, g, b);
 		return c;
@@ -633,22 +698,21 @@ public class Main implements ActionListener {
 	public Color getTitleFg(Color bg) {
 		int r = 0, g = 0, b = 0;
 		boolean rVisible = true, gVisible = true, bVisible = true;
-		if (bg.getRed() > scd)
-			r = bg.getRed() - scd;
+		if (bg.getRed() > STANDARD_COLOR_DIFFERENCE)
+			r = bg.getRed() - STANDARD_COLOR_DIFFERENCE;
 		else
 			rVisible = false;
-		if (bg.getGreen() > scd)
-			g = bg.getGreen() - scd;
+		if (bg.getGreen() > STANDARD_COLOR_DIFFERENCE)
+			g = bg.getGreen() - STANDARD_COLOR_DIFFERENCE;
 		else
 			gVisible = false;
-		if (bg.getBlue() > scd)
-			b = bg.getBlue() - scd;
+		if (bg.getBlue() > STANDARD_COLOR_DIFFERENCE)
+			b = bg.getBlue() - STANDARD_COLOR_DIFFERENCE;
 		else
 			bVisible = false;
-		new Main().print(bg.toString());
 		Color c;
 		if (!rVisible && !gVisible && !bVisible)
-			c = new Color(bg.getRed() + scd, bg.getGreen() + scd, bg.getBlue() + scd);
+			c = new Color(bg.getRed() + STANDARD_COLOR_DIFFERENCE, bg.getGreen() + STANDARD_COLOR_DIFFERENCE, bg.getBlue() + STANDARD_COLOR_DIFFERENCE);
 		else
 			c = new Color(r, g, b);
 		return c;
@@ -767,6 +831,36 @@ public class Main implements ActionListener {
 
 	public static void addLog(String log) {
 		Main.log.add(log);
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

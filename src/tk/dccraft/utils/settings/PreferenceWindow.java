@@ -14,6 +14,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -49,7 +50,6 @@ public class PreferenceWindow extends Main {
 	private JLabel cfgColorlbl;
 	private JLabel cbgColorlbl;
 	private JLabel fontlbl;
-	private JLabel messagelbl;
 	private JLabel title;
 	private JTextField cfgField;
 	private JTextField cbgField;
@@ -62,6 +62,7 @@ public class PreferenceWindow extends Main {
 	private JPanel contentPane;
 	private JFrame f;
 	private JTabbedPane tab;
+	private JCheckBox log;;
 
 	/**
 	 * Initializes the Preferences Window, TabbedPane, and Control Buttons
@@ -141,11 +142,14 @@ public class PreferenceWindow extends Main {
 		this.tab.setSelectedIndex(getIndex());
 		initColors();
 	}
+
 	/**
-	 * Initializes the TabbedPane, Control Buttons, and Preferences Window at a specified location p
+	 * Initializes the TabbedPane, Control Buttons, and Preferences Window at a
+	 * specified location p
+	 * 
 	 * @param p
 	 */
-	public PreferenceWindow(Point p){
+	public PreferenceWindow(Point p) {
 		print("Opening Preferences...");
 
 		this.contentPane = new JPanel();
@@ -235,17 +239,9 @@ public class PreferenceWindow extends Main {
 		this.title.setLayout(null);
 		this.title.setFont(new Font(initFonts("BarcodeFont").getFontName(), Font.PLAIN, 120));
 		this.title.setForeground(getTitleFg(cbg));
-//		this.title.setFont(new Font("Impact", Font.PLAIN, 48));
 		this.title.setLocation((int) size.getWidth() - 250, 10);
-		this.title.setSize(250, this.height-50);
+		this.title.setSize(250, this.height - 50);
 		this.pane.add(this.title);
-
-		this.messagelbl = new JLabel("These changes need a full restart to take effect");
-		this.messagelbl.setLayout(null);
-		this.messagelbl.setForeground(this.cfg);
-		this.messagelbl.setSize(new Dimension(300, 25));
-		this.messagelbl.setLocation(this.width - this.messagelbl.getWidth(), 10);
-		this.pane.add(this.messagelbl);
 
 		this.fontlbl = new JLabel("Set font size");
 		this.fontlbl.setLocation(50, 15);
@@ -334,6 +330,16 @@ public class PreferenceWindow extends Main {
 		this.cbgField.setVisible(true);
 		this.cbgField.setLayout(null);
 		this.pane.add(this.cbgField);
+
+		log = new JCheckBox("Record Debug-Log");
+		log.setSelected(true);
+		log.setSize((log.getText().length() * log.getFont().getSize()) + 10, 25);
+		log.setLocation(cfgColorlbl.getLocation().x, cfgColorlbl.getLocation().y + (cfgField.getHeight() + log.getHeight() + 75));
+		log.addActionListener(this);
+		log.setForeground(cfg);
+		log.setBackground(cbg);
+		pane.add(log);
+
 		this.apply.setBackground(this.cbg);
 		this.apply.setForeground(this.cfg);
 		this.reset.setBackground(this.cbg);
@@ -493,7 +499,6 @@ public class PreferenceWindow extends Main {
 			this.cbgColorlbl.setForeground(this.cfg);
 			this.cfgColorlbl.setForeground(this.cfg);
 			this.fontlbl.setForeground(this.cfg);
-			this.messagelbl.setForeground(this.cfg);
 		}
 	}
 
@@ -521,8 +526,8 @@ public class PreferenceWindow extends Main {
 		} else if (e.getSource().equals(this.apply)) {
 			setIndex(this.tab.getSelectedIndex());
 			String FolderName = "Settings/";
-			String FileName = "Colors.ini";
-			String fileContent = "bg:0x" + this.bgField.getText() + "\nfg:0x" + this.fgField.getText() + "\nft:" + this.fontField.getText() + "\ncbg:0x" + this.cbgField.getText() + "\ncfg:0x" + this.cfgField.getText() + "\nindex:" + getIndex();
+			String FileName = "Pref.ini";
+			String fileContent = "bg:0x" + this.bgField.getText() + "\nfg:0x" + this.fgField.getText() + "\nft:" + this.fontField.getText() + "\ncbg:0x" + this.cbgField.getText() + "\ncfg:0x" + this.cfgField.getText() + "\nindex:" + getIndex()+"\nlog:" + log.isSelected();
 			Main.setBg(new Color(Integer.decode("0x" + this.bgField.getText()).intValue()));
 			Main.setFg(new Color(Integer.decode("0x" + this.fgField.getText()).intValue()));
 			Main.setConsoleBg(new Color(Integer.decode("0x" + this.cbgField.getText()).intValue()));
@@ -539,7 +544,7 @@ public class PreferenceWindow extends Main {
 			new PreferenceWindow(f.getLocation());
 		} else if (e.getSource().equals(this.reset)) {
 			String FolderName = "Settings/";
-			String FileName = "Colors.ini";
+			String FileName = "Pref.ini";
 			String fileContent = "bg:0x404040\nfg:0xFFFFFF\ncbg:0x000000\ncfg:0xFFFFFF\nft:12";
 			Main.setBg(new Color(4210752));
 			Main.setFg(new Color(16777215));
@@ -555,7 +560,14 @@ public class PreferenceWindow extends Main {
 			initColors();
 			this.f.dispose();
 			new PreferenceWindow(f.getLocation());
-		} else if (e.getSource().equals(this.close)) {
+		}else if(e.getSource().equals(log)){
+			if(log.isSelected()){
+				print("Log Enabled");
+			}else{
+				print("Log Disabled");
+			}
+			setShouldLog(log.isSelected());
+		}  else if (e.getSource().equals(this.close)) {
 			this.f.dispose();
 		}
 	}
