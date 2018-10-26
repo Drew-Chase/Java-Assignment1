@@ -36,10 +36,11 @@ import tk.dccraft.Assignment_1.part_1.MealTester;
 import tk.dccraft.Assignment_1.part_2.CalendarTester;
 import tk.dccraft.Assignment_2.bank.SavingsAccountTester;
 import tk.dccraft.Assignment_3.keys.KeyTester;
-import tk.dccraft.excercies.Ex7;
-import tk.dccraft.excercies.Exercise3;
-import tk.dccraft.excercies.Exercise4;
-import tk.dccraft.excercies.NumberGuesser;
+import tk.dccraft.exercises.Ex7;
+import tk.dccraft.exercises.Exercise3;
+import tk.dccraft.exercises.Exercise4;
+import tk.dccraft.exercises.Exercise8;
+import tk.dccraft.exercises.NumberGuesser;
 import tk.dccraft.http.updater.Updater;
 import tk.dccraft.lab1.Lab1;
 import tk.dccraft.lab2.VendingMachine;
@@ -148,6 +149,7 @@ public class Main implements ActionListener, MouseListener, MouseMotionListener 
 		menuItemName.add("ex:Exercise 4");
 		menuItemName.add("ex:Exercise 5");
 		menuItemName.add("ex:Exercise 7");
+		menuItemName.add("ex:Exercise 8");
 
 		for (int i = 0; i < menuName.size(); i++) {
 			menus.add(new JMenu());
@@ -380,6 +382,8 @@ public class Main implements ActionListener, MouseListener, MouseMotionListener 
 					new NumberGuesser();
 				} else if (args[0].equalsIgnoreCase("ex7")) {
 					new Ex7();
+				}else if(args[0].equalsIgnoreCase("ex8")) {
+					new Exercise8();
 				} else if (args[0].equalsIgnoreCase("load")) {
 					new Main().loadDefaultFiles();
 					new Main().Exit();
@@ -669,6 +673,8 @@ public class Main implements ActionListener, MouseListener, MouseMotionListener 
 				CmdLabStarter("ex5");
 			}else if(e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 7")))){
 				CmdLabStarter("ex7");
+			}else if(e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 8")))){
+				CmdLabStarter("ex8");
 			}
 		} catch (Exception ex) {
 			print("Button Action Not Found.");

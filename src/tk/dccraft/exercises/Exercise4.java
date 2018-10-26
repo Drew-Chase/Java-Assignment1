@@ -1,4 +1,4 @@
-package tk.dccraft.excercies;
+package tk.dccraft.exercises;
 
 import java.util.Scanner;
 /**
