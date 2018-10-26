@@ -274,7 +274,7 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 		main.print(finalContent);
 		accounts.clear();
 		try {
-			io.TextWriter("bankinfo.dat", finalContent, "DataBase/", false);
+			io.TextWriter("bankinfo.dat", finalContent, Main.root + "\\Settings\\DataBase\\", false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -285,7 +285,7 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 	 */
 	public void ReadFromFile() {
 		try {
-			io.TextReader("bankinfo.dat", "Settings/DataBase/", "bank");
+			io.TextReader("bankinfo.dat", Main.root + "\\Settings\\DataBase\\", "bank");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

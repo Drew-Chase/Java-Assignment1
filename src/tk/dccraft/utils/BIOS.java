@@ -191,7 +191,7 @@ public class BIOS extends Main {
 		print("Accessing Settings Saving Method...");
 		File f = new File(FolderName);
 		try {
-			if (f.mkdir()) {
+			if (f.mkdirs()) {
 				print("Directory Created in " + f.getAbsolutePath());
 			} else {// Exists
 				print("Directory is not created -- Maybe the File already exists");

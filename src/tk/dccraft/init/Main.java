@@ -76,6 +76,8 @@ public class Main implements ActionListener, MouseListener {
 	public Font styleFont;
 	private static List<String> help = new ArrayList<String>();
 
+	public static String root = System.getProperty("user.home") + "\\A Drew Chase Project\\Java\\";
+
 	public boolean shouldLog;
 
 	/**
@@ -340,11 +342,10 @@ public class Main implements ActionListener, MouseListener {
 
 	public static void main(String[] args) {
 		if (System.console() == null) {
-
 			Main main = new Main();
 			try {
-				io.TextReader("Pref.ini", "Settings/", "style");
-				io.TextReader("bankinfo.dat", "Settings/DataBase/", "bank");
+				io.TextReader("Pref.ini", root + "Settings\\", "style");
+				io.TextReader("bankinfo.dat", root + "Settings\\DataBase\\", "bank");
 				main.setShouldLog(io.log.equalsIgnoreCase("true") ? true : false);
 				main.shouldLog = (io.log.equalsIgnoreCase("true") ? true : false);
 				System.out.println("setting is logging to " + main.isShouldLog());
@@ -356,8 +357,8 @@ public class Main implements ActionListener, MouseListener {
 				new Main().print("Files not found... Creating them");
 				new Main().loadDefaultFiles();
 			}
-			getLog().add("Starting LOG...**");
 			setDefaultConsole(true);
+			getLog().add("Starting LOG...**");
 			new Main().setConsoleBg(new Color(Integer.decode(io.cbg)));
 			new Main().setConsoleFg(new Color(Integer.decode(io.cfg)));
 			new Main().initConsoleWindow();
@@ -388,6 +389,8 @@ public class Main implements ActionListener, MouseListener {
 					new Main().Exit();
 				} else if (args[0].equalsIgnoreCase("pref")) {
 					new PreferenceWindow();
+				} else if (args[0].equalsIgnoreCase("update")) {
+					new Updater();
 				} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
 					new Main().help();
 				} else {
@@ -429,6 +432,8 @@ public class Main implements ActionListener, MouseListener {
 					} else if (input.equalsIgnoreCase("load")) {
 						new Main().loadDefaultFiles();
 						System.exit(0);
+					} else if (input.equalsIgnoreCase("update")) {
+						new Updater();
 					} else if (input.equalsIgnoreCase("pref")) {
 						new PreferenceWindow();
 					} else if (input.equalsIgnoreCase("custom terminal") || input.equalsIgnoreCase("custom") || input.equalsIgnoreCase("ct")) {
@@ -451,6 +456,7 @@ public class Main implements ActionListener, MouseListener {
 		print("(c) A Drew Chase Project", 2);
 		print("Version: " + Metadata.version);
 		print("Current Author: " + Metadata.author);
+		print("Changelog: Fixed the Updater, finished lab4, worked on cross commandline interfaces");
 	}
 
 	private void launchCustomTerminal() {
@@ -505,8 +511,9 @@ public class Main implements ActionListener, MouseListener {
 	 * Loads the default settings required for the program to operate properly
 	 */
 	private void loadDefaultFiles() {
-
-		String FolderName = "Settings/";
+		// File f = new File(root);
+		// if(f.mkdirs())
+		String FolderName = root + "Settings\\";
 		String FileName = "Pref.ini";
 		String fileContent = "bg:0x404040\nfg:0xFFFFFF\nft:12\ncbg:0x000000\ncfg:0xFF00FF\nindex:0\nlog:true";
 		try {
@@ -515,7 +522,7 @@ public class Main implements ActionListener, MouseListener {
 			e1.printStackTrace();
 		}
 
-		FolderName = "Settings/DataBase/";
+		FolderName = root + "Settings\\DataBase\\";
 		FileName = "bankinfo.dat";
 		fileContent = "Name0:Corey\nBalance0:300.0\nName1:Sofia\nBalance1:2000.0";
 		try {
@@ -544,11 +551,12 @@ public class Main implements ActionListener, MouseListener {
 	 * Exits the program and saves the log.
 	 */
 	public void Exit() {
+		
 		System.out.println(isShouldLog());
 		// if (isShouldLog()) {
 		try {
-			io.TextWriter("logLatest.txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), "logs/", false);
-			io.TextWriter("log-" + DATE_STRING + ".txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), "logs/", false);
+			io.TextWriter("logLatest.txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), root + "\\logs\\", false);
+//			io.TextWriter("log-" + DATE_STRING + ".txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), root + "\\logs\\", false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -652,6 +660,10 @@ public class Main implements ActionListener, MouseListener {
 
 		sat.setBackground(getConsoleBg());
 		sat.setForeground(getConsoleFg());
+		
+		// Assignment 3
+		assign_3.setBackground(getConsoleBg());
+		assign_3.setForeground(getConsoleFg());
 
 		update.setBackground(getConsoleBg());
 		update.setForeground(getConsoleFg());
@@ -664,6 +676,9 @@ public class Main implements ActionListener, MouseListener {
 
 		clear.setBackground(getConsoleBg());
 		clear.setForeground(getConsoleFg());
+
+		terminal.setBackground(getConsoleBg());
+		terminal.setForeground(getConsoleFg());
 
 		// Console
 		console.setBackground(getConsoleBg());

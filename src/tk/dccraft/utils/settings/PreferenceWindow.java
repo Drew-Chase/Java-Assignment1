@@ -15,6 +15,8 @@ import java.net.URISyntaxException;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -62,7 +64,9 @@ public class PreferenceWindow extends Main {
 	private JPanel contentPane;
 	private JFrame f;
 	private JTabbedPane tab;
-	private JCheckBox log;;
+	private JCheckBox log;
+	private JColorChooser chooser;
+	private JDialog co;
 
 	/**
 	 * Initializes the Preferences Window, TabbedPane, and Control Buttons
@@ -243,6 +247,8 @@ public class PreferenceWindow extends Main {
 		this.title.setSize(250, this.height - 50);
 		this.pane.add(this.title);
 
+		chooser = new JColorChooser();
+
 		this.fontlbl = new JLabel("Set font size");
 		this.fontlbl.setLocation(50, 15);
 		this.fontlbl.setForeground(this.cfg);
@@ -251,18 +257,23 @@ public class PreferenceWindow extends Main {
 		this.fontlbl.setFont(getFont());
 		this.pane.add(this.fontlbl);
 
-		this.cfgColorlbl = new JLabel("<html>Set the Console Text Color<br/>(Ex:0xFFFFFF = <u>White</u>,<br/> 0x000000 = <u>BLACK</u>)<br/>Click me to Lookup Color Codes</html>");
+		this.cfgColorlbl = new JLabel("<html>Set the Console Text Color<br/>Click me to Lookup Color Codes</html>");
 		this.cfgColorlbl.setLocation(50, this.height / 2);
 		this.cfgColorlbl.setForeground(this.cfg);
 		this.cfgColorlbl.setSize(200, 100);
 		this.cfgColorlbl.setLayout(null);
 		this.cfgColorlbl.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
-				try {
-					PreferenceWindow.this.open(new URI("https://www.webpagefx.com/web-design/color-picker/" + PreferenceWindow.this.cfgField.getText()));
-				} catch (URISyntaxException e1) {
-					e1.printStackTrace();
-				}
+				chooser.setColor(getConsoleFg());
+				co = JColorChooser.createDialog(null, "Pick a Console Foreground Color", false, chooser, new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						Color c = chooser.getColor();
+						cfgField.setText("" + Integer.toHexString(c.hashCode()).substring(2));
+						Apply();
+					}
+				}, null);
+				co.setVisible(true);
 			}
 
 			public void mousePressed(MouseEvent e) {
@@ -279,18 +290,23 @@ public class PreferenceWindow extends Main {
 		});
 		this.pane.add(this.cfgColorlbl);
 
-		this.cbgColorlbl = new JLabel("<html>Set the Console Background Color<br/>(Ex:0xFFFFFF = <u>White</u>,<br/> 0x000000 = <u>BLACK</u>)<br/>Click me to Lookup Color Codes</html>");
+		this.cbgColorlbl = new JLabel("<html>Set the Console Background Color<br/>Click me to Lookup Color Codes</html>");
 		this.cbgColorlbl.setLocation(50, this.height / 2 - 150);
 		this.cbgColorlbl.setForeground(this.cfg);
 		this.cbgColorlbl.setSize(200, 100);
 		this.cbgColorlbl.setLayout(null);
 		this.cbgColorlbl.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
-				try {
-					PreferenceWindow.this.open(new URI("https://www.webpagefx.com/web-design/color-picker/" + PreferenceWindow.this.cbgField.getText()));
-				} catch (URISyntaxException e1) {
-					e1.printStackTrace();
-				}
+				chooser.setColor(getConsoleBg());
+				co = JColorChooser.createDialog(null, "Pick a Console Background Color", false, chooser, new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						Color c = chooser.getColor();
+						cbgField.setText("" + Integer.toHexString(c.hashCode()).substring(2));
+						Apply();
+					}
+				}, null);
+				co.setVisible(true);
 			}
 
 			public void mousePressed(MouseEvent e) {
@@ -338,7 +354,7 @@ public class PreferenceWindow extends Main {
 		log.addActionListener(this);
 		log.setForeground(cfg);
 		log.setBackground(cbg);
-//		pane.add(log);
+		// pane.add(log);
 
 		this.apply.setBackground(this.cbg);
 		this.apply.setForeground(this.cfg);
@@ -373,18 +389,23 @@ public class PreferenceWindow extends Main {
 		this.title.setSize(this.width, 100);
 		this.pane.add(this.title);
 
-		this.fgColorlbl = new JLabel("<html>Set the Text Color<br/>(Ex:0xFFFFFF = <u>White</u>,<br/> 0x000000 = <u>BLACK</u>)<br/>Click me to Lookup Color Codes</html>");
+		this.fgColorlbl = new JLabel("<html>Set the Text Color<br/>Click me to Lookup Color Codes</html>");
 		this.fgColorlbl.setLocation(50, this.height / 2);
 		this.fgColorlbl.setForeground(this.fg);
 		this.fgColorlbl.setSize(200, 100);
 		this.fgColorlbl.setLayout(null);
 		this.fgColorlbl.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
-				try {
-					PreferenceWindow.this.open(new URI("https://www.webpagefx.com/web-design/color-picker/" + PreferenceWindow.this.fgField.getText()));
-				} catch (URISyntaxException e1) {
-					e1.printStackTrace();
-				}
+				chooser.setColor(getFg());
+				co = JColorChooser.createDialog(null, "Pick a Foreground Color", false, chooser, new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						Color c = chooser.getColor();
+						fgField.setText("" + Integer.toHexString(c.hashCode()).substring(2));
+						Apply();
+					}
+				}, null);
+				co.setVisible(true);
 			}
 
 			public void mousePressed(MouseEvent e) {
@@ -401,18 +422,23 @@ public class PreferenceWindow extends Main {
 		});
 		this.pane.add(this.fgColorlbl);
 
-		this.bgColorlbl = new JLabel("<html>Set the Background Color<br/>(Ex:0xFFFFFF = <u>White</u>,<br/> 0x000000 = <u>BLACK</u>)<br/>Click me to Lookup Color Codes</html>");
+		this.bgColorlbl = new JLabel("<html>Set the Background Color<br/>Click me to Lookup Color Codes</html>");
 		this.bgColorlbl.setLocation(50, this.height / 2 - 150);
 		this.bgColorlbl.setForeground(this.fg);
 		this.bgColorlbl.setSize(200, 100);
 		this.bgColorlbl.setLayout(null);
 		this.bgColorlbl.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
-				try {
-					PreferenceWindow.this.open(new URI("https://www.webpagefx.com/web-design/color-picker/" + PreferenceWindow.this.bgField.getText()));
-				} catch (URISyntaxException e1) {
-					e1.printStackTrace();
-				}
+				chooser.setColor(getBg());
+				co = JColorChooser.createDialog(null, "Pick a Background Color", false, chooser, new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						Color c = chooser.getColor();
+						bgField.setText("" + Integer.toHexString(c.hashCode()).substring(2));
+						Apply();
+					}
+				}, null);
+				co.setVisible(true);
 			}
 
 			public void mousePressed(MouseEvent e) {
@@ -524,26 +550,9 @@ public class PreferenceWindow extends Main {
 				initColors();
 			}
 		} else if (e.getSource().equals(this.apply)) {
-			setIndex(this.tab.getSelectedIndex());
-			String FolderName = "Settings/";
-			String FileName = "Pref.ini";
-			String fileContent = "bg:0x" + this.bgField.getText() + "\nfg:0x" + this.fgField.getText() + "\nft:" + this.fontField.getText() + "\ncbg:0x" + this.cbgField.getText() + "\ncfg:0x" + this.cfgField.getText() + "\nindex:" + getIndex()+"\nlog:" + log.isSelected();
-			Main.setBg(new Color(Integer.decode("0x" + this.bgField.getText()).intValue()));
-			Main.setFg(new Color(Integer.decode("0x" + this.fgField.getText()).intValue()));
-			Main.setConsoleBg(new Color(Integer.decode("0x" + this.cbgField.getText()).intValue()));
-			Main.setConsoleFg(new Color(Integer.decode("0x" + this.cfgField.getText()).intValue()));
-			Main.setFontSize(Integer.parseInt(this.fontField.getText()));
-			try {
-				this.io.TextWriter(FileName, fileContent, FolderName, false);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			updateConsole();
-			initColors();
-			this.f.dispose();
-			new PreferenceWindow(f.getLocation());
+			Apply();
 		} else if (e.getSource().equals(this.reset)) {
-			String FolderName = "Settings/";
+			String FolderName = Main.root + "\\Settings\\";
 			String FileName = "Pref.ini";
 			String fileContent = "bg:0x404040\nfg:0xFFFFFF\ncbg:0x000000\ncfg:0xFFFFFF\nft:12";
 			Main.setBg(new Color(4210752));
@@ -560,15 +569,38 @@ public class PreferenceWindow extends Main {
 			initColors();
 			this.f.dispose();
 			new PreferenceWindow(f.getLocation());
-		}else if(e.getSource().equals(log)){
-			if(log.isSelected()){
+		} else if (e.getSource().equals(log)) {
+			if (log.isSelected()) {
 				print("Log Enabled");
-			}else{
+			} else {
 				print("Log Disabled");
 			}
 			setShouldLog(log.isSelected());
-		}  else if (e.getSource().equals(this.close)) {
+		} else if (e.getSource().equals(this.close)) {
 			this.f.dispose();
 		}
+	}
+
+	private void Apply() {
+
+		setIndex(this.tab.getSelectedIndex());
+		String FolderName = Main.root + "\\Settings\\";
+		String FileName = "Pref.ini";
+		String fileContent = "bg:0x" + this.bgField.getText() + "\nfg:0x" + this.fgField.getText() + "\nft:" + this.fontField.getText() + "\ncbg:0x" + this.cbgField.getText() + "\ncfg:0x" + this.cfgField.getText() + "\nindex:" + getIndex() + "\nlog:" + log.isSelected();
+		Main.setBg(new Color(Integer.decode("0x" + this.bgField.getText()).intValue()));
+		Main.setFg(new Color(Integer.decode("0x" + this.fgField.getText()).intValue()));
+		Main.setConsoleBg(new Color(Integer.decode("0x" + this.cbgField.getText()).intValue()));
+		Main.setConsoleFg(new Color(Integer.decode("0x" + this.cfgField.getText()).intValue()));
+		Main.setFontSize(Integer.parseInt(this.fontField.getText()));
+		try {
+			this.io.TextWriter(FileName, fileContent, FolderName, false);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		updateConsole();
+		initColors();
+		this.f.dispose();
+		new PreferenceWindow(f.getLocation());
+
 	}
 }
