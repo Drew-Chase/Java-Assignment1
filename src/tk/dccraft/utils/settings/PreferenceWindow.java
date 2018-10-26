@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
+import javafx.scene.input.MouseDragEvent;
 import tk.dccraft.init.Main;
 import tk.dccraft.utils.BIOS;
 
@@ -67,6 +68,7 @@ public class PreferenceWindow extends Main {
 	private JCheckBox log;
 	private JColorChooser chooser;
 	private JDialog co;
+	private int xOnFrame, yOnFrame;
 
 	/**
 	 * Initializes the Preferences Window, TabbedPane, and Control Buttons
@@ -79,6 +81,8 @@ public class PreferenceWindow extends Main {
 		this.contentPane.setBackground(this.bg);
 		this.contentPane.setForeground(this.fg);
 		this.contentPane.setLayout(null);
+		this.contentPane.addMouseListener(this);
+		this.contentPane.addMouseMotionListener(this);
 
 		this.tab = new JTabbedPane();
 		this.tab.setSize(this.size.width, this.height - 75);
@@ -90,12 +94,15 @@ public class PreferenceWindow extends Main {
 		this.f = new JFrame();
 		this.f.setTitle("Preferences");
 		this.f.setSize(this.size);
+		this.f.setUndecorated(true);
 		this.f.setVisible(true);
 		this.f.setResizable(false);
 		this.f.setDefaultCloseOperation(2);
 		this.f.setLayout(null);
 		this.f.setLocationRelativeTo(null);
 		this.f.setContentPane(this.contentPane);
+		this.f.addMouseListener(this);
+		this.f.addMouseMotionListener(this);
 
 		this.reset = new JButton("Reset");
 		this.reset.setVisible(true);
@@ -161,6 +168,8 @@ public class PreferenceWindow extends Main {
 		this.contentPane.setBackground(this.bg);
 		this.contentPane.setForeground(this.fg);
 		this.contentPane.setLayout(null);
+		this.contentPane.addMouseListener(this);
+		this.contentPane.addMouseMotionListener(this);
 
 		this.tab = new JTabbedPane();
 		this.tab.setSize(this.size.width, this.height - 75);
@@ -172,12 +181,15 @@ public class PreferenceWindow extends Main {
 		this.f = new JFrame();
 		this.f.setTitle("Preferences");
 		this.f.setSize(this.size);
+		this.f.setUndecorated(true);
 		this.f.setVisible(true);
 		this.f.setResizable(false);
 		this.f.setDefaultCloseOperation(2);
 		this.f.setLayout(null);
 		this.f.setLocation(p);
 		this.f.setContentPane(this.contentPane);
+		this.f.addMouseListener(this);
+		this.f.addMouseMotionListener(this);
 
 		this.reset = new JButton("Reset");
 		this.reset.setVisible(true);
@@ -246,6 +258,9 @@ public class PreferenceWindow extends Main {
 		this.title.setLocation((int) size.getWidth() - 250, 10);
 		this.title.setSize(250, this.height - 50);
 		this.pane.add(this.title);
+		
+		this.tab.addMouseListener(this);
+		this.tab.addMouseMotionListener(this);
 
 		chooser = new JColorChooser();
 
@@ -380,6 +395,8 @@ public class PreferenceWindow extends Main {
 		this.pane.setForeground(this.fg);
 		this.pane.setLayout(null);
 		this.tab.addTab("Main Style", this.pane);
+		this.tab.addMouseListener(this);
+		this.tab.addMouseMotionListener(this);
 
 		this.title = new JLabel("Main Windows Styling");
 		this.title.setLayout(null);
@@ -579,6 +596,20 @@ public class PreferenceWindow extends Main {
 		} else if (e.getSource().equals(this.close)) {
 			this.f.dispose();
 		}
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		xOnFrame = e.getX();
+		yOnFrame = e.getY();
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		int x = (int) e.getXOnScreen() - xOnFrame;
+		int y = (int) e.getYOnScreen() - yOnFrame;
+
+		f.setLocation(x, y);
 	}
 
 	private void Apply() {

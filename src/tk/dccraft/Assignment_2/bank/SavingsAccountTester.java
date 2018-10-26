@@ -9,6 +9,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import tk.dccraft.utils.BIOS;
  *
  */
 @SuppressWarnings("all")
-public class SavingsAccountTester extends JFrame implements ActionListener, FocusListener, MouseListener {
+public class SavingsAccountTester extends JFrame implements ActionListener, FocusListener, MouseListener, MouseMotionListener {
 
 	private JTextField nameBox, balanceBox;
 	private JPanel contentPane;
@@ -64,6 +65,8 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 		contentPane.setBackground(bg);
 		contentPane.setForeground(fg);
 		contentPane.setLayout(null);
+		contentPane.addMouseListener(this);
+		contentPane.addMouseMotionListener(this);
 
 		// Stylized title for the GUI
 		title = new JLabel("Test Bank title".toUpperCase());
@@ -176,6 +179,8 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 		setLocationRelativeTo(null);
 		setLayout(null);
 		setContentPane(contentPane);
+		addMouseListener(this);
+		addMouseMotionListener(this);
 		main.updateFrame(this, getGraphics());
 
 	}
@@ -338,12 +343,6 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 
@@ -377,6 +376,27 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 		} else if (e.getSource().equals(list)) {
 			list.setForeground(new Main().getFg());
 		}
+
+	}
+
+	int xOnFrame, yOnFrame;
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		xOnFrame = e.getX();
+		yOnFrame = e.getY();
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		int x = (int) e.getXOnScreen() - xOnFrame;
+		int y = (int) e.getYOnScreen() - yOnFrame;
+		this.setLocation(x, y);
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent arg0) {
+		// TODO Auto-generated method stub
 
 	}
 

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -52,6 +53,8 @@ public class MealTester extends Main {
 	private BufferedWriter bw;
 	private Font font = getFont();
 	private BIOS io = new BIOS();
+
+	private int xOnFrame, yOnFrame;
 
 	/**
 	 * Initializes the MealTester.class
@@ -132,6 +135,8 @@ public class MealTester extends Main {
 		orderWindow.setSize(new Dimension(width, height));
 		orderWindow.setBackground(bg);
 		orderWindow.setUndecorated(true);
+		orderWindow.addMouseListener(this);
+		orderWindow.addMouseMotionListener(this);
 		// orderWindow.setLayout(null);
 		orderWindow.setVisible(true);
 		orderWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -140,6 +145,9 @@ public class MealTester extends Main {
 		orderWindow.setContentPane(pane);
 		pane.setBackground(bg);
 		pane.setLayout(null);
+		
+		pane.addMouseListener(this);
+		pane.addMouseMotionListener(this);
 
 		// Initializing UI
 
@@ -347,50 +355,17 @@ public class MealTester extends Main {
 		}
 	}
 
-	/**
-	 * Sends the file to an FTP Server using Apache Libraries
-	 * 
-	 * @param url
-	 * @param name
-	 * @param content
-	 */
-//	public void ftpSend(String url, String name, String content) {
-//		FileOutputStream fos = null;
-//		FTPClient client = new FTPClient();
-//		try {
-//			client.connect(url);
-//			File f = new File(name);
-//			bw = new BufferedWriter(new FileWriter(f, true));
-//			bw.write(content);
-//			bw.newLine();
-//			bw.flush();
-//			client.setFileType(FTP.BINARY_FILE_TYPE);
-//			try (InputStream input = new FileInputStream(f)) {
-//				client.storeFile(url + name, input);
-//			}
-//			fos = new FileOutputStream(f);
-//
-//			client.logout();
-//			print("Sending " + content + "\n to " + url);
-//		} catch (IOException e) {
-//			print("ERROR with the ftpSender Method\n" + e.getMessage());
-//		} finally {
-//			if (bw != null) {
-//				try {
-//					bw.close();
-//				} catch (IOException e) {
-//					print("Error with BufferedWriter closing\nERROR:" + e.getMessage());
-//				}
-//			}
-//			try {
-//				if (fos != null) {
-//					fos.close();
-//				}
-//				client.disconnect();
-//			} catch (IOException e) {
-//				print("ERROR with the ftpSender Method\n" + e.getMessage());
-//			}
-//		}
-//	}
+	@Override
+	public void mousePressed(MouseEvent e) {
+		xOnFrame = e.getX();
+		yOnFrame = e.getY();
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		int x = (int) e.getXOnScreen() - xOnFrame;
+		int y = (int) e.getYOnScreen() - yOnFrame;
+		orderWindow.setLocation(x, y);
+	}
 
 }

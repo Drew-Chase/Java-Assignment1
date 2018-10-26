@@ -11,9 +11,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -35,6 +36,10 @@ import tk.dccraft.Assignment_1.part_1.MealTester;
 import tk.dccraft.Assignment_1.part_2.CalendarTester;
 import tk.dccraft.Assignment_2.bank.SavingsAccountTester;
 import tk.dccraft.Assignment_3.keys.KeyTester;
+import tk.dccraft.excercies.Ex7;
+import tk.dccraft.excercies.Exercise3;
+import tk.dccraft.excercies.Exercise4;
+import tk.dccraft.excercies.NumberGuesser;
 import tk.dccraft.http.updater.Updater;
 import tk.dccraft.lab1.Lab1;
 import tk.dccraft.lab2.VendingMachine;
@@ -51,14 +56,17 @@ import tk.dccraft.utils.settings.PreferenceWindow;
  *
  */
 @SuppressWarnings("all")
-public class Main implements ActionListener, MouseListener {
+public class Main implements ActionListener, MouseListener, MouseMotionListener {
 
 	public static JTextArea console;
 	private static JFrame consoleWindow;
 	private static DefaultCaret caret;
-	private static JMenuBar menuBar;
-	private static JMenu file, edit, assign, assign_1, assign_2, assign_3, labs;
-	private static JMenuItem pos, dob, key, exit, terminal, sat, update, preference, load, lab_1, lab_2, lab_3, lab_4, clear;
+	private static JMenuBar menuBar, titleBar;
+	private static List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
+	private static List<JMenu> menus = new ArrayList<JMenu>();
+	private static List<String> menuName = new ArrayList<String>();
+	private static List<String> menuItemName = new ArrayList<String>();
+	private static JButton exit;
 	private static Color bg, fg, cbg, cfg;
 	private static int fontSize = 12;
 	private final int STANDARD_COLOR_DIFFERENCE = 50;
@@ -69,6 +77,8 @@ public class Main implements ActionListener, MouseListener {
 	private final String DATE_STRING = dateFormat.format(date.getTime());
 	private static List<String> log = new ArrayList<String>();
 
+	private int xOnFrame, yOnFrame;
+
 	private static BIOS io = new BIOS();
 	private static int index = 0;
 	public static Font font, titleFont = new Font(new Main().initFonts("ScorchedEarth.otf").getFontName(), Font.PLAIN, 28);
@@ -76,7 +86,7 @@ public class Main implements ActionListener, MouseListener {
 	public Font styleFont;
 	private static List<String> help = new ArrayList<String>();
 
-	public static String root = System.getProperty("user.home") + "\\A Drew Chase Project\\Java\\";
+	public static String root = System.getProperty("user.home") + "\\AppData\\Roaming\\A Drew Chase Project\\Java\\";
 
 	public boolean shouldLog;
 
@@ -96,140 +106,103 @@ public class Main implements ActionListener, MouseListener {
 
 		// Initializing UI
 		// Menu Items
+		titleBar = new JMenuBar();
+		titleBar.setBorderPainted(false);
+		titleBar.setForeground(getConsoleFg());
+		titleBar.setBackground(getConsoleBg());
+		titleBar.addMouseListener(this);
+		titleBar.addMouseMotionListener(this);
+
 		menuBar = new JMenuBar();
 		menuBar.setBorderPainted(false);
 		menuBar.setForeground(getConsoleFg());
 		menuBar.setBackground(getConsoleBg());
+		menuBar.addMouseListener(this);
+		menuBar.addMouseMotionListener(this);
 
-		file = new JMenu("File");
-		file.setMnemonic(KeyEvent.VK_F);
-		file.setBackground(getConsoleBg());
-		file.setForeground(getConsoleFg());
-		menuBar.add(file);
+		menuName.add("File");
+		menuName.add("Edit");
+		menuName.add("Assignments");
+		menuName.add("Assignment 1");
+		menuName.add("Assignment 2");
+		menuName.add("Assignment 3");
+		menuName.add("Assignment 4");
+		menuName.add("Labs");
+		menuName.add("Exercises");
 
-		edit = new JMenu("Edit");
-		edit.setMnemonic(KeyEvent.VK_E);
-		edit.addActionListener(new Main());
-		edit.setForeground(getConsoleFg());
-		edit.setBackground(getConsoleBg());
-		edit.setBorderPainted(false);
-		menuBar.add(edit);
+		menuItemName.add("a1:Meal Tester");
+		menuItemName.add("a1:Calendar Tester");
+		menuItemName.add("a2:Savings Account");
+		menuItemName.add("a3:Key Breaker");
+		menuItemName.add("a4:Student");
+		menuItemName.add("l1:Print Name");
+		menuItemName.add("l2:Vending Machine");
+		menuItemName.add("l3:Flipping Coin");
+		menuItemName.add("l4:Loops");
+		menuItemName.add("ed:clear");
+		menuItemName.add("ed:Update");
+		menuItemName.add("ed:Open in System Terminal");
+		menuItemName.add("ed:preferences");
+		menuItemName.add("ed:load");
+		menuItemName.add("ex:Exercise 3");
+		menuItemName.add("ex:Exercise 4");
+		menuItemName.add("ex:Exercise 5");
+		menuItemName.add("ex:Exercise 7");
 
-		exit = new JMenuItem("Exit");
-		exit.setMnemonic(KeyEvent.VK_X);
-		exit.setForeground(getConsoleFg());
+		for (int i = 0; i < menuName.size(); i++) {
+			menus.add(new JMenu());
+			String text = menuName.get(i).toCharArray()[0] + menuName.get(i).substring(1);
+			menus.get(i).setText(text);
+			menus.get(i).setBackground(getConsoleBg());
+			menus.get(i).setForeground(getConsoleFg());
+			menus.get(i).setText(menuName.get(i));
+			menus.get(i).addActionListener(this);
+			if (menuName.get(i).equalsIgnoreCase("Assignments") || menuName.get(i).equalsIgnoreCase("Labs") || menuName.get(i).equalsIgnoreCase("Exercises")) {
+				menus.get(menuName.indexOf("File")).add(menus.get(i));
+			} else if (menuName.get(i).startsWith("Assignment ")) {
+				menus.get(menuName.indexOf("Assignments")).add(menus.get(i));
+			} else {
+				menuBar.add(menus.get(i));
+			}
+		}
+
+		for (int i = 0; i < menuItemName.size(); i++) {
+			menuItems.add(new JMenuItem());
+			String text = menuItemName.get(i).substring(3);
+			text = (text.toCharArray()[0] + "").toString().toUpperCase() + text.substring(1);
+			menuItems.get(i).setText(text);
+			menuItems.get(i).setBackground(getConsoleBg());
+			menuItems.get(i).setForeground(getConsoleFg());
+			menuItems.get(i).addActionListener(this);
+			if (menuItemName.get(i).startsWith("a1:")) {
+				menus.get(menuName.indexOf("Assignment 1")).add(menuItems.get(i));
+			} else if (menuItemName.get(i).startsWith("a2:")) {
+				menus.get(menuName.indexOf("Assignment 2")).add(menuItems.get(i));
+			} else if (menuItemName.get(i).startsWith("a3:")) {
+				menus.get(menuName.indexOf("Assignment 3")).add(menuItems.get(i));
+				menuItems.get(i).setEnabled(false);
+			} else if (menuItemName.get(i).startsWith("a4:")) {
+				menus.get(menuName.indexOf("Assignment 4")).add(menuItems.get(i));
+			} else if (menuItemName.get(i).startsWith("l")) {
+				menus.get(menuName.indexOf("Labs")).add(menuItems.get(i));
+			} else if (menuItemName.get(i).startsWith("ed:")) {
+				menus.get(menuName.indexOf("Edit")).add(menuItems.get(i));
+			} else if (menuItemName.get(i).startsWith("mi:")) {
+				menuBar.add(menuItems.get(menuItemName.indexOf("mi:Exit")));
+			} else if (menuItemName.get(i).startsWith("ex:")) {
+				menus.get(menuName.indexOf("Exercises")).add(menuItems.get(i));
+			}
+		}
+
+		exit = new JButton("Exit");
+		exit.setLayout(null);
+		exit.addActionListener(this);
 		exit.setBackground(getConsoleBg());
-		exit.addActionListener(new Main());
-		exit.setSize(new Dimension(20, 20));
+		exit.setForeground(getConsoleFg());
+		exit.setBorderPainted(false);
+		exit.setSize(exit.getText().length() * exit.getFont().getSize(), 12);
+		exit.setLocation(consoleWindow.getWidth() - exit.getWidth(), 0);
 		menuBar.add(exit);
-
-		assign = new JMenu("Assignments");
-		assign.setForeground(getConsoleFg());
-		assign.setBackground(getConsoleBg());
-		file.add(assign);
-
-		labs = new JMenu("Labs");
-		labs.setForeground(getConsoleFg());
-		labs.setBackground(getConsoleBg());
-		file.add(labs);
-
-		// Labs Menu
-		lab_1 = new JMenuItem("Lab 1");
-		lab_1.addActionListener(new Main());
-		lab_1.setBackground(getConsoleBg());
-		lab_1.setForeground(getConsoleFg());
-		labs.add(lab_1);
-
-		lab_2 = new JMenuItem("Lab 2");
-		lab_2.addActionListener(new Main());
-		lab_2.setBackground(getConsoleBg());
-		lab_2.setForeground(getConsoleFg());
-		labs.add(lab_2);
-
-		lab_3 = new JMenuItem("Lab 3");
-		lab_3.addActionListener(new Main());
-		lab_3.setBackground(getConsoleBg());
-		lab_3.setForeground(getConsoleFg());
-		labs.add(lab_3);
-
-		lab_4 = new JMenuItem("Lab 4");
-		lab_4.addActionListener(new Main());
-		lab_4.setBackground(getConsoleBg());
-		lab_4.setForeground(getConsoleFg());
-		labs.add(lab_4);
-
-		// Assignment 1 Menu
-		assign_1 = new JMenu("Assignment 1");
-		assign_1.setForeground(getConsoleFg());
-		assign_1.setBackground(getConsoleBg());
-		assign.add(assign_1);
-
-		dob = new JMenuItem("CalendarTester");
-		dob.addActionListener(new Main());
-		dob.setBackground(getConsoleBg());
-		dob.setForeground(getConsoleFg());
-		assign_1.add(dob);
-
-		pos = new JMenuItem("MealTester");
-		pos.addActionListener(new Main());
-		pos.setBackground(getConsoleBg());
-		pos.setForeground(getConsoleFg());
-		assign_1.add(pos);
-
-		// Assignment 2 Menu
-		assign_2 = new JMenu("Assignment 2");
-		assign_2.setBackground(getConsoleBg());
-		assign_2.setForeground(getConsoleFg());
-		assign.add(assign_2);
-
-		sat = new JMenuItem("Savings Account Tester");
-		sat.addActionListener(new Main());
-		sat.setBackground(getConsoleBg());
-		sat.setForeground(getConsoleFg());
-		assign_2.add(sat);
-
-		assign_3 = new JMenu("Assignment 3");
-		assign_3.setBackground(getConsoleBg());
-		assign_3.setForeground(getConsoleFg());
-		assign.add(assign_3);
-
-		key = new JMenuItem("Key Tester");
-		key.addActionListener(new Main());
-		key.setBackground(getConsoleBg());
-		key.setForeground(getConsoleFg());
-		key.setEnabled(false);
-		assign_3.add(key);
-
-		update = new JMenuItem("Update");
-		update.addActionListener(new Main());
-		update.setBackground(getConsoleBg());
-		update.setForeground(getConsoleFg());
-		file.add(update);
-
-		// Working on Edit Menu
-		preference = new JMenuItem("Preferences");
-		preference.addActionListener(new Main());
-		preference.setForeground(getConsoleFg());
-		preference.setBackground(getConsoleBg());
-		edit.add(preference);
-
-		load = new JMenuItem("Load Default Files");
-		load.addActionListener(new Main());
-		load.setBackground(getConsoleBg());
-		load.setForeground(getConsoleFg());
-		edit.add(load);
-
-		clear = new JMenuItem("Clear Console");
-		clear.addActionListener(new Main());
-		clear.setBackground(getConsoleBg());
-		clear.setForeground(getConsoleFg());
-		edit.add(clear);
-
-		terminal = new JMenuItem("Open in System Terminal");
-		terminal.addActionListener(new Main());
-		terminal.setBackground(getConsoleBg());
-		terminal.setForeground(getConsoleFg());
-		edit.add(terminal);
 
 		// Console
 		console = new JTextArea("");
@@ -273,9 +246,22 @@ public class Main implements ActionListener, MouseListener {
 	 */
 	public void print(Object message) {
 		getLog().add(new Main().timestamp.format(date.getTime()) + " : " + message.toString() + "**");
-		if (isDefaultConsole())
+		if (isDefaultConsole()) {
 			console.append(message.toString() + "\n");
-		else
+			// char[] text = message.toString().toCharArray();
+			//
+			// for (int i = 0; i<text.length; i++) {
+			// int j = (message.toString().length() *
+			// console.getFont().getSize());
+			//// message += + "";
+			// if(j < console.getWidth()){
+			// console.append(text[i] + "");
+			// j+=console.getFont().getSize();
+			// }else if(j == console.getWidth())
+			// console.append("\n");
+			// }
+			// console.append("\n");
+		} else
 			System.out.println(message + "\n");
 	}
 
@@ -345,10 +331,12 @@ public class Main implements ActionListener, MouseListener {
 			Main main = new Main();
 			try {
 				io.TextReader("Pref.ini", root + "Settings\\", "style");
-				io.TextReader("bankinfo.dat", root + "Settings\\DataBase\\", "bank");
-				main.setShouldLog(io.log.equalsIgnoreCase("true") ? true : false);
-				main.shouldLog = (io.log.equalsIgnoreCase("true") ? true : false);
-				System.out.println("setting is logging to " + main.isShouldLog());
+				// main.setShouldLog(io.log.equalsIgnoreCase("true") ? true :
+				// false);
+				// main.shouldLog = (io.log.equalsIgnoreCase("true") ? true :
+				// false);
+				// System.out.println("setting is logging to " +
+				// main.isShouldLog());
 				main.setBg(new Color(Integer.decode(io.bg)));
 				main.setFg(new Color(Integer.decode(io.fg)));
 				main.setFontSize(Integer.parseInt(io.ft));
@@ -384,6 +372,14 @@ public class Main implements ActionListener, MouseListener {
 					new Lab3();
 				} else if (args[0].equalsIgnoreCase("lab4")) {
 					new Lab4();
+				} else if (args[0].equalsIgnoreCase("ex3")) {
+					new Exercise3();
+				} else if (args[0].equalsIgnoreCase("ex4")) {
+					new Exercise4();
+				} else if (args[0].equalsIgnoreCase("ex5")) {
+					new NumberGuesser();
+				} else if (args[0].equalsIgnoreCase("ex7")) {
+					new Ex7();
 				} else if (args[0].equalsIgnoreCase("load")) {
 					new Main().loadDefaultFiles();
 					new Main().Exit();
@@ -447,16 +443,13 @@ public class Main implements ActionListener, MouseListener {
 				}
 			}
 		}
-		// while(true){
-		// System.out.println(new Main().getIsLogging());
-		// }
 	}
 
 	public void initStartMessages() {
 		print("(c) A Drew Chase Project", 2);
 		print("Version: " + Metadata.version);
 		print("Current Author: " + Metadata.author);
-		print("Changelog: Fixed the Updater, finished lab4, worked on cross commandline interfaces");
+		print("Changelog: Fixed the Updater,\nWorked on a more Comprehensive Color Picker Method,\nWorked on Cross CommandLine Interfaces,\nAnd Windows are Now Allowed to be Moved");
 	}
 
 	private void launchCustomTerminal() {
@@ -551,12 +544,15 @@ public class Main implements ActionListener, MouseListener {
 	 * Exits the program and saves the log.
 	 */
 	public void Exit() {
-		
+
 		System.out.println(isShouldLog());
 		// if (isShouldLog()) {
 		try {
 			io.TextWriter("logLatest.txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), root + "\\logs\\", false);
-//			io.TextWriter("log-" + DATE_STRING + ".txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), root + "\\logs\\", false);
+			// io.TextWriter("log-" + DATE_STRING + ".txt",
+			// getLog().toString().replace("[", "").replace("]",
+			// "").replace("**", "\n").replace(", ", ""), root + "\\logs\\",
+			// false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -612,73 +608,22 @@ public class Main implements ActionListener, MouseListener {
 	 * Updates the Console GUI
 	 */
 	public void updateConsole() {
-		console.setBackground(getConsoleBg());
-		console.setForeground(getConsoleFg());
+		// console.setBackground(getConsoleBg());
+		// console.setForeground(getConsoleFg());
+		exit.setBackground(getConsoleBg());
+		exit.setForeground(getConsoleFg());
 
 		menuBar.setForeground(getConsoleFg());
 		menuBar.setBackground(getConsoleBg());
 
-		file.setBackground(getConsoleBg());
-		file.setForeground(getConsoleFg());
-
-		edit.setForeground(getConsoleFg());
-		edit.setBackground(getConsoleBg());
-
-		exit.setForeground(getConsoleFg());
-		exit.setBackground(getConsoleBg());
-		// Labs Menu
-		lab_1.setBackground(getConsoleBg());
-		lab_1.setForeground(getConsoleFg());
-
-		lab_2.setBackground(getConsoleBg());
-		lab_2.setForeground(getConsoleFg());
-
-		lab_3.setBackground(getConsoleBg());
-		lab_3.setForeground(getConsoleFg());
-
-		lab_4.setBackground(getConsoleBg());
-		lab_4.setForeground(getConsoleFg());
-
-		assign.setForeground(getConsoleFg());
-		assign.setBackground(getConsoleBg());
-
-		labs.setForeground(getConsoleFg());
-		labs.setBackground(getConsoleBg());
-		// Assignment 1 Menu
-		assign_1.setForeground(getConsoleFg());
-		assign_1.setBackground(getConsoleBg());
-
-		dob.setBackground(getConsoleBg());
-		dob.setForeground(getConsoleFg());
-
-		pos.setBackground(getConsoleBg());
-		pos.setForeground(getConsoleFg());
-
-		// Assignment 2 Menu
-		assign_2.setBackground(getConsoleBg());
-		assign_2.setForeground(getConsoleFg());
-
-		sat.setBackground(getConsoleBg());
-		sat.setForeground(getConsoleFg());
-		
-		// Assignment 3
-		assign_3.setBackground(getConsoleBg());
-		assign_3.setForeground(getConsoleFg());
-
-		update.setBackground(getConsoleBg());
-		update.setForeground(getConsoleFg());
-
-		preference.setForeground(getConsoleFg());
-		preference.setBackground(getConsoleBg());
-
-		load.setBackground(getConsoleBg());
-		load.setForeground(getConsoleFg());
-
-		clear.setBackground(getConsoleBg());
-		clear.setForeground(getConsoleFg());
-
-		terminal.setBackground(getConsoleBg());
-		terminal.setForeground(getConsoleFg());
+		for (JMenu m : menus) {
+			m.setBackground(getConsoleBg());
+			m.setForeground(getConsoleFg());
+		}
+		for (JMenuItem m : menuItems) {
+			m.setBackground(getConsoleBg());
+			m.setForeground(getConsoleFg());
+		}
 
 		// Console
 		console.setBackground(getConsoleBg());
@@ -687,34 +632,46 @@ public class Main implements ActionListener, MouseListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(clear)) {
-			Clear();
-		} else if (e.getSource().equals(load)) {
-			loadDefaultFiles();
-		} else if (e.getSource().equals(preference)) {
-			new PreferenceWindow();
-		} else if (e.getSource().equals(terminal)) {
-			launchSystemTerminal();
-		} else if (e.getSource().equals(update)) {
-			new Updater();
-		} else if (e.getSource().equals(exit)) {
-			Exit();
-		} else if (e.getSource().equals(dob)) {
-			new CalendarTester();
-		} else if (e.getSource().equals(pos)) {
-			new MealTester();
-		} else if (e.getSource().equals(sat)) {
-			new SavingsAccountTester();
-		} else if (e.getSource().equals(key)) {
-			new KeyTester();
-		} else if (e.getSource().equals(lab_1)) {
-			new Lab1();
-		} else if (e.getSource().equals(lab_2)) {
-			Lab2();
-		} else if (e.getSource().equals(lab_3)) {
-			CmdLabStarter("lab 3");
-		} else if (e.getSource().equals(lab_4)) {
-			CmdLabStarter("lab 4");
+		try {
+			if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ed:clear")))) {
+				Clear();
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ed:load")))) {
+				loadDefaultFiles();
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ed:preferences")))) {
+				new PreferenceWindow();
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ed:Open in System Terminal")))) {
+				launchSystemTerminal();
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ed:Update")))) {
+				new Updater();
+			} else if (e.getSource().equals(exit)) {
+				Exit();
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("a1:Calendar Tester")))) {
+				new CalendarTester();
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("a1:Meal Tester")))) {
+				new MealTester();
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("a2:Savings Account")))) {
+				new SavingsAccountTester();
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("a3:Key Breaker")))) {
+				new KeyTester();
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("l1:Print Name")))) {
+				new Lab1();
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("l2:Vending Machine")))) {
+				Lab2();
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("l3:Flipping Coin")))) {
+				CmdLabStarter("lab3");
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("l4:Loops")))) {
+				CmdLabStarter("lab4");
+			}else if(e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 3")))){
+				CmdLabStarter("ex3");
+			}else if(e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 4")))){
+				CmdLabStarter("ex4");
+			}else if(e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 5")))){
+				CmdLabStarter("ex5");
+			}else if(e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 7")))){
+				CmdLabStarter("ex7");
+			}
+		} catch (Exception ex) {
+			print("Button Action Not Found.");
 		}
 	}
 
@@ -945,14 +902,7 @@ public class Main implements ActionListener, MouseListener {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -966,6 +916,29 @@ public class Main implements ActionListener, MouseListener {
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// if (e.getSource().equals()) {
+		xOnFrame = e.getX();
+		yOnFrame = e.getY();
+		// }
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// if (e.getSource().equals(menus.get(menuName.indexOf("Move")))) {
+		int x = (int) e.getXOnScreen() - xOnFrame;
+		int y = (int) e.getYOnScreen() - yOnFrame;
+		consoleWindow.setLocation(x, y);
+		// }
 	}
 
 }

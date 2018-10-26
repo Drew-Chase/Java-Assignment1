@@ -10,7 +10,7 @@ import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
  */
 @SuppressWarnings("all")
 public class Exercise3 {
-	public static void main(String[] args) {
+	public Exercise3() {
 		Scanner in = new Scanner(System.in);
 		System.out.println("Enter your first and last name: ");
 		String name = in.nextLine();
