@@ -11,11 +11,15 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.FileSystemNotFoundException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +40,7 @@ import tk.dccraft.Assignment_1.part_1.MealTester;
 import tk.dccraft.Assignment_1.part_2.CalendarTester;
 import tk.dccraft.Assignment_2.bank.SavingsAccountTester;
 import tk.dccraft.Assignment_3.keys.KeyTester;
+import tk.dccraft.Assignment_4.school.InternshipApp;
 import tk.dccraft.exercises.Ex7;
 import tk.dccraft.exercises.Exercise3;
 import tk.dccraft.exercises.Exercise4;
@@ -57,7 +62,7 @@ import tk.dccraft.utils.settings.PreferenceWindow;
  *
  */
 @SuppressWarnings("all")
-public class Main implements ActionListener, MouseListener, MouseMotionListener {
+public class Main extends Listeners {
 
 	public static JTextArea console;
 	private static JFrame consoleWindow;
@@ -82,7 +87,7 @@ public class Main implements ActionListener, MouseListener, MouseMotionListener 
 
 	private static BIOS io = new BIOS();
 	private static int index = 0;
-	public static Font font, titleFont = new Font(new Main().initFonts("ScorchedEarth.otf").getFontName(), Font.PLAIN, 28);
+	public static Font font, titleFont = new Font(/*new Main().initFonts("ScorchedEarth.otf").getFontName()*/"Arial", Font.PLAIN, 28);
 	public char[] abc = ("abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".toUpperCase()).toCharArray();
 	public Font styleFont;
 	private static List<String> help = new ArrayList<String>();
@@ -135,7 +140,7 @@ public class Main implements ActionListener, MouseListener, MouseMotionListener 
 		menuItemName.add("a1:Calendar Tester");
 		menuItemName.add("a2:Savings Account");
 		menuItemName.add("a3:Key Breaker");
-		menuItemName.add("a4:Student");
+		menuItemName.add("a4:Internship App");
 		menuItemName.add("l1:Print Name");
 		menuItemName.add("l2:Vending Machine");
 		menuItemName.add("l3:Flipping Coin");
@@ -250,19 +255,6 @@ public class Main implements ActionListener, MouseListener, MouseMotionListener 
 		getLog().add(new Main().timestamp.format(date.getTime()) + " : " + message.toString() + "**");
 		if (isDefaultConsole()) {
 			console.append(message.toString() + "\n");
-			// char[] text = message.toString().toCharArray();
-			//
-			// for (int i = 0; i<text.length; i++) {
-			// int j = (message.toString().length() *
-			// console.getFont().getSize());
-			//// message += + "";
-			// if(j < console.getWidth()){
-			// console.append(text[i] + "");
-			// j+=console.getFont().getSize();
-			// }else if(j == console.getWidth())
-			// console.append("\n");
-			// }
-			// console.append("\n");
 		} else
 			System.out.println(message + "\n");
 	}
@@ -329,124 +321,144 @@ public class Main implements ActionListener, MouseListener, MouseMotionListener 
 	// }
 
 	public static void main(String[] args) {
+		boolean fileFound = true;
 		if (System.console() == null) {
-			Main main = new Main();
+			String FolderName = root + "Settings\\";
+			String FileName = "Pref.ini";
+//			Main main = new Main();
 			try {
-				io.TextReader("Pref.ini", root + "Settings\\", "style");
-				// main.setShouldLog(io.log.equalsIgnoreCase("true") ? true :
-				// false);
-				// main.shouldLog = (io.log.equalsIgnoreCase("true") ? true :
-				// false);
-				// System.out.println("setting is logging to " +
-				// main.isShouldLog());
-				main.setBg(new Color(Integer.decode(io.bg)));
-				main.setFg(new Color(Integer.decode(io.fg)));
-				main.setFontSize(Integer.parseInt(io.ft));
-				main.setIndex(Integer.parseInt(io.index));
-			} catch (Exception e) {
-				new Main().print("Files not found... Creating them");
-				new Main().loadDefaultFiles();
+				io.TextReader(FileName, FolderName, "style");
+				new Main().setBg(new Color(Integer.decode(io.bg)));
+				new Main().setFg(new Color(Integer.decode(io.fg)));
+				new Main().setFontSize(Integer.parseInt(io.ft));
+				new Main().setIndex(Integer.parseInt(io.index));
+				new Main().setConsoleBg(new Color(Integer.decode(io.cbg)));
+				new Main().setConsoleFg(new Color(Integer.decode(io.cfg)));
+				new Main().initConsoleWindow();
+			} catch (IOException e) {
+				System.out.println("HELP");
+				e.printStackTrace();
+//				new Main().Exit();
+//				fileFound = false;
 			}
-			setDefaultConsole(true);
+			// main.setShouldLog(io.log.equalsIgnoreCase("true") ? true :
+			// false);
+			// main.shouldLog = (io.log.equalsIgnoreCase("true") ? true :
+			// false);
+			// System.out.println("setting is logging to " +
+			// main.isShouldLog());
 			getLog().add("Starting LOG...**");
-			new Main().setConsoleBg(new Color(Integer.decode(io.cbg)));
-			new Main().setConsoleFg(new Color(Integer.decode(io.cfg)));
-			new Main().initConsoleWindow();
 			new Main().initStartMessages();
 			EventQueue.invokeLater(() -> {
 				consoleWindow.setVisible(true);
 			});
-		} else {
-			setDefaultConsole(false);
-			// Everything Below is for standard Command Line Launch
-			if (args.length > 0) {
-				if (args[0].equalsIgnoreCase("pos")) {
-					new MealTester();
-				} else if (args[0].equalsIgnoreCase("dob")) {
-					new CalendarTester();
-				} else if (args[0].equalsIgnoreCase("bank")) {
-					new SavingsAccountTester();
-				} else if (args[0].equalsIgnoreCase("lab1")) {
-					new Lab1();
-				} else if (args[0].equalsIgnoreCase("lab2")) {
-					new Main().Lab2();
-				} else if (args[0].equalsIgnoreCase("lab3")) {
-					new Lab3();
-				} else if (args[0].equalsIgnoreCase("lab4")) {
-					new Lab4();
-				} else if (args[0].equalsIgnoreCase("ex3")) {
-					new Exercise3();
-				} else if (args[0].equalsIgnoreCase("ex4")) {
-					new Exercise4();
-				} else if (args[0].equalsIgnoreCase("ex5")) {
-					new NumberGuesser();
-				} else if (args[0].equalsIgnoreCase("ex7")) {
-					new Ex7();
-				}else if(args[0].equalsIgnoreCase("ex8")) {
-					new Exercise8();
-				} else if (args[0].equalsIgnoreCase("load")) {
-					new Main().loadDefaultFiles();
-					new Main().Exit();
-				} else if (args[0].equalsIgnoreCase("pref")) {
-					new PreferenceWindow();
-				} else if (args[0].equalsIgnoreCase("update")) {
-					new Updater();
-				} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
-					new Main().help();
-				} else {
-					new Main().print(args[0] + " is not a proper argument.");
-					new Main().help();
-				}
-			} else {
-				while (true) {
-					help.add("pos:MealTester");
-					help.add("dob:CalculatorTester");
-					help.add("bank:SavingsAccountTester");
-					help.add("lab1:Lab1");
-					help.add("lab2:Lab2");
-					help.add("lab3:Lab3");
-					help.add("lab4:lab4");
-					help.add("load:Load Default Settings");
-					help.add("pref:Open Prefrences");
-					help.add("exit:Exits the Program");
-					help.add("custom terminal | custom | ct:Opens a custom ease of use Terminal");
-					Scanner sc = new Scanner(System.in);
-					new Main().print("type help or ? for a list of commands and cmd arguments");
-					String input = sc.nextLine();
-					if (input.equalsIgnoreCase("pos")) {
-						new MealTester();
-					} else if (input.equalsIgnoreCase("dob")) {
-						new CalendarTester();
-					} else if (input.equalsIgnoreCase("lab1")) {
-						new Lab1();
-					} else if (input.equalsIgnoreCase("lab2")) {
-						new Main().Lab2();
-					} else if (input.equalsIgnoreCase("lab3")) {
-						new Lab3();
-					} else if (input.equalsIgnoreCase("lab4")) {
-						new Lab4();
-					} else if (input.equalsIgnoreCase("bank")) {
-						new SavingsAccountTester();
-					} else if (input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("quit")) {
-						new Main().Exit();
-					} else if (input.equalsIgnoreCase("load")) {
-						new Main().loadDefaultFiles();
-						System.exit(0);
-					} else if (input.equalsIgnoreCase("update")) {
-						new Updater();
-					} else if (input.equalsIgnoreCase("pref")) {
-						new PreferenceWindow();
-					} else if (input.equalsIgnoreCase("custom terminal") || input.equalsIgnoreCase("custom") || input.equalsIgnoreCase("ct")) {
-						new Main().launchCustomTerminal();
-					} else if (input.equalsIgnoreCase("help") || input.equalsIgnoreCase("?")) {
-						new Main().help();
-					} else {
-						new Main().print("Commands Not Found: " + input);
-						new Main().help();
-					}
-				}
-			}
-		}
+			setDefaultConsole(true);
+			if (!fileFound) {
+				new Main().print("Files not found... Creating them");
+				new Main().loadDefaultFiles();
+				System.out.println("FILE NOT FOUND");
+			}}
+//		} else {
+//			setDefaultConsole(false);
+//			// Everything Below is for standard Command Line Launch
+//			if (args.length > 0) {
+//				if (args[0].equalsIgnoreCase("pos")) {
+//					new MealTester();
+//				} else if (args[0].equalsIgnoreCase("dob")) {
+//					new CalendarTester();
+//				} else if (args[0].equalsIgnoreCase("bank")) {
+//					new SavingsAccountTester();
+//				} else if (args[0].equalsIgnoreCase("lab1")) {
+//					new Lab1();
+//				} else if (args[0].equalsIgnoreCase("lab2")) {
+//					new Main().Lab2();
+//				} else if (args[0].equalsIgnoreCase("lab3")) {
+//					new Lab3();
+//				} else if (args[0].equalsIgnoreCase("lab4")) {
+//					new Lab4();
+//				} else if (args[0].equalsIgnoreCase("ex3")) {
+//					new Exercise3();
+//				} else if (args[0].equalsIgnoreCase("ex4")) {
+//					new Exercise4();
+//				} else if (args[0].equalsIgnoreCase("ex5")) {
+//					new NumberGuesser();
+//				} else if (args[0].equalsIgnoreCase("ex7")) {
+//					new Ex7();
+//				} else if (args[0].equalsIgnoreCase("ex8")) {
+//					new Exercise8();
+//				} else if (args[0].equalsIgnoreCase("load")) {
+//					new Main().loadDefaultFiles();
+//					new Main().Exit();
+//				} else if (args[0].equalsIgnoreCase("pref")) {
+//					new PreferenceWindow();
+//				} else if (args[0].equalsIgnoreCase("update")) {
+//					new Updater();
+//				} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
+//					new Main().help();
+//				} else if (args[0].equalsIgnoreCase("gui")) {
+//					// setDefaultConsole(true);
+//					getLog().add("Starting LOG...**");
+//					new Main().setConsoleBg(new Color(Integer.decode(io.cbg)));
+//					new Main().setConsoleFg(new Color(Integer.decode(io.cfg)));
+//					new Main().initConsoleWindow();
+//					new Main().initStartMessages();
+//					EventQueue.invokeLater(() -> {
+//						consoleWindow.setVisible(true);
+//					});
+//				} else {
+//					new Main().print(args[0] + " is not a proper argument.");
+//					new Main().help();
+//				}
+//			} else {
+//				while (true) {
+//					help.add("pos:MealTester");
+//					help.add("dob:CalculatorTester");
+//					help.add("bank:SavingsAccountTester");
+//					help.add("lab1:Lab1");
+//					help.add("lab2:Lab2");
+//					help.add("lab3:Lab3");
+//					help.add("lab4:lab4");
+//					help.add("load:Load Default Settings");
+//					help.add("pref:Open Prefrences");
+//					help.add("exit:Exits the Program");
+//					help.add("custom terminal | custom | ct:Opens a custom ease of use Terminal");
+//					Scanner sc = new Scanner(System.in);
+//					new Main().print("type help or ? for a list of commands and cmd arguments");
+//					String input = sc.nextLine();
+//					if (input.equalsIgnoreCase("pos")) {
+//						new MealTester();
+//					} else if (input.equalsIgnoreCase("dob")) {
+//						new CalendarTester();
+//					} else if (input.equalsIgnoreCase("lab1")) {
+//						new Lab1();
+//					} else if (input.equalsIgnoreCase("lab2")) {
+//						new Main().Lab2();
+//					} else if (input.equalsIgnoreCase("lab3")) {
+//						new Lab3();
+//					} else if (input.equalsIgnoreCase("lab4")) {
+//						new Lab4();
+//					} else if (input.equalsIgnoreCase("bank")) {
+//						new SavingsAccountTester();
+//					} else if (input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("quit")) {
+//						new Main().Exit();
+//					} else if (input.equalsIgnoreCase("load")) {
+//						new Main().loadDefaultFiles();
+//						System.exit(0);
+//					} else if (input.equalsIgnoreCase("update")) {
+//						new Updater();
+//					} else if (input.equalsIgnoreCase("pref")) {
+//						new PreferenceWindow();
+//					} else if (input.equalsIgnoreCase("custom terminal") || input.equalsIgnoreCase("custom") || input.equalsIgnoreCase("ct")) {
+//						new Main().launchCustomTerminal();
+//					} else if (input.equalsIgnoreCase("help") || input.equalsIgnoreCase("?")) {
+//						new Main().help();
+//					} else {
+//						new Main().print("Commands Not Found: " + input);
+//						new Main().help();
+//					}
+//				}
+//			}
+//		}
 	}
 
 	public void initStartMessages() {
@@ -512,7 +524,7 @@ public class Main implements ActionListener, MouseListener, MouseMotionListener 
 		// if(f.mkdirs())
 		String FolderName = root + "Settings\\";
 		String FileName = "Pref.ini";
-		String fileContent = "bg:0x404040\nfg:0xFFFFFF\nft:12\ncbg:0x000000\ncfg:0xFF00FF\nindex:0\nlog:true";
+		String fileContent = "bg:0x441E00\nfg:0xFFFFFF\nft:12\ncbg:0x8091B\ncfg:0xcc9900\nindex:0\nlog:true";
 		try {
 			io.TextWriter(FileName, fileContent, FolderName, false);
 		} catch (IOException e1) {
@@ -665,19 +677,22 @@ public class Main implements ActionListener, MouseListener, MouseMotionListener 
 				CmdLabStarter("lab3");
 			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("l4:Loops")))) {
 				CmdLabStarter("lab4");
-			}else if(e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 3")))){
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 3")))) {
 				CmdLabStarter("ex3");
-			}else if(e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 4")))){
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 4")))) {
 				CmdLabStarter("ex4");
-			}else if(e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 5")))){
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 5")))) {
 				CmdLabStarter("ex5");
-			}else if(e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 7")))){
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 7")))) {
 				CmdLabStarter("ex7");
-			}else if(e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 8")))){
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 8")))) {
 				CmdLabStarter("ex8");
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("a4:Internship App")))) {
+				new InternshipApp();
 			}
 		} catch (Exception ex) {
 			print("Button Action Not Found.");
+			ex.printStackTrace();
 		}
 	}
 
@@ -899,35 +914,6 @@ public class Main implements ActionListener, MouseListener, MouseMotionListener 
 
 	public static void addLog(String log) {
 		Main.log.add(log);
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
