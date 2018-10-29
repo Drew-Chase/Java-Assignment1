@@ -87,7 +87,7 @@ public class Main extends Listeners {
 
 	private static BIOS io = new BIOS();
 	private static int index = 0;
-	public static Font font, titleFont = new Font(/*new Main().initFonts("ScorchedEarth.otf").getFontName()*/"Arial", Font.PLAIN, 28);
+	public static Font font, titleFont = new Font(new Main().initFonts("ScorchedEarth.otf").getFontName(), Font.PLAIN, 28);
 	public char[] abc = ("abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".toUpperCase()).toCharArray();
 	public Font styleFont;
 	private static List<String> help = new ArrayList<String>();
@@ -325,7 +325,7 @@ public class Main extends Listeners {
 		if (System.console() == null) {
 			String FolderName = root + "Settings\\";
 			String FileName = "Pref.ini";
-//			Main main = new Main();
+			// Main main = new Main();
 			try {
 				io.TextReader(FileName, FolderName, "style");
 				new Main().setBg(new Color(Integer.decode(io.bg)));
@@ -338,8 +338,9 @@ public class Main extends Listeners {
 			} catch (IOException e) {
 				System.out.println("HELP");
 				e.printStackTrace();
-//				new Main().Exit();
-//				fileFound = false;
+				new Main().loadDefaultFiles();
+				// new Main().Exit();
+				// fileFound = false;
 			}
 			// main.setShouldLog(io.log.equalsIgnoreCase("true") ? true :
 			// false);
@@ -347,118 +348,118 @@ public class Main extends Listeners {
 			// false);
 			// System.out.println("setting is logging to " +
 			// main.isShouldLog());
+			setDefaultConsole(true);
 			getLog().add("Starting LOG...**");
 			new Main().initStartMessages();
 			EventQueue.invokeLater(() -> {
 				consoleWindow.setVisible(true);
 			});
-			setDefaultConsole(true);
 			if (!fileFound) {
 				new Main().print("Files not found... Creating them");
 				new Main().loadDefaultFiles();
 				System.out.println("FILE NOT FOUND");
-			}}
-//		} else {
-//			setDefaultConsole(false);
-//			// Everything Below is for standard Command Line Launch
-//			if (args.length > 0) {
-//				if (args[0].equalsIgnoreCase("pos")) {
-//					new MealTester();
-//				} else if (args[0].equalsIgnoreCase("dob")) {
-//					new CalendarTester();
-//				} else if (args[0].equalsIgnoreCase("bank")) {
-//					new SavingsAccountTester();
-//				} else if (args[0].equalsIgnoreCase("lab1")) {
-//					new Lab1();
-//				} else if (args[0].equalsIgnoreCase("lab2")) {
-//					new Main().Lab2();
-//				} else if (args[0].equalsIgnoreCase("lab3")) {
-//					new Lab3();
-//				} else if (args[0].equalsIgnoreCase("lab4")) {
-//					new Lab4();
-//				} else if (args[0].equalsIgnoreCase("ex3")) {
-//					new Exercise3();
-//				} else if (args[0].equalsIgnoreCase("ex4")) {
-//					new Exercise4();
-//				} else if (args[0].equalsIgnoreCase("ex5")) {
-//					new NumberGuesser();
-//				} else if (args[0].equalsIgnoreCase("ex7")) {
-//					new Ex7();
-//				} else if (args[0].equalsIgnoreCase("ex8")) {
-//					new Exercise8();
-//				} else if (args[0].equalsIgnoreCase("load")) {
-//					new Main().loadDefaultFiles();
-//					new Main().Exit();
-//				} else if (args[0].equalsIgnoreCase("pref")) {
-//					new PreferenceWindow();
-//				} else if (args[0].equalsIgnoreCase("update")) {
-//					new Updater();
-//				} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
-//					new Main().help();
-//				} else if (args[0].equalsIgnoreCase("gui")) {
-//					// setDefaultConsole(true);
-//					getLog().add("Starting LOG...**");
-//					new Main().setConsoleBg(new Color(Integer.decode(io.cbg)));
-//					new Main().setConsoleFg(new Color(Integer.decode(io.cfg)));
-//					new Main().initConsoleWindow();
-//					new Main().initStartMessages();
-//					EventQueue.invokeLater(() -> {
-//						consoleWindow.setVisible(true);
-//					});
-//				} else {
-//					new Main().print(args[0] + " is not a proper argument.");
-//					new Main().help();
-//				}
-//			} else {
-//				while (true) {
-//					help.add("pos:MealTester");
-//					help.add("dob:CalculatorTester");
-//					help.add("bank:SavingsAccountTester");
-//					help.add("lab1:Lab1");
-//					help.add("lab2:Lab2");
-//					help.add("lab3:Lab3");
-//					help.add("lab4:lab4");
-//					help.add("load:Load Default Settings");
-//					help.add("pref:Open Prefrences");
-//					help.add("exit:Exits the Program");
-//					help.add("custom terminal | custom | ct:Opens a custom ease of use Terminal");
-//					Scanner sc = new Scanner(System.in);
-//					new Main().print("type help or ? for a list of commands and cmd arguments");
-//					String input = sc.nextLine();
-//					if (input.equalsIgnoreCase("pos")) {
-//						new MealTester();
-//					} else if (input.equalsIgnoreCase("dob")) {
-//						new CalendarTester();
-//					} else if (input.equalsIgnoreCase("lab1")) {
-//						new Lab1();
-//					} else if (input.equalsIgnoreCase("lab2")) {
-//						new Main().Lab2();
-//					} else if (input.equalsIgnoreCase("lab3")) {
-//						new Lab3();
-//					} else if (input.equalsIgnoreCase("lab4")) {
-//						new Lab4();
-//					} else if (input.equalsIgnoreCase("bank")) {
-//						new SavingsAccountTester();
-//					} else if (input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("quit")) {
-//						new Main().Exit();
-//					} else if (input.equalsIgnoreCase("load")) {
-//						new Main().loadDefaultFiles();
-//						System.exit(0);
-//					} else if (input.equalsIgnoreCase("update")) {
-//						new Updater();
-//					} else if (input.equalsIgnoreCase("pref")) {
-//						new PreferenceWindow();
-//					} else if (input.equalsIgnoreCase("custom terminal") || input.equalsIgnoreCase("custom") || input.equalsIgnoreCase("ct")) {
-//						new Main().launchCustomTerminal();
-//					} else if (input.equalsIgnoreCase("help") || input.equalsIgnoreCase("?")) {
-//						new Main().help();
-//					} else {
-//						new Main().print("Commands Not Found: " + input);
-//						new Main().help();
-//					}
-//				}
-//			}
-//		}
+			}
+		} else {
+			setDefaultConsole(false);
+			// Everything Below is for standard Command Line Launch
+			if (args.length > 0) {
+				if (args[0].equalsIgnoreCase("pos")) {
+					new MealTester();
+				} else if (args[0].equalsIgnoreCase("dob")) {
+					new CalendarTester();
+				} else if (args[0].equalsIgnoreCase("bank")) {
+					new SavingsAccountTester();
+				} else if (args[0].equalsIgnoreCase("lab1")) {
+					new Lab1();
+				} else if (args[0].equalsIgnoreCase("lab2")) {
+					new Main().Lab2();
+				} else if (args[0].equalsIgnoreCase("lab3")) {
+					new Lab3();
+				} else if (args[0].equalsIgnoreCase("lab4")) {
+					new Lab4();
+				} else if (args[0].equalsIgnoreCase("ex3")) {
+					new Exercise3();
+				} else if (args[0].equalsIgnoreCase("ex4")) {
+					new Exercise4();
+				} else if (args[0].equalsIgnoreCase("ex5")) {
+					new NumberGuesser();
+				} else if (args[0].equalsIgnoreCase("ex7")) {
+					new Ex7();
+				} else if (args[0].equalsIgnoreCase("ex8")) {
+					new Exercise8();
+				} else if (args[0].equalsIgnoreCase("load")) {
+					new Main().loadDefaultFiles();
+					new Main().Exit();
+				} else if (args[0].equalsIgnoreCase("pref")) {
+					new PreferenceWindow();
+				} else if (args[0].equalsIgnoreCase("update")) {
+					new Updater();
+				} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
+					new Main().help();
+				} else if (args[0].equalsIgnoreCase("gui")) {
+					// setDefaultConsole(true);
+					getLog().add("Starting LOG...**");
+					new Main().setConsoleBg(new Color(Integer.decode(io.cbg)));
+					new Main().setConsoleFg(new Color(Integer.decode(io.cfg)));
+					new Main().initConsoleWindow();
+					new Main().initStartMessages();
+					EventQueue.invokeLater(() -> {
+						consoleWindow.setVisible(true);
+					});
+				} else {
+					new Main().print(args[0] + " is not a proper argument.");
+					new Main().help();
+				}
+			} else {
+				while (true) {
+					help.add("pos:MealTester");
+					help.add("dob:CalculatorTester");
+					help.add("bank:SavingsAccountTester");
+					help.add("lab1:Lab1");
+					help.add("lab2:Lab2");
+					help.add("lab3:Lab3");
+					help.add("lab4:lab4");
+					help.add("load:Load Default Settings");
+					help.add("pref:Open Prefrences");
+					help.add("exit:Exits the Program");
+					help.add("custom terminal | custom | ct:Opens a custom ease of use Terminal");
+					Scanner sc = new Scanner(System.in);
+					new Main().print("type help or ? for a list of commands and cmd arguments");
+					String input = sc.nextLine();
+					if (input.equalsIgnoreCase("pos")) {
+						new MealTester();
+					} else if (input.equalsIgnoreCase("dob")) {
+						new CalendarTester();
+					} else if (input.equalsIgnoreCase("lab1")) {
+						new Lab1();
+					} else if (input.equalsIgnoreCase("lab2")) {
+						new Main().Lab2();
+					} else if (input.equalsIgnoreCase("lab3")) {
+						new Lab3();
+					} else if (input.equalsIgnoreCase("lab4")) {
+						new Lab4();
+					} else if (input.equalsIgnoreCase("bank")) {
+						new SavingsAccountTester();
+					} else if (input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("quit")) {
+						new Main().Exit();
+					} else if (input.equalsIgnoreCase("load")) {
+						new Main().loadDefaultFiles();
+						System.exit(0);
+					} else if (input.equalsIgnoreCase("update")) {
+						new Updater();
+					} else if (input.equalsIgnoreCase("pref")) {
+						new PreferenceWindow();
+					} else if (input.equalsIgnoreCase("custom terminal") || input.equalsIgnoreCase("custom") || input.equalsIgnoreCase("ct")) {
+						new Main().launchCustomTerminal();
+					} else if (input.equalsIgnoreCase("help") || input.equalsIgnoreCase("?")) {
+						new Main().help();
+					} else {
+						new Main().print("Commands Not Found: " + input);
+						new Main().help();
+					}
+				}
+			}
+		}
 	}
 
 	public void initStartMessages() {
