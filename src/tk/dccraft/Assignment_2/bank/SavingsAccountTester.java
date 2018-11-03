@@ -289,12 +289,7 @@ public class SavingsAccountTester extends JFrame implements ActionListener, Focu
 	 * Reads DataBase info from the BIOS
 	 */
 	public void ReadFromFile() {
-		try {
-			io.TextReader("bankinfo.dat", Main.root + "\\Settings\\DataBase\\", "bank");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		io.TextReader("bankinfo.dat", Main.root + "\\Settings\\DataBase\\", "bank");
 	}
 
 	/**

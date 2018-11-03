@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<!-- Configuration of the Ant build system to generate a Jar file -->
+<project name="Assignments-Java-Course" default="CreateJar">
+	<target name="CreateJar" description="Create Jar file">
+		<jar jarfile="Y:/assignment/Assignment.jar" basedir="./target/classes/" includes="**/*">
+			<manifest>
+				<attribute name="Main-Class" value="tk.dccraft.init.Main" />
+
+			</manifest>
+		</jar>
+	</target>
+</project>

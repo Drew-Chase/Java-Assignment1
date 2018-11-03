@@ -10,16 +10,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.FileSystemNotFoundException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,10 +41,11 @@ import tk.dccraft.exercises.Exercise4;
 import tk.dccraft.exercises.Exercise8;
 import tk.dccraft.exercises.NumberGuesser;
 import tk.dccraft.http.updater.Updater;
-import tk.dccraft.lab1.Lab1;
-import tk.dccraft.lab2.VendingMachine;
-import tk.dccraft.lab3.Lab3;
-import tk.dccraft.lab4.Lab4;
+import tk.dccraft.labs.Lab1;
+import tk.dccraft.labs.Lab2;
+import tk.dccraft.labs.Lab3;
+import tk.dccraft.labs.Lab4;
+import tk.dccraft.labs.Lab5;
 import tk.dccraft.utils.BIOS;
 import tk.dccraft.utils.settings.PreferenceWindow;
 
@@ -65,6 +60,7 @@ import tk.dccraft.utils.settings.PreferenceWindow;
 public class Main extends Listeners {
 
 	public static JTextArea console;
+	public static Main m = new Main();
 	private static JFrame consoleWindow;
 	private static DefaultCaret caret;
 	private static JMenuBar menuBar, titleBar;
@@ -87,7 +83,7 @@ public class Main extends Listeners {
 
 	private static BIOS io = new BIOS();
 	private static int index = 0;
-	public static Font font, titleFont = new Font(new Main().initFonts("ScorchedEarth.otf").getFontName(), Font.PLAIN, 28);
+	public static Font font, titleFont = new Font(m.initFonts("ScorchedEarth.otf").getFontName(), Font.PLAIN, 28);
 	public char[] abc = ("abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".toUpperCase()).toCharArray();
 	public Font styleFont;
 	private static List<String> help = new ArrayList<String>();
@@ -145,6 +141,7 @@ public class Main extends Listeners {
 		menuItemName.add("l2:Vending Machine");
 		menuItemName.add("l3:Flipping Coin");
 		menuItemName.add("l4:Loops");
+		menuItemName.add("l5:Arrays");
 		menuItemName.add("ed:clear");
 		menuItemName.add("ed:Update");
 		menuItemName.add("ed:Open in System Terminal");
@@ -252,7 +249,7 @@ public class Main extends Listeners {
 	 *            printable string
 	 */
 	public void print(Object message) {
-		getLog().add(new Main().timestamp.format(date.getTime()) + " : " + message.toString() + "**");
+		getLog().add(m.timestamp.format(date.getTime()) + " : " + message.toString() + "**");
 		if (isDefaultConsole()) {
 			console.append(message.toString() + "\n");
 		} else
@@ -325,38 +322,27 @@ public class Main extends Listeners {
 		if (System.console() == null) {
 			String FolderName = root + "Settings\\";
 			String FileName = "Pref.ini";
-			// Main main = new Main();
 			try {
 				io.TextReader(FileName, FolderName, "style");
-				new Main().setBg(new Color(Integer.decode(io.bg)));
-				new Main().setFg(new Color(Integer.decode(io.fg)));
-				new Main().setFontSize(Integer.parseInt(io.ft));
-				new Main().setIndex(Integer.parseInt(io.index));
-				new Main().setConsoleBg(new Color(Integer.decode(io.cbg)));
-				new Main().setConsoleFg(new Color(Integer.decode(io.cfg)));
-				new Main().initConsoleWindow();
-			} catch (IOException e) {
-				System.out.println("HELP");
-				e.printStackTrace();
-				new Main().loadDefaultFiles();
-				// new Main().Exit();
-				// fileFound = false;
+				m.setBg(new Color(Integer.decode(io.bg)));
+				m.setFg(new Color(Integer.decode(io.fg)));
+				m.setFontSize(Integer.parseInt(io.ft));
+				m.setIndex(Integer.parseInt(io.index));
+				m.setConsoleBg(new Color(Integer.decode(io.cbg)));
+				m.setConsoleFg(new Color(Integer.decode(io.cfg)));
+				m.initConsoleWindow();
+			} catch (Exception e) {
+				m.print("ERROR Message: " + e.getMessage());
 			}
-			// main.setShouldLog(io.log.equalsIgnoreCase("true") ? true :
-			// false);
-			// main.shouldLog = (io.log.equalsIgnoreCase("true") ? true :
-			// false);
-			// System.out.println("setting is logging to " +
-			// main.isShouldLog());
 			setDefaultConsole(true);
 			getLog().add("Starting LOG...**");
-			new Main().initStartMessages();
+			m.initStartMessages();
 			EventQueue.invokeLater(() -> {
 				consoleWindow.setVisible(true);
 			});
 			if (!fileFound) {
-				new Main().print("Files not found... Creating them");
-				new Main().loadDefaultFiles();
+				m.print("Files not found... Creating them");
+				m.loadDefaultFiles();
 				System.out.println("FILE NOT FOUND");
 			}
 		} else {
@@ -372,7 +358,7 @@ public class Main extends Listeners {
 				} else if (args[0].equalsIgnoreCase("lab1")) {
 					new Lab1();
 				} else if (args[0].equalsIgnoreCase("lab2")) {
-					new Main().Lab2();
+					m.Lab2();
 				} else if (args[0].equalsIgnoreCase("lab3")) {
 					new Lab3();
 				} else if (args[0].equalsIgnoreCase("lab4")) {
@@ -388,27 +374,27 @@ public class Main extends Listeners {
 				} else if (args[0].equalsIgnoreCase("ex8")) {
 					new Exercise8();
 				} else if (args[0].equalsIgnoreCase("load")) {
-					new Main().loadDefaultFiles();
-					new Main().Exit();
+					m.loadDefaultFiles();
+					m.Exit();
 				} else if (args[0].equalsIgnoreCase("pref")) {
 					new PreferenceWindow();
 				} else if (args[0].equalsIgnoreCase("update")) {
 					new Updater();
 				} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
-					new Main().help();
+					m.help();
 				} else if (args[0].equalsIgnoreCase("gui")) {
 					// setDefaultConsole(true);
 					getLog().add("Starting LOG...**");
-					new Main().setConsoleBg(new Color(Integer.decode(io.cbg)));
-					new Main().setConsoleFg(new Color(Integer.decode(io.cfg)));
-					new Main().initConsoleWindow();
-					new Main().initStartMessages();
+					m.setConsoleBg(new Color(Integer.decode(io.cbg)));
+					m.setConsoleFg(new Color(Integer.decode(io.cfg)));
+					m.initConsoleWindow();
+					m.initStartMessages();
 					EventQueue.invokeLater(() -> {
 						consoleWindow.setVisible(true);
 					});
 				} else {
-					new Main().print(args[0] + " is not a proper argument.");
-					new Main().help();
+					m.print(args[0] + " is not a proper argument.");
+					m.help();
 				}
 			} else {
 				while (true) {
@@ -424,7 +410,7 @@ public class Main extends Listeners {
 					help.add("exit:Exits the Program");
 					help.add("custom terminal | custom | ct:Opens a custom ease of use Terminal");
 					Scanner sc = new Scanner(System.in);
-					new Main().print("type help or ? for a list of commands and cmd arguments");
+					m.print("type help or ? for a list of commands and cmd arguments");
 					String input = sc.nextLine();
 					if (input.equalsIgnoreCase("pos")) {
 						new MealTester();
@@ -433,7 +419,7 @@ public class Main extends Listeners {
 					} else if (input.equalsIgnoreCase("lab1")) {
 						new Lab1();
 					} else if (input.equalsIgnoreCase("lab2")) {
-						new Main().Lab2();
+						m.Lab2();
 					} else if (input.equalsIgnoreCase("lab3")) {
 						new Lab3();
 					} else if (input.equalsIgnoreCase("lab4")) {
@@ -441,21 +427,21 @@ public class Main extends Listeners {
 					} else if (input.equalsIgnoreCase("bank")) {
 						new SavingsAccountTester();
 					} else if (input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("quit")) {
-						new Main().Exit();
+						m.Exit();
 					} else if (input.equalsIgnoreCase("load")) {
-						new Main().loadDefaultFiles();
+						m.loadDefaultFiles();
 						System.exit(0);
 					} else if (input.equalsIgnoreCase("update")) {
 						new Updater();
 					} else if (input.equalsIgnoreCase("pref")) {
 						new PreferenceWindow();
 					} else if (input.equalsIgnoreCase("custom terminal") || input.equalsIgnoreCase("custom") || input.equalsIgnoreCase("ct")) {
-						new Main().launchCustomTerminal();
+						m.launchCustomTerminal();
 					} else if (input.equalsIgnoreCase("help") || input.equalsIgnoreCase("?")) {
-						new Main().help();
+						m.help();
 					} else {
-						new Main().print("Commands Not Found: " + input);
-						new Main().help();
+						m.print("Commands Not Found: " + input);
+						m.help();
 					}
 				}
 			}
@@ -499,7 +485,7 @@ public class Main extends Listeners {
 	 * Initializes Lab 2
 	 */
 	private void Lab2() {
-		VendingMachine vm = new VendingMachine(10);
+		Lab2 vm = new Lab2(10);
 		if (!isDefaultConsole())
 			vm.fill();
 		vm.dispense();
@@ -511,16 +497,16 @@ public class Main extends Listeners {
 	 * Creates a help menu for the system console
 	 */
 	private void help() {
-		new Main().print("HELP!!!\n" + "---Here's a list of commands:");
+		m.print("HELP!!!\n" + "---Here's a list of commands:");
 		for (int i = 0; i < help.size(); i++) {
-			new Main().print("---------" + help.get(i));
+			m.print("---------" + help.get(i));
 		}
 	}
 
 	/**
 	 * Loads the default settings required for the program to operate properly
 	 */
-	private void loadDefaultFiles() {
+	public void loadDefaultFiles() {
 		// File f = new File(root);
 		// if(f.mkdirs())
 		String FolderName = root + "Settings\\";
@@ -546,7 +532,7 @@ public class Main extends Listeners {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new Main().Exit();
+		m.Exit();
 	}
 
 	public String getExportedName() {
@@ -678,6 +664,8 @@ public class Main extends Listeners {
 				CmdLabStarter("lab3");
 			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("l4:Loops")))) {
 				CmdLabStarter("lab4");
+			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("l5:Arrays")))) {
+				new Lab5();
 			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 3")))) {
 				CmdLabStarter("ex3");
 			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 4")))) {
@@ -763,7 +751,7 @@ public class Main extends Listeners {
 			b = bg.getBlue() - STANDARD_COLOR_DIFFERENCE;
 		else
 			bVisible = false;
-		new Main().print(bg.toString());
+		m.print(bg.toString());
 		Color c;
 		if (!rVisible && !gVisible && !bVisible)
 			c = new Color(bg.getRed() + STANDARD_COLOR_DIFFERENCE, bg.getGreen() + STANDARD_COLOR_DIFFERENCE, bg.getBlue() + STANDARD_COLOR_DIFFERENCE);
@@ -888,7 +876,7 @@ public class Main extends Listeners {
 	 *            tab index
 	 */
 	public void setIndex(int index) {
-		new Main().index = index;
+		m.index = index;
 	}
 
 	/**

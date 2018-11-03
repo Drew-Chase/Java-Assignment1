@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -48,12 +49,19 @@ public class BIOS extends Main {
 	 * @param type
 	 * @throws IOException
 	 */
-	public void TextReader(String FileName, String FileLocation, String type) throws IOException {
+	public void TextReader(String FileName, String FileLocation, String type) {
 		print("Accessing Text Reader Method...");
 		print("Attempting To Read Designated File...");
-		FileReader file = new FileReader(FileLocation + FileName);
-		print("Reading File: " + FileName + " in " + FileLocation);
-		BufferedReader reader = new BufferedReader(file);
+		FileReader file;
+		try {
+			file = new FileReader(FileLocation + FileName);
+			print("Reading File: " + FileName + " in " + FileLocation);
+			reader = new BufferedReader(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			print("Thats so weird cant seem to locate the file");
+			loadDefaultFiles();
+		}
 
 		BufferedInputStream inStream = new BufferedInputStream(System.in);
 
@@ -111,7 +119,7 @@ public class BIOS extends Main {
 					line = reader.readLine();
 				}
 			} catch (Exception e) {
-				print("Had A Problem with the while loop in the TextReader Method(Section 1:Style)\n Couldn't proccess line reader");
+				print("Had A Problem with the while loop in the TextReader Method(Section 1:Style)\nCouldn't proccess line reader");
 				e.printStackTrace();
 			}
 		} else if (type.equalsIgnoreCase("bank")) {
@@ -144,17 +152,17 @@ public class BIOS extends Main {
 				print("Had A Problem with the while loop in the TextReader Method(Section 2:Banking)\n Couldn't proccess line reader");
 				e.printStackTrace();
 			}
-		}else if(type.equalsIgnoreCase("metadata")){
-			try{
+		} else if (type.equalsIgnoreCase("metadata")) {
+			try {
 				String text = "";
 				String line = reader.readLine();
-				while(line != null){
-					if(line.startsWith("author:")){
-						
+				while (line != null) {
+					if (line.startsWith("author:")) {
+
 					}
 				}
-			}catch(Exception e){
-				
+			} catch (Exception e) {
+
 			}
 		} else {
 			try {
@@ -173,7 +181,11 @@ public class BIOS extends Main {
 				e.printStackTrace();
 			}
 		}
-		inStream.close();
+		try {
+			inStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 
