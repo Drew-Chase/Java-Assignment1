@@ -1,18 +1,13 @@
 package tk.dccraft.init;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -20,15 +15,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.text.DefaultCaret;
 
 import tk.dccraft.Assignment_1.part_1.MealTester;
 import tk.dccraft.Assignment_1.part_2.CalendarTester;
@@ -59,15 +53,15 @@ import tk.dccraft.utils.settings.PreferenceWindow;
 @SuppressWarnings("all")
 public class Main extends Listeners {
 
+	public static Terminal terminal;
+	private Thread thread = new Thread();
 	public static JTextArea console;
 	public static Main m = new Main();
 	private static JFrame consoleWindow;
-	private static DefaultCaret caret;
-	private static JMenuBar menuBar, titleBar;
-	private static List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
-	private static List<JMenu> menus = new ArrayList<JMenu>();
-	private static List<String> menuName = new ArrayList<String>();
-	private static List<String> menuItemName = new ArrayList<String>();
+	private static List<JMenuItem> menuItems;
+	private static List<JMenu> menus;
+	private static List<String> menuName;
+	private static List<String> menuItemName;
 	private static JButton exit;
 	private static Color bg, fg, cbg, cfg;
 	private static int fontSize = 12;
@@ -79,6 +73,7 @@ public class Main extends Listeners {
 	private final String DATE_STRING = dateFormat.format(date.getTime());
 	private static List<String> log = new ArrayList<String>();
 
+	private static Scanner sc = new Scanner(System.in);
 	private int xOnFrame, yOnFrame;
 
 	private static BIOS io = new BIOS();
@@ -93,155 +88,6 @@ public class Main extends Listeners {
 	public boolean shouldLog;
 
 	/**
-	 * Initializes the Custom Console Window
-	 */
-	public void initConsoleWindow() {
-		// Initializing Frame
-		consoleWindow = new JFrame("Console");
-		consoleWindow.setSize(new Dimension(500, 300));
-		consoleWindow.setUndecorated(true);
-		consoleWindow.setLocation(50, 100);
-		consoleWindow.setResizable(true);
-		consoleWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		consoleWindow.setBackground(getConsoleBg());
-		consoleWindow.setForeground(getConsoleFg());
-
-		// Initializing UI
-		// Menu Items
-		titleBar = new JMenuBar();
-		titleBar.setBorderPainted(false);
-		titleBar.setForeground(getConsoleFg());
-		titleBar.setBackground(getConsoleBg());
-		titleBar.addMouseListener(this);
-		titleBar.addMouseMotionListener(this);
-
-		menuBar = new JMenuBar();
-		menuBar.setBorderPainted(false);
-		menuBar.setForeground(getConsoleFg());
-		menuBar.setBackground(getConsoleBg());
-		menuBar.addMouseListener(this);
-		menuBar.addMouseMotionListener(this);
-
-		menuName.add("File");
-		menuName.add("Edit");
-		menuName.add("Assignments");
-		menuName.add("Assignment 1");
-		menuName.add("Assignment 2");
-		menuName.add("Assignment 3");
-		menuName.add("Assignment 4");
-		menuName.add("Labs");
-		menuName.add("Exercises");
-
-		menuItemName.add("a1:Meal Tester");
-		menuItemName.add("a1:Calendar Tester");
-		menuItemName.add("a2:Savings Account");
-		menuItemName.add("a3:Key Breaker");
-		menuItemName.add("a4:Internship App");
-		menuItemName.add("l1:Print Name");
-		menuItemName.add("l2:Vending Machine");
-		menuItemName.add("l3:Flipping Coin");
-		menuItemName.add("l4:Loops");
-		menuItemName.add("l5:Arrays");
-		menuItemName.add("ed:clear");
-		menuItemName.add("ed:Update");
-		menuItemName.add("ed:Open in System Terminal");
-		menuItemName.add("ed:preferences");
-		menuItemName.add("ed:load");
-		menuItemName.add("ex:Exercise 3");
-		menuItemName.add("ex:Exercise 4");
-		menuItemName.add("ex:Exercise 5");
-		menuItemName.add("ex:Exercise 7");
-		menuItemName.add("ex:Exercise 8");
-
-		for (int i = 0; i < menuName.size(); i++) {
-			menus.add(new JMenu());
-			String text = menuName.get(i).toCharArray()[0] + menuName.get(i).substring(1);
-			menus.get(i).setText(text);
-			menus.get(i).setBackground(getConsoleBg());
-			menus.get(i).setForeground(getConsoleFg());
-			menus.get(i).setText(menuName.get(i));
-			menus.get(i).addActionListener(this);
-			if (menuName.get(i).equalsIgnoreCase("Assignments") || menuName.get(i).equalsIgnoreCase("Labs") || menuName.get(i).equalsIgnoreCase("Exercises")) {
-				menus.get(menuName.indexOf("File")).add(menus.get(i));
-			} else if (menuName.get(i).startsWith("Assignment ")) {
-				menus.get(menuName.indexOf("Assignments")).add(menus.get(i));
-			} else {
-				menuBar.add(menus.get(i));
-			}
-		}
-
-		for (int i = 0; i < menuItemName.size(); i++) {
-			menuItems.add(new JMenuItem());
-			String text = menuItemName.get(i).substring(3);
-			text = (text.toCharArray()[0] + "").toString().toUpperCase() + text.substring(1);
-			menuItems.get(i).setText(text);
-			menuItems.get(i).setBackground(getConsoleBg());
-			menuItems.get(i).setForeground(getConsoleFg());
-			menuItems.get(i).addActionListener(this);
-			if (menuItemName.get(i).startsWith("a1:")) {
-				menus.get(menuName.indexOf("Assignment 1")).add(menuItems.get(i));
-			} else if (menuItemName.get(i).startsWith("a2:")) {
-				menus.get(menuName.indexOf("Assignment 2")).add(menuItems.get(i));
-			} else if (menuItemName.get(i).startsWith("a3:")) {
-				menus.get(menuName.indexOf("Assignment 3")).add(menuItems.get(i));
-				menuItems.get(i).setEnabled(false);
-			} else if (menuItemName.get(i).startsWith("a4:")) {
-				menus.get(menuName.indexOf("Assignment 4")).add(menuItems.get(i));
-			} else if (menuItemName.get(i).startsWith("l")) {
-				menus.get(menuName.indexOf("Labs")).add(menuItems.get(i));
-			} else if (menuItemName.get(i).startsWith("ed:")) {
-				menus.get(menuName.indexOf("Edit")).add(menuItems.get(i));
-			} else if (menuItemName.get(i).startsWith("mi:")) {
-				menuBar.add(menuItems.get(menuItemName.indexOf("mi:Exit")));
-			} else if (menuItemName.get(i).startsWith("ex:")) {
-				menus.get(menuName.indexOf("Exercises")).add(menuItems.get(i));
-			}
-		}
-
-		exit = new JButton("Exit");
-		exit.setLayout(null);
-		exit.addActionListener(this);
-		exit.setBackground(getConsoleBg());
-		exit.setForeground(getConsoleFg());
-		exit.setBorderPainted(false);
-		exit.setSize(exit.getText().length() * exit.getFont().getSize(), 12);
-		exit.setLocation(consoleWindow.getWidth() - exit.getWidth(), 0);
-		menuBar.add(exit);
-
-		// Console
-		console = new JTextArea("");
-		console.setSize(new Dimension(consoleWindow.getWidth(), consoleWindow.getHeight()));
-		console.setBackground(getConsoleBg());
-		console.setForeground(getConsoleFg());
-		console.setEditable(false);
-
-		GridBagLayout gbl = new GridBagLayout();
-		consoleWindow.setLayout(gbl);
-
-		JScrollPane scroll = new JScrollPane(console, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		caret = (DefaultCaret) console.getCaret();
-		caret.setUpdatePolicy(2);
-		scroll.getVerticalScrollBar().setBackground(getConsoleBg());
-		scroll.getVerticalScrollBar().setForeground(getTitleFg(getConsoleBg()));
-		GridBagConstraints scrollConstraints = new GridBagConstraints();
-		scrollConstraints.insets = new Insets(0, 0, 0, 0);
-		scrollConstraints.fill = 1;
-		scrollConstraints.gridx = 0;
-		scrollConstraints.gridy = 0;
-		scrollConstraints.gridwidth = 3;
-		scrollConstraints.gridheight = 2;
-		scrollConstraints.weightx = 1.0;
-		scrollConstraints.weighty = 1.0;
-		consoleWindow.add(scroll, scrollConstraints);
-		consoleWindow.setJMenuBar(menuBar);
-		console.setBackground(getConsoleBg());
-		console.setForeground(getConsoleFg());
-
-		styleFont = new Font(initFonts("BarcodeFont").getFontName(), Font.PLAIN, 72);
-
-	}
-
-	/**
 	 * Prints the message to either console
 	 * 
 	 * @param message
@@ -250,10 +96,27 @@ public class Main extends Listeners {
 	 */
 	public void print(Object message) {
 		getLog().add(m.timestamp.format(date.getTime()) + " : " + message.toString() + "**");
+		char[] typewritter = message.toString().toCharArray();
 		if (isDefaultConsole()) {
-			console.append(message.toString() + "\n");
-		} else
-			System.out.println(message + "\n");
+			int counter = 0;
+			for (char c : typewritter) {
+				console.append(c + "");
+				for (int i = 0; i < 1000; i++) {
+					// console.append("0");
+				}
+			}
+			console.append("\n");
+		} else {
+			for (char c : typewritter) {
+				System.out.print(c);
+				try {
+					thread.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			System.out.println();
+		}
 	}
 
 	/**
@@ -313,12 +176,8 @@ public class Main extends Listeners {
 		}
 	}
 
-	// public Main(){
-	//
-	// }
-
 	public static void main(String[] args) {
-		boolean fileFound = true;
+		boolean fileFound = true;// System.console() == null
 		if (System.console() == null) {
 			String FolderName = root + "Settings\\";
 			String FileName = "Pref.ini";
@@ -330,16 +189,21 @@ public class Main extends Listeners {
 				m.setIndex(Integer.parseInt(io.index));
 				m.setConsoleBg(new Color(Integer.decode(io.cbg)));
 				m.setConsoleFg(new Color(Integer.decode(io.cfg)));
-				m.initConsoleWindow();
+				terminal = new Terminal();
+				consoleWindow = terminal.getFrame();
+				menuItems = terminal.menuItems;
+				menus = terminal.menus;
+				menuName = terminal.menuName;
+				menuItemName = terminal.menuItemName;
+				exit = terminal.exit;
+				console = terminal.console;
 			} catch (Exception e) {
 				m.print("ERROR Message: " + e.getMessage());
 			}
 			setDefaultConsole(true);
 			getLog().add("Starting LOG...**");
 			m.initStartMessages();
-			EventQueue.invokeLater(() -> {
-				consoleWindow.setVisible(true);
-			});
+
 			if (!fileFound) {
 				m.print("Files not found... Creating them");
 				m.loadDefaultFiles();
@@ -348,6 +212,19 @@ public class Main extends Listeners {
 		} else {
 			setDefaultConsole(false);
 			// Everything Below is for standard Command Line Launch
+			String FolderName = root + "Settings\\";
+			String FileName = "Pref.ini";
+			try {
+				io.TextReader(FileName, FolderName, "style");
+				m.setBg(new Color(Integer.decode(io.bg)));
+				m.setFg(new Color(Integer.decode(io.fg)));
+				m.setFontSize(Integer.parseInt(io.ft));
+				m.setIndex(Integer.parseInt(io.index));
+				m.setConsoleBg(new Color(Integer.decode(io.cbg)));
+				m.setConsoleFg(new Color(Integer.decode(io.cfg)));
+			} catch (Exception e) {
+				m.print("ERROR Message: " + e.getMessage());
+			}
 			if (args.length > 0) {
 				if (args[0].equalsIgnoreCase("pos")) {
 					new MealTester();
@@ -382,36 +259,27 @@ public class Main extends Listeners {
 					new Updater();
 				} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
 					m.help();
-				} else if (args[0].equalsIgnoreCase("gui")) {
-					// setDefaultConsole(true);
-					getLog().add("Starting LOG...**");
-					m.setConsoleBg(new Color(Integer.decode(io.cbg)));
-					m.setConsoleFg(new Color(Integer.decode(io.cfg)));
-					m.initConsoleWindow();
-					m.initStartMessages();
-					EventQueue.invokeLater(() -> {
-						consoleWindow.setVisible(true);
-					});
 				} else {
 					m.print(args[0] + " is not a proper argument.");
 					m.help();
 				}
 			} else {
-				while (true) {
-					help.add("pos:MealTester");
-					help.add("dob:CalculatorTester");
-					help.add("bank:SavingsAccountTester");
-					help.add("lab1:Lab1");
-					help.add("lab2:Lab2");
-					help.add("lab3:Lab3");
-					help.add("lab4:lab4");
-					help.add("load:Load Default Settings");
-					help.add("pref:Open Prefrences");
-					help.add("exit:Exits the Program");
-					help.add("custom terminal | custom | ct:Opens a custom ease of use Terminal");
-					Scanner sc = new Scanner(System.in);
-					m.print("type help or ? for a list of commands and cmd arguments");
-					String input = sc.nextLine();
+				help.add("pos:MealTester");
+				help.add("dob:CalculatorTester");
+				help.add("bank:SavingsAccountTester");
+				help.add("lab1:Lab1");
+				help.add("lab2:Lab2");
+				help.add("lab3:Lab3");
+				help.add("lab4:lab4");
+				help.add("load:Load Default Settings");
+				help.add("pref:Open Prefrences");
+				help.add("exit:Exits the Program");
+				help.add("custom terminal | custom | ct:Opens a custom ease of use Terminal");
+				m.print("type help or ? for a list of commands and cmd arguments");
+				String input;
+				while (sc.hasNext()) {
+					// m.print(">", 0);
+					input = sc.nextLine();
 					if (input.equalsIgnoreCase("pos")) {
 						new MealTester();
 					} else if (input.equalsIgnoreCase("dob")) {
@@ -444,6 +312,7 @@ public class Main extends Listeners {
 						m.help();
 					}
 				}
+				sc.close();
 			}
 		}
 	}
@@ -466,7 +335,7 @@ public class Main extends Listeners {
 
 	private void launchSystemTerminal() {
 		try {
-			Runtime.getRuntime().exec("cmd /c start cmd /K \"java -jar " + getExportedName() + "\"");
+			Runtime.getRuntime().exec("cmd /c start cmd  /c \"java -jar " + getExportedName() + "\"");
 			Exit();
 		} catch (Exception e) {
 			print("Sorry something went wrong");
@@ -475,7 +344,7 @@ public class Main extends Listeners {
 
 	private void CmdLabStarter(String labname) {
 		try {
-			Runtime.getRuntime().exec("cmd /c start cmd /K \"java -jar " + getExportedName() + " " + labname + "\"");
+			Runtime.getRuntime().exec("cmd /c start cmd /c \"java -jar " + getExportedName() + " " + labname + "\"");
 		} catch (Exception e) {
 			print("Sorry something went wrong");
 		}
@@ -548,18 +417,12 @@ public class Main extends Listeners {
 	 */
 	public void Exit() {
 
-		System.out.println(isShouldLog());
-		// if (isShouldLog()) {
+		// System.out.println(isShouldLog());
 		try {
 			io.TextWriter("logLatest.txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), root + "\\logs\\", false);
-			// io.TextWriter("log-" + DATE_STRING + ".txt",
-			// getLog().toString().replace("[", "").replace("]",
-			// "").replace("**", "\n").replace(", ", ""), root + "\\logs\\",
-			// false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// }
 		System.exit(0);
 	}
 
@@ -616,8 +479,8 @@ public class Main extends Listeners {
 		exit.setBackground(getConsoleBg());
 		exit.setForeground(getConsoleFg());
 
-		menuBar.setForeground(getConsoleFg());
-		menuBar.setBackground(getConsoleBg());
+		terminal.menuBar.setForeground(getConsoleFg());
+		terminal.menuBar.setBackground(getConsoleBg());
 
 		for (JMenu m : menus) {
 			m.setBackground(getConsoleBg());

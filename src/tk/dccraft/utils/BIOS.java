@@ -63,8 +63,6 @@ public class BIOS extends Main {
 			loadDefaultFiles();
 		}
 
-		BufferedInputStream inStream = new BufferedInputStream(System.in);
-
 		print("Initializing Buffered Reader... \nInitializing Buffered Input Stream...");
 
 		if (type.equalsIgnoreCase("style")) {
@@ -118,6 +116,7 @@ public class BIOS extends Main {
 					text += line;
 					line = reader.readLine();
 				}
+				reader.close();
 			} catch (Exception e) {
 				print("Had A Problem with the while loop in the TextReader Method(Section 1:Style)\nCouldn't proccess line reader");
 				e.printStackTrace();
@@ -144,6 +143,7 @@ public class BIOS extends Main {
 						count++;
 					normalCount++;
 				}
+				reader.close();
 
 				for (int i = 0; i < nameList.size(); i++)
 					SavingsAccountTester.accounts.add(new SavingsAccount(Double.parseDouble(balanceList.get(i)), nameList.get(i)));
@@ -161,6 +161,7 @@ public class BIOS extends Main {
 
 					}
 				}
+				reader.close();
 			} catch (Exception e) {
 
 			}
@@ -174,17 +175,12 @@ public class BIOS extends Main {
 					print("Line:" + line + " Text" + text);
 					text += line;
 					line = reader.readLine();
-
 				}
+				reader.close();
 			} catch (Exception e) {
 				print("Had A Problem with the while loop in the TextReader Method\n Couldn't proccess line reader");
 				e.printStackTrace();
 			}
-		}
-		try {
-			inStream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 
 	}

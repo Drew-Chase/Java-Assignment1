@@ -13,6 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import tk.dccraft.utils.ComponentResizer;
+
 /**
  * Allows easier creation of custom windows
  * 
@@ -49,7 +51,9 @@ public class CustomWindow extends Main {
 		f.setContentPane(createContentPane());
 		f.addMouseListener(this);
 		f.addMouseMotionListener(this);
-
+		ComponentResizer cr = new ComponentResizer();
+		cr.registerComponent(f);
+		cr.setSnapSize(new Dimension(10, 10));
 		return f;
 	}
 
@@ -74,6 +78,9 @@ public class CustomWindow extends Main {
 		f.setContentPane(createContentPane());
 		f.addMouseListener(this);
 		f.addMouseMotionListener(this);
+		ComponentResizer cr = new ComponentResizer();
+		cr.registerComponent(f);
+		cr.setSnapSize(new Dimension(10, 10));
 		return f;
 	}
 
@@ -96,6 +103,9 @@ public class CustomWindow extends Main {
 		f.setForeground(getFg());
 		f.addMouseListener(this);
 		f.addMouseMotionListener(this);
+		ComponentResizer cr = new ComponentResizer();
+		cr.registerComponent(f);
+		cr.setMinimumSize(size);
 		return f;
 	}
 
@@ -121,6 +131,9 @@ public class CustomWindow extends Main {
 		pane.setSize(getSize());
 		pane.addMouseListener(this);
 		pane.addMouseMotionListener(this);
+		ComponentResizer cr = new ComponentResizer();
+		cr.registerComponent(pane);
+		cr.setSnapSize(new Dimension(10, 10));
 		return pane;
 	}
 
@@ -139,6 +152,9 @@ public class CustomWindow extends Main {
 		pane.setSize(getSize());
 		pane.addMouseListener(this);
 		pane.addMouseMotionListener(this);
+		ComponentResizer cr = new ComponentResizer();
+		cr.registerComponent(pane);
+		cr.setSnapSize(new Dimension(10, 10));
 
 		JLabel l = createLabel(title, new Point(25, 25));
 		l.setForeground(getTitleFg());
