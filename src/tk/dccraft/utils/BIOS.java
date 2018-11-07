@@ -1,6 +1,5 @@
 package tk.dccraft.utils;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,8 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
 
 import tk.dccraft.Assignment_2.bank.SavingsAccount;
 import tk.dccraft.Assignment_2.bank.SavingsAccountTester;

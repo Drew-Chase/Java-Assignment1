@@ -3,13 +3,11 @@ package tk.dccraft.exercises;
 import java.util.Random;
 import java.util.Scanner;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
+public class Exercise_5 {
 
-public class NumberGuesser {
-	
 	int x = 0;
 
-	public NumberGuesser() {
+	public Exercise_5() {
 		Random ran = new Random();
 		Scanner in = new Scanner(System.in);
 		String question = "yes";
@@ -37,14 +35,14 @@ public class NumberGuesser {
 				return true;
 			else
 				return false;
-		} catch (ParseException | NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			return false;
 		}
 
 	}
 
 	public static void main(String[] args) {
-		new NumberGuesser();
+		new Exercise_5();
 	}
 
 }

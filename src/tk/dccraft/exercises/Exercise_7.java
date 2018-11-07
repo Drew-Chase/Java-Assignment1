@@ -3,9 +3,9 @@ package tk.dccraft.exercises;
 import java.util.Scanner;
 
 @SuppressWarnings("all")
-public class Ex7 {
+public class Exercise_7 {
 
-	public Ex7() {
+	public Exercise_7() {
 		whileCounter();
 		forCounter();
 		input();
@@ -56,7 +56,7 @@ public class Ex7 {
 	}
 
 	public static void main(String[] args) {
-		new Ex7();
+		new Exercise_7();
 	}
 
 }

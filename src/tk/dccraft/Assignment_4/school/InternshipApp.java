@@ -10,8 +10,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
-
 /**
  * GUI App that allows conversing with the Students Object
  * 
@@ -25,7 +23,8 @@ public class InternshipApp extends Students {
 	JButton check, close;
 	JTextField studentTF, creditsTF, gpaTF;
 	char[] symbols = "0123456789`~!@#$%^&*()_-+=[{}]|\\'\";:/?.>,<*".toCharArray();
-	String initStudentText = "Students Name", initGPAText = "Enter Your Current GPA Here", initCreditText = "Enter Your Current Credit Ammount";
+	String initStudentText = "Students Name", initGPAText = "Enter Your Current GPA Here",
+			initCreditText = "Enter Your Current Credit Ammount";
 
 	private double gpa, credit;
 
@@ -36,13 +35,16 @@ public class InternshipApp extends Students {
 		f = createWindow(new Dimension(800, 350), "InternshipApp");
 		pane = createContentPane("Internship App", "Fantastic.ttf");
 
-		studentTF = createTextBox(initStudentText, new Point(f.getWidth() / 3, f.getHeight() / 2 - 69 - 30 - 30), new Dimension(f.getWidth() / 3, 25));
+		studentTF = createTextBox(initStudentText, new Point(f.getWidth() / 3, f.getHeight() / 2 - 69 - 30 - 30),
+				new Dimension(f.getWidth() / 3, 25));
 		pane.add(studentTF);
 
-		creditsTF = createTextBox(initCreditText, new Point(f.getWidth() / 3, f.getHeight() / 2 - 69 - 30), new Dimension(f.getWidth() / 3, 25));
+		creditsTF = createTextBox(initCreditText, new Point(f.getWidth() / 3, f.getHeight() / 2 - 69 - 30),
+				new Dimension(f.getWidth() / 3, 25));
 		pane.add(creditsTF);
 
-		gpaTF = createTextBox(initGPAText, new Point(f.getWidth() / 3, f.getHeight() / 2 - 69), new Dimension(f.getWidth() / 3, 25));
+		gpaTF = createTextBox(initGPAText, new Point(f.getWidth() / 3, f.getHeight() / 2 - 69),
+				new Dimension(f.getWidth() / 3, 25));
 		pane.add(gpaTF);
 
 		check = createButton("Check", new Point((f.getWidth() / 2) - 35, f.getHeight() - 100), new Dimension(69, 25));
@@ -58,13 +60,18 @@ public class InternshipApp extends Students {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(check)) {
-			if (!(studentTF.getText().equals(initStudentText) || creditsTF.getText().equals(initCreditText) || gpaTF.getText().equals(initGPAText))) {
+			if (!(studentTF.getText().equals(initStudentText) || creditsTF.getText().equals(initCreditText)
+					|| gpaTF.getText().equals(initGPAText))) {
 				Students s = new Students(studentTF.getText(), credit, gpa);
 				print(gpa + " , " + credit);
 				if (s.isEligibleForInternship())
-					print("\n\nHello " + s.getName() + " We would like to Congratulate you on your " + s.getGPA() + " GPA\nand with the credits You've earned so far you are technically a " + s.getClassStatus() + "\nYou are currently Eligible for the Majority of Internships");
+					print("\n\nHello " + s.getName() + " We would like to Congratulate you on your " + s.getGPA()
+							+ " GPA\nand with the credits You've earned so far you are technically a "
+							+ s.getClassStatus() + "\nYou are currently Eligible for the Majority of Internships");
 				else
-					print("\n\nHello Student...\nWe are Sorry to Inform you that you do not meet the minimum\nrequirements to under take an internship.\nStudent Name:" + s.getName() + "\nStudent GPA " + s.getGPA() + "\nStudent Class Status " + s.getClassStatus());
+					print("\n\nHello Student...\nWe are Sorry to Inform you that you do not meet the minimum\nrequirements to under take an internship.\nStudent Name:"
+							+ s.getName() + "\nStudent GPA " + s.getGPA() + "\nStudent Class Status "
+							+ s.getClassStatus());
 			} else
 				print("You've Got to type something in...");
 		} else if (e.getSource().equals(close)) {
@@ -133,7 +140,7 @@ public class InternshipApp extends Students {
 					gpa = Double.parseDouble(s);
 					print(gpa);
 					return isValidGPA(gpa);
-				} catch (NumberFormatException | ParseException e) {
+				} catch (NumberFormatException e) {
 					print("Not a valid GPA");
 					return false;
 				}
@@ -141,7 +148,7 @@ public class InternshipApp extends Students {
 				try {
 					credit = Double.parseDouble(s);
 					return isValidCredits(credit);
-				} catch (NumberFormatException | ParseException e) {
+				} catch (NumberFormatException e) {
 					print("Not a valid number");
 					return false;
 				}

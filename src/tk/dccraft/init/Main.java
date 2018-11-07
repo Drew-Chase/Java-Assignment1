@@ -29,11 +29,11 @@ import tk.dccraft.Assignment_1.part_2.CalendarTester;
 import tk.dccraft.Assignment_2.bank.SavingsAccountTester;
 import tk.dccraft.Assignment_3.keys.KeyTester;
 import tk.dccraft.Assignment_4.school.InternshipApp;
-import tk.dccraft.exercises.Ex7;
-import tk.dccraft.exercises.Exercise3;
-import tk.dccraft.exercises.Exercise4;
-import tk.dccraft.exercises.Exercise8;
-import tk.dccraft.exercises.NumberGuesser;
+import tk.dccraft.exercises.Exercise_7;
+import tk.dccraft.exercises.Exercise_3;
+import tk.dccraft.exercises.Exercise_4;
+import tk.dccraft.exercises.Exercise_8;
+import tk.dccraft.exercises.Exercise_5;
 import tk.dccraft.http.updater.Updater;
 import tk.dccraft.labs.Lab1;
 import tk.dccraft.labs.Lab2;
@@ -90,9 +90,8 @@ public class Main extends Listeners {
 	/**
 	 * Prints the message to either console
 	 * 
-	 * @param message
-	 *            gets the message to print as an object then converts it to a
-	 *            printable string
+	 * @param message gets the message to print as an object then converts it to a
+	 *                printable string
 	 */
 	public void print(Object message) {
 		getLog().add(m.timestamp.format(date.getTime()) + " : " + message.toString() + "**");
@@ -120,14 +119,12 @@ public class Main extends Listeners {
 	}
 
 	/**
-	 * Prints the message to either console and makes a new line base on the
-	 * newLine param
+	 * Prints the message to either console and makes a new line base on the newLine
+	 * param
 	 * 
-	 * @param message
-	 *            gets the message to print as an object then converts it to a
-	 *            printable string
-	 * @param newLine
-	 *            prints a x new lines after the text
+	 * @param message gets the message to print as an object then converts it to a
+	 *                printable string
+	 * @param newLine prints a x new lines after the text
 	 */
 	public void print(Object message, int newLine) {
 		getLog().add(timestamp.format(date.getTime()) + " : " + message.toString() + "**");
@@ -241,15 +238,15 @@ public class Main extends Listeners {
 				} else if (args[0].equalsIgnoreCase("lab4")) {
 					new Lab4();
 				} else if (args[0].equalsIgnoreCase("ex3")) {
-					new Exercise3();
+					new Exercise_3();
 				} else if (args[0].equalsIgnoreCase("ex4")) {
-					new Exercise4();
+					new Exercise_4();
 				} else if (args[0].equalsIgnoreCase("ex5")) {
-					new NumberGuesser();
+					new Exercise_5();
 				} else if (args[0].equalsIgnoreCase("ex7")) {
-					new Ex7();
+					new Exercise_7();
 				} else if (args[0].equalsIgnoreCase("ex8")) {
-					new Exercise8();
+					new Exercise_8();
 				} else if (args[0].equalsIgnoreCase("load")) {
 					m.loadDefaultFiles();
 					m.Exit();
@@ -303,7 +300,8 @@ public class Main extends Listeners {
 						new Updater();
 					} else if (input.equalsIgnoreCase("pref")) {
 						new PreferenceWindow();
-					} else if (input.equalsIgnoreCase("custom terminal") || input.equalsIgnoreCase("custom") || input.equalsIgnoreCase("ct")) {
+					} else if (input.equalsIgnoreCase("custom terminal") || input.equalsIgnoreCase("custom")
+							|| input.equalsIgnoreCase("ct")) {
 						m.launchCustomTerminal();
 					} else if (input.equalsIgnoreCase("help") || input.equalsIgnoreCase("?")) {
 						m.help();
@@ -419,7 +417,9 @@ public class Main extends Listeners {
 
 		// System.out.println(isShouldLog());
 		try {
-			io.TextWriter("logLatest.txt", getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""), root + "\\logs\\", false);
+			io.TextWriter("logLatest.txt",
+					getLog().toString().replace("[", "").replace("]", "").replace("**", "\n").replace(", ", ""),
+					root + "\\logs\\", false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -427,11 +427,10 @@ public class Main extends Listeners {
 	}
 
 	/**
-	 * I just wrote this when you were talking about it. but it doesn't do
-	 * anything different than the original way.
+	 * I just wrote this when you were talking about it. but it doesn't do anything
+	 * different than the original way.
 	 * 
-	 * @param Object
-	 *            o
+	 * @param Object o
 	 */
 	@Override
 	public boolean equals(Object o) {
@@ -449,10 +448,8 @@ public class Main extends Listeners {
 	/**
 	 * IF NEEDED it will update the Graphics on the JFrame
 	 * 
-	 * @param frame
-	 *            gets window
-	 * @param g
-	 *            gets Graphics of window
+	 * @param frame gets window
+	 * @param g     gets Graphics of window
 	 */
 	public void updateFrame(JFrame frame, Graphics g) {
 		frame.update(g);
@@ -462,8 +459,7 @@ public class Main extends Listeners {
 	/**
 	 * IF NEEDED it will update the Graphics on the JFrame
 	 * 
-	 * @param frame
-	 *            gets window with graphics
+	 * @param frame gets window with graphics
 	 */
 	public void updateFrame(JFrame frame) {
 		frame.update(frame.getGraphics());
@@ -538,7 +534,7 @@ public class Main extends Listeners {
 			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 7")))) {
 				CmdLabStarter("ex7");
 			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("ex:Exercise 8")))) {
-				CmdLabStarter("ex8");
+				new Exercise_8();
 			} else if (e.getSource().equals(menuItems.get(menuItemName.indexOf("a4:Internship App")))) {
 				new InternshipApp();
 			}
@@ -575,8 +571,7 @@ public class Main extends Listeners {
 	/**
 	 * Sets the font size
 	 * 
-	 * @param size
-	 *            font size
+	 * @param size font size
 	 */
 	public static void setFontSize(int size) {
 		fontSize = size;
@@ -617,7 +612,8 @@ public class Main extends Listeners {
 		m.print(bg.toString());
 		Color c;
 		if (!rVisible && !gVisible && !bVisible)
-			c = new Color(bg.getRed() + STANDARD_COLOR_DIFFERENCE, bg.getGreen() + STANDARD_COLOR_DIFFERENCE, bg.getBlue() + STANDARD_COLOR_DIFFERENCE);
+			c = new Color(bg.getRed() + STANDARD_COLOR_DIFFERENCE, bg.getGreen() + STANDARD_COLOR_DIFFERENCE,
+					bg.getBlue() + STANDARD_COLOR_DIFFERENCE);
 		else
 			c = new Color(r, g, b);
 		return c;
@@ -625,10 +621,8 @@ public class Main extends Listeners {
 
 	/**
 	 * 
-	 * @param bg
-	 *            specifies the background color
-	 * @return slightly darker or lighter color based on the given background
-	 *         color
+	 * @param bg specifies the background color
+	 * @return slightly darker or lighter color based on the given background color
 	 */
 	public Color getTitleFg(Color bg) {
 		int r = 0, g = 0, b = 0;
@@ -647,7 +641,8 @@ public class Main extends Listeners {
 			bVisible = false;
 		Color c;
 		if (!rVisible && !gVisible && !bVisible)
-			c = new Color(bg.getRed() + STANDARD_COLOR_DIFFERENCE, bg.getGreen() + STANDARD_COLOR_DIFFERENCE, bg.getBlue() + STANDARD_COLOR_DIFFERENCE);
+			c = new Color(bg.getRed() + STANDARD_COLOR_DIFFERENCE, bg.getGreen() + STANDARD_COLOR_DIFFERENCE,
+					bg.getBlue() + STANDARD_COLOR_DIFFERENCE);
 		else
 			c = new Color(r, g, b);
 		return c;
@@ -674,8 +669,7 @@ public class Main extends Listeners {
 	/**
 	 * sets the main Background Color
 	 * 
-	 * @param bg
-	 *            background color
+	 * @param bg background color
 	 */
 	public static void setBg(Color bg) {
 		Main.bg = bg;
@@ -693,8 +687,7 @@ public class Main extends Listeners {
 	/**
 	 * Sets the main Foreground Color
 	 * 
-	 * @param fg
-	 *            Foreground Color
+	 * @param fg Foreground Color
 	 */
 	public static void setFg(Color fg) {
 		Main.fg = fg;
@@ -703,8 +696,7 @@ public class Main extends Listeners {
 	/**
 	 * Sets the Console Foreground Color
 	 * 
-	 * @param fg
-	 *            Foreground Color
+	 * @param fg Foreground Color
 	 */
 	public static void setConsoleFg(Color fg) {
 		Main.cfg = fg;
@@ -735,8 +727,7 @@ public class Main extends Listeners {
 	/**
 	 * Sets the Current Page Index used for the Preference Window
 	 * 
-	 * @param index
-	 *            tab index
+	 * @param index tab index
 	 */
 	public void setIndex(int index) {
 		m.index = index;
