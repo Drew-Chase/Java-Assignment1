@@ -32,11 +32,13 @@ public class Terminal extends CustomWindow {
 	public static List<String> menuName = new ArrayList<String>();
 	public static List<String> menuItemName = new ArrayList<String>();
 	public static JButton exit;
+	
+	public static Terminal term;
 
 	Dimension size = new Dimension(440, 340);
 
 	public Terminal() {
-
+		term = this;
 		// Initializing Frame
 		consoleWindow = createWindow(size, "Console", new Point(50, 100));
 		consoleWindow.setResizable(true);
@@ -182,6 +184,41 @@ public class Terminal extends CustomWindow {
 			consoleWindow.setVisible(true);
 		});
 
+	}
+	
+	/**
+	 * Updates the Console GUI
+	 */
+	public void updateConsole() {
+		// console.setBackground(getConsoleBg());
+		// console.setForeground(getConsoleFg());
+		exit.setBackground(getConsoleBg());
+		exit.setForeground(getConsoleFg());
+
+		terminal.menuBar.setForeground(getConsoleFg());
+		terminal.menuBar.setBackground(getConsoleBg());
+
+		for (JMenu m : menus) {
+			m.setBackground(getConsoleBg());
+			m.setForeground(getConsoleFg());
+		}
+		for (JMenuItem m : menuItems) {
+			m.setBackground(getConsoleBg());
+			m.setForeground(getConsoleFg());
+		}
+
+		// Console
+		console.setBackground(getConsoleBg());
+		console.setForeground(getConsoleFg());
+	}
+	
+	/**
+	 * Gets the Console Window
+	 * 
+	 * @return Console Window
+	 */
+	public JFrame getFrame() {
+		return consoleWindow;
 	}
 
 }

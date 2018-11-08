@@ -256,7 +256,7 @@ public class PreferenceWindow extends Main {
 		this.title.setLocation((int) size.getWidth() - 250, 10);
 		this.title.setSize(250, this.height - 50);
 		this.pane.add(this.title);
-		
+
 		this.tab.addMouseListener(this);
 		this.tab.addMouseMotionListener(this);
 
@@ -580,7 +580,7 @@ public class PreferenceWindow extends Main {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			updateConsole();
+			getTerminal().updateConsole();
 			initColors();
 			this.f.dispose();
 			new PreferenceWindow(f.getLocation());
@@ -626,7 +626,7 @@ public class PreferenceWindow extends Main {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		updateConsole();
+		getTerminal().updateConsole();
 		initColors();
 		this.f.dispose();
 		new PreferenceWindow(f.getLocation());

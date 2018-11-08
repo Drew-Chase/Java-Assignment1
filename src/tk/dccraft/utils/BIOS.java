@@ -61,7 +61,7 @@ public class BIOS extends Main {
 
 		print("Initializing Buffered Reader... \nInitializing Buffered Input Stream...");
 
-		if (OsUtils.isUnix())
+		if (OsUtils.isLinux())
 			FileLocation = FileLocation.replace("\\", "/");
 
 		if (type.equalsIgnoreCase("style")) {
@@ -198,7 +198,7 @@ public class BIOS extends Main {
 	 */
 	public void TextWriter(String FileName, String fileContent, String FolderName, boolean append) throws IOException {
 		print("Accessing Settings Saving Method...");
-		if (OsUtils.isUnix())
+		if (OsUtils.isLinux())
 			FolderName = FolderName.replace("\\", "/");
 		File f = new File(FolderName);
 		try {
