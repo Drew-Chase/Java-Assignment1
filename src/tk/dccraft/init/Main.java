@@ -41,6 +41,7 @@ import tk.dccraft.labs.Lab3;
 import tk.dccraft.labs.Lab4;
 import tk.dccraft.labs.Lab5;
 import tk.dccraft.utils.BIOS;
+import tk.dccraft.utils.OsUtils;
 import tk.dccraft.utils.settings.PreferenceWindow;
 
 /**
@@ -83,7 +84,7 @@ public class Main extends Listeners {
 	public Font styleFont;
 	private static List<String> help = new ArrayList<String>();
 
-	public static String root = System.getProperty("user.home") + "\\AppData\\Roaming\\A Drew Chase Project\\Java\\";
+	public static String root = System.getProperty("user.home");
 
 	public boolean shouldLog;
 
@@ -174,7 +175,12 @@ public class Main extends Listeners {
 	}
 
 	public static void main(String[] args) {
-		boolean fileFound = true;// System.console() == null
+		// System.console() == null
+		if (OsUtils.isWindows()) 
+			root += "\\AppData\\Roaming\\A Drew Chase Project\\Java\\";
+		 else 
+			root += "/.A Drew Chase Project/Java/";
+		m.print("Loading Settings for " + OsUtils.getOsName());
 		if (System.console() == null) {
 			String FolderName = root + "Settings\\";
 			String FileName = "Pref.ini";
@@ -200,12 +206,6 @@ public class Main extends Listeners {
 			setDefaultConsole(true);
 			getLog().add("Starting LOG...**");
 			m.initStartMessages();
-
-			if (!fileFound) {
-				m.print("Files not found... Creating them");
-				m.loadDefaultFiles();
-				System.out.println("FILE NOT FOUND");
-			}
 		} else {
 			setDefaultConsole(false);
 			// Everything Below is for standard Command Line Launch
@@ -332,11 +332,15 @@ public class Main extends Listeners {
 	}
 
 	private void launchSystemTerminal() {
-		try {
-			Runtime.getRuntime().exec("cmd /c start cmd  /c \"java -jar " + getExportedName() + "\"");
-			Exit();
-		} catch (Exception e) {
-			print("Sorry something went wrong");
+		if (OsUtils.isWindows()) {
+			try {
+				Runtime.getRuntime().exec("cmd /c start cmd  /c \"java -jar " + getExportedName() + "\"");
+				Exit();
+			} catch (Exception e) {
+				print("Sorry something went wrong");
+			}
+		} else {
+
 		}
 	}
 

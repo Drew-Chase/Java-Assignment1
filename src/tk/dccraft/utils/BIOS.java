@@ -38,8 +38,8 @@ public class BIOS extends Main {
 	public boolean exists = false;
 
 	/**
-	 * Reads the file and organizes by type("style" or more specifically by
-	 * program use, like "bank" for the SavingsAccountTester.class)
+	 * Reads the file and organizes by type("style" or more specifically by program
+	 * use, like "bank" for the SavingsAccountTester.class)
 	 * 
 	 * @param FileName
 	 * @param FileLocation
@@ -55,12 +55,14 @@ public class BIOS extends Main {
 			print("Reading File: " + FileName + " in " + FileLocation);
 			reader = new BufferedReader(file);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 			print("Thats so weird cant seem to locate the file");
 			loadDefaultFiles();
 		}
 
 		print("Initializing Buffered Reader... \nInitializing Buffered Input Stream...");
+
+		if (OsUtils.isUnix())
+			FileLocation = FileLocation.replace("\\", "/");
 
 		if (type.equalsIgnoreCase("style")) {
 			try {
@@ -97,7 +99,8 @@ public class BIOS extends Main {
 							log = line.substring(4);
 							print(line);
 						} catch (Exception e) {
-							print("Could not parse log boolean string in " + FileLocation + "/" + FileName + " line " + line + " line should say \"log:true\" or \"log:false\"");
+							print("Could not parse log boolean string in " + FileLocation + "/" + FileName + " line "
+									+ line + " line should say \"log:true\" or \"log:false\"");
 						}
 						// if(line.contains("true"))
 						// else if(line.contains("false"))
@@ -143,7 +146,8 @@ public class BIOS extends Main {
 				reader.close();
 
 				for (int i = 0; i < nameList.size(); i++)
-					SavingsAccountTester.accounts.add(new SavingsAccount(Double.parseDouble(balanceList.get(i)), nameList.get(i)));
+					SavingsAccountTester.accounts
+							.add(new SavingsAccount(Double.parseDouble(balanceList.get(i)), nameList.get(i)));
 
 			} catch (Exception e) {
 				print("Had A Problem with the while loop in the TextReader Method(Section 2:Banking)\n Couldn't proccess line reader");
@@ -183,8 +187,8 @@ public class BIOS extends Main {
 	}
 
 	/**
-	 * Writes to a file, either by overwriting or appending to the end of the
-	 * file. with the append boolean
+	 * Writes to a file, either by overwriting or appending to the end of the file.
+	 * with the append boolean
 	 * 
 	 * @param FileName
 	 * @param fileContent
@@ -194,6 +198,8 @@ public class BIOS extends Main {
 	 */
 	public void TextWriter(String FileName, String fileContent, String FolderName, boolean append) throws IOException {
 		print("Accessing Settings Saving Method...");
+		if (OsUtils.isUnix())
+			FolderName = FolderName.replace("\\", "/");
 		File f = new File(FolderName);
 		try {
 			if (f.mkdirs()) {
@@ -210,7 +216,8 @@ public class BIOS extends Main {
 			bw.newLine();
 			bw.flush();
 		} catch (IOException e) {
-			print("Had an issue with Writting the file " + FileName + " in TextWriter Meathod.  ERROR: " + e.getMessage());
+			print("Had an issue with Writting the file " + FileName + " in TextWriter Meathod.  ERROR: "
+					+ e.getMessage());
 		} finally {
 			if (bw != null) {
 				bw.close();
